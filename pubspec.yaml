@@ -1,0 +1,85 @@
+name: habito_ai
+description: "A futuristic AI-powered habit tracker built with Clean Architecture."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.10.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State Management & DI
+  provider: ^6.1.1 # Stable for your architecture
+
+  # Core Utilities
+  uuid: ^4.5.2
+  path_provider: ^2.1.5
+  flutter_dotenv: ^6.0.0 # Essential for keeping Gemini API keys safe
+
+  # Data Storage (Hive)
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # AI & Notifications
+  google_generative_ai: ^0.4.7
+  flutter_local_notifications: ^20.0.0
+  timezone: ^0.10.1
+
+  # UI, Charts & Animations
+  animations: ^2.1.1
+  fl_chart: ^0.70.0 # Updated for latest compatibility
+  flutter_heatmap_calendar: ^1.0.5
+  lottie: ^3.3.2
+  animate_do: ^4.2.0
+  confetti: ^0.8.0
+  intl: ^0.19.0 # Most stable version for modern projects
+  scratcher: ^2.5.0
+  share_plus: ^12.0.1
+  screenshot: ^3.0.0
+  audioplayers: ^6.5.1
+  permission_handler: ^12.0.1
+  do_not_disturb: ^1.0.3
+  speedometer_widget: ^0.2.1
+  speedometer_chart: ^1.0.8
+  flutter_flip_card: ^0.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  hive_generator: ^2.0.1 # Essential for generating TypeAdapters
+  build_runner: ^2.4.9  # Required to run hive_generator
+  flutter_launcher_icons: ^0.14.4 # Moved here for best practices
+
+# Configuration for generating app icons for Android and iOS
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/app_icon1.png" # Make sure your logo is saved exactly at this path with this name
+  min_sdk_android: 21
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - .env
+    - assets/icons/
+    - assets/images/
+    - assets/lottie_animation/
+    - assets/sounds/
+    - assets/bots_images/
+
+  fonts:
+    - family: SpaceMono
+      fonts:
+        - asset: assets/fonts/SpaceMono-Regular.ttf
+        - asset: assets/fonts/SpaceMono-Bold.ttf
+          weight: 700
+    - family: Orbitron
+      fonts:
+        - asset: assets/fonts/Orbitron-Regular.ttf
+        - asset: assets/fonts/Orbitron-Bold.ttf
+          weight: 700
