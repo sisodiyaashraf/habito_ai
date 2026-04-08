@@ -1,14 +1,73 @@
-gradle-wrapper.jar
-/.gradle
-/captures/
-/gradlew
-/gradlew.bat
-/local.properties
-GeneratedPluginRegistrant.java
-.cxx/
-
-# Remember to never publicly share your keystore.
-# See https://flutter.dev/to/reference-keystore
+# --- Environment & Secrets (CRITICAL) ---
+.env
+.env.*
+!.env.example
 key.properties
 **/*.keystore
 **/*.jks
+
+# --- Flutter/Dart ---
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# --- Android ---
+.gradle/
+build/
+local.properties
+GeneratedPluginRegistrant.java
+.cxx/
+capture/
+*.apk
+*.aab
+*.bundle
+
+# --- Gradle Wrapper (Optional but recommended to keep unless you have a specific version need) ---
+# gradlew
+# gradlew.bat
+# gradle/wrapper/gradle-wrapper.jar
+
+# --- iOS/macOS ---
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+**/*sync/
+Icon?
+.DS_Store
+DerivedData/
+Incremental/
+Intermediates/
+Index/
+Logs/
+Build/
+Products/
+TestResults/
+Frameworks/
+xcuserdata/
+xcshareddata/
+/ios/.generated_plugins_dependencies
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/flutter_export_environment.sh
+/ios/Flutter/App.framework
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/Pods/
+
+# --- IDEs ---
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# --- Others ---
+doc/api/
+*.log
+*.temp
+*.tmp

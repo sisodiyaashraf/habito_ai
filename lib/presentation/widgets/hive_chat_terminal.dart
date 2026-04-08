@@ -26,7 +26,6 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
     super.dispose();
   }
 
-  /// Automatically scrolls to the bottom of the terminal when a message arrives
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
@@ -71,58 +70,80 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
 
     return FadeInUp(
       duration: const Duration(milliseconds: 600),
-      child: Container(
-        padding: const EdgeInsets.all(
-          16,
-        ), // Slightly tighter padding for overflow safety
-        decoration: BoxDecoration(
-          color: const Color(0xFF060912).withOpacity(0.98),
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(
-            color: isCritical
-                ? Colors.redAccent.withOpacity(0.4)
-                : Colors.cyanAccent.withOpacity(0.2),
-            width: 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: (isCritical ? Colors.redAccent : Colors.cyanAccent)
-                  .withOpacity(0.05),
-              blurRadius: 40,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Constrain vertical expansion
-          children: [
-            // 1. Terminal Header with Stability Monitor
-            _buildTerminalHeader(stability, isCritical),
-
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Divider(color: Colors.white10, height: 1),
-            ),
-
-            // 2. Live Message Stream (The Scrollable Core)
-            Expanded(child: _buildMessageList(hive)),
-
-            // 3. AI Smart Features Row
-            const SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _buildGhostwriterPill(),
-                  const SizedBox(width: 8),
-                  if (!hive.isMissionActive) _buildMissionChip(hive),
-                ],
+      child: Stack(
+        // Wrap content in a Stack to allow the floating robot
+        clipBehavior: Clip.none,
+        children: [
+          // --- MAIN TERMINAL CONTAINER ---
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF060912).withOpacity(0.98),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: isCritical
+                    ? Colors.redAccent.withOpacity(0.4)
+                    : Colors.cyanAccent.withOpacity(0.2),
+                width: 1.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: (isCritical ? Colors.redAccent : Colors.cyanAccent)
+                      .withOpacity(0.05),
+                  blurRadius: 40,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTerminalHeader(stability, isCritical),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Divider(color: Colors.white10, height: 1),
+                ),
+                Expanded(child: _buildMessageList(hive)),
+                const SizedBox(height: 12),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildGhostwriterPill(),
+                      const SizedBox(width: 8),
+                      if (!hive.isMissionActive) _buildMissionChip(hive),
+                    ],
+                  ),
+                ),
+                _buildTerminalInput(context, isCritical),
+              ],
+            ),
+          ),
 
-            // 4. Terminal Input Field
-            _buildTerminalInput(context, isCritical),
-          ],
+          // --- FLOATING ROBOT SIDEKICK ---
+          _buildRobotSidekick(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRobotSidekick() {
+    return Positioned(
+      top: 40, // Positioned relative to the top of the terminal
+      right: -59, // Slightly overlapping the right border for depth
+      child: IgnorePointer(
+        // Robot won't block clicks on messages behind it
+        child: FadeInRight(
+          duration: const Duration(milliseconds: 800),
+
+          child: Image.asset(
+            'assets/robots/robotguide1.png',
+            height: 110, // Scaled for the terminal area
+            fit: BoxFit.contain,
+            // Adding a subtle glow effect to the robot asset
+            colorBlendMode: BlendMode.screen,
+            opacity: const AlwaysStoppedAnimation(0.9),
+          ),
         ),
       ),
     );
@@ -263,7 +284,7 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
 
     return ListView.builder(
       controller: _scrollController,
-      reverse: true, // Newest messages at bottom
+      reverse: true,
       itemCount: messages.length,
       padding: const EdgeInsets.only(top: 10),
       physics: const BouncingScrollPhysics(),

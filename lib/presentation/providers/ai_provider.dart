@@ -48,15 +48,23 @@ class AIProvider extends ChangeNotifier {
   String get userName => _userName;
 
   /// Returns a persona-specific status message for the UI Ticker
-  String get systemStatusMessage {
+  /// Updated to acknowledge high-efficiency states
+  String getSystemStatusMessage(double multiplier) {
+    bool hasBonus = multiplier > 1.0;
     switch (_currentPersona) {
       case AIPersonality.gentle:
-        return "ADVISOR: STANDING BY TO SUPPORT.";
+        return hasBonus
+            ? "ADVISOR: YOUR MOMENTUM IS INSPIRING. KEEP BLOOMING."
+            : "ADVISOR: STANDING BY TO SUPPORT.";
       case AIPersonality.brutal:
-        return "WARDEN: MONITORING FOR WEAKNESS.";
+        return hasBonus
+            ? "WARDEN: EFFICIENCY ACCEPTABLE. DON'T BREAK THE CHAIN."
+            : "WARDEN: MONITORING FOR WEAKNESS.";
       case AIPersonality.neutral:
       default:
-        return "SENTINEL: LOGIC GATES OPTIMAL.";
+        return hasBonus
+            ? "SENTINEL: OVERCLOCK ACTIVE. EFFICIENCY ${multiplier}X."
+            : "SENTINEL: LOGIC GATES OPTIMAL.";
     }
   }
 
@@ -108,22 +116,50 @@ class AIProvider extends ChangeNotifier {
     }
   }
 
+  /// Generates a recommended protocol based on user level and current system needs
+  Future<String> generateHabitSuggestion(int level) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final prompt =
+          "User is a Level $level Sentinel. Suggest one high-impact futuristic habit name (max 3 words) and a brief 10-word justification.";
+      final response = await aiService.generateCustomPrompt(prompt);
+      return response;
+    } catch (e) {
+      return "RECONNAISSANCE_FAILED: Suggest 'Deep Work Protocol'.";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   /// Fetches persona-aware feedback for habits
+  /// UPDATED: Now accepts multiplier and streak data to provide targeted AI coaching
   Future<void> fetchFeedback({
     required List<Habit> habits,
     required int currentLevel,
     required int totalXP,
+    double multiplier = 1.0,
+    int highestStreak = 0,
   }) async {
     _isLoading = true;
     _aiResponse = "SYNCING WITH ADVISOR...";
     notifyListeners();
 
     try {
+      // We pass the streak and multiplier as part of the context to the AI Service
       _aiResponse = await aiService.generatePersonaFeedback(
         habits: habits,
         persona: currentPersona,
         level: currentLevel,
         xp: totalXP,
+        // The AI Service should be updated to handle these extra context parameters
+        extraContext: {
+          'multiplier': multiplier.toString(),
+          'current_streak': highestStreak.toString(),
+          'is_overclocked': (multiplier > 1.0).toString(),
+        },
       );
     } catch (e) {
       _aiResponse = "LINK UNSTABLE. RE-SYNC REQUIRED.";

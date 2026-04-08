@@ -36,7 +36,8 @@ class SettingsScreen extends StatelessWidget {
 
           CustomScrollView(
             slivers: [
-              _buildAppBar(themeColor),
+              // --- PASS CONTEXT HERE ---
+              _buildAppBar(context, themeColor),
 
               SliverToBoxAdapter(
                 child: Padding(
@@ -81,7 +82,8 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppBar(Color theme) {
+  // --- UPDATED APP BAR WITH CONTEXT ---
+  Widget _buildAppBar(BuildContext context, Color theme) {
     return SliverAppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -102,8 +104,11 @@ class SettingsScreen extends StatelessWidget {
           color: Colors.white54,
           size: 18,
         ),
-        onPressed: () =>
-            SystemChannels.platform.invokeMethod('SystemNavigator.pop'),
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          // RETREAT PROTOCOL: Navigates back to ProfileScreen
+          Navigator.of(context).pop();
+        },
       ),
     );
   }
@@ -136,7 +141,6 @@ class SettingsScreen extends StatelessWidget {
             onTap: () async {
               HapticFeedback.heavyImpact();
               hive.setPersona(persona);
-              // Recalibrate nudges to match new persona vibe
               await notify.scheduleDailySmartNudges(habits.habits, persona);
             },
             leading: Icon(

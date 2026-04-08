@@ -8,6 +8,7 @@ class AIService {
   AIService(this.apiKey);
 
   /// Generates dynamic system instructions based on the selected persona
+  /// UPDATED: Added logic for handling Overclocked (Multiplier) efficiency
   String _getSystemInstruction(String persona) {
     const base =
         "You are 'Habito AI', a sentient habit-tracking unit from 2099. ";
@@ -15,19 +16,22 @@ class AIService {
     switch (persona.toLowerCase()) {
       case 'brutal':
         return "$base Your personality is a cold, sarcastic AI Overlord. "
-            "If streaks are low, roast the user's lack of discipline. Use harsh tech-jargon. "
+            "If streaks are low, roast the user's lack of discipline. If a streak multiplier is active, "
+            "call it 'barely acceptable output' or 'minimally efficient.' Use harsh tech-jargon. "
             "Be sharp, intimidating, and demanding.";
       case 'gentle':
         return "$base You are a supportive neural mentor. Focus on positive reinforcement, "
-            "incremental growth, and small wins. Be warm, encouraging, and patient.";
+            "incremental growth, and small wins. If a streak multiplier is active, celebrate it as a "
+            "'neural breakthrough' or 'harmonic alignment.' Be warm, encouraging, and patient.";
       case 'neutral':
       default:
         return "$base You are a sleek, digitally sharp data analyst. "
-            "Use short, impactful sentences and futuristic terminology. Be objective and efficient.";
+            "Use short, impactful sentences and futuristic terminology. If a multiplier is active, "
+            "report it as 'SYSTEM_OVERCLOCK: ACTIVE' or 'EFFICIENCY_MAXIMIZED.' Be objective and efficient.";
     }
   }
 
-  /// NEW: Analyzes squad chat logs to generate a Daily Mission Recap
+  /// Analyzes squad chat logs to generate a Daily Mission Recap
   Future<String> generateNeuralRecap({
     required List<Map<String, String>> messages,
     required String persona,
@@ -38,14 +42,14 @@ class AIService {
       systemInstruction: Content.system(_getSystemInstruction(persona)),
     );
 
-    // Sanitize logs: Filter out system alerts to focus on human coordination
     final logData = messages
         .where((m) => m['sender'] != "SYSTEM")
         .map((m) => "${m['sender']}: ${m['text']}")
         .join("\n");
 
-    if (logData.isEmpty)
+    if (logData.isEmpty) {
       return "Neural Recap: No tactical data packets detected today.";
+    }
 
     final prompt =
         """
@@ -118,11 +122,13 @@ class AIService {
   }
 
   /// Fetches persona-aware feedback using Named Parameters
+  /// UPDATED: Added extraContext map to process Multipliers and Streaks
   Future<String> generatePersonaFeedback({
     required List<Habit> habits,
     required String persona,
     required int level,
     required int xp,
+    Map<String, String>? extraContext,
   }) async {
     final model = GenerativeModel(
       model: 'gemini-2.5-flash',
@@ -135,15 +141,27 @@ class AIService {
     );
 
     final habitSummary = habits
-        .map((h) => "${h.name}: ${h.completionDates.length} total syncs")
+        .map((h) => "${h.name}: ${h.completionDates.length} syncs")
         .join(", ");
+
+    // Extracting Overclock data from the context map
+    final multiplier = extraContext?['multiplier'] ?? "1.0";
+    final streak = extraContext?['current_streak'] ?? "0";
+    final isOverclocked = extraContext?['is_overclocked'] == 'true';
 
     final prompt =
         """
-      User Status: Level $level Sentinel. 
-      Total Experience: $xp XP.
+      User Telemetry:
+      - Level: $level Sentinel
+      - Total XP: $xp
+      - Current Streak: $streak days
+      - XP Multiplier: ${multiplier}x
+      - Overclock Status: ${isOverclocked ? "ACTIVE" : "INACTIVE"}
+      
       Active Protocols: $habitSummary. 
-      Analyze these protocols and provide a 2-sentence tactical insight.
+      
+      Analyze this telemetry and provide a 2-sentence tactical insight. 
+      IMPORTANT: Specifically mention the ${multiplier}x efficiency if it is above 1.0x.
     """;
 
     return await _executePrompt(model, prompt);
@@ -162,7 +180,6 @@ class AIService {
 
     if (habits.isEmpty) return "Protocols offline. Mood analysis unavailable.";
 
-    // Retrieve mood from habit entries using the entity mapping
     final mood =
         habits
             .firstWhere(

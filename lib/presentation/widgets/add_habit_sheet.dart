@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import '../providers/habit_provider.dart';
+import '../providers/ai_provider.dart';
 
 class AddHabitSheet extends StatefulWidget {
   const AddHabitSheet({super.key});
@@ -27,14 +28,17 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
   final TextEditingController _targetController = TextEditingController(
     text: "1",
   );
+  final TextEditingController _customTimerController = TextEditingController();
 
   String _selectedCategory = "CODING";
   String _selectedPriority = "MEDIUM";
   TimeOfDay _reminderTime = const TimeOfDay(hour: 9, minute: 0);
-  List<int> _selectedDays = [1, 2, 3, 4, 5, 6, 7];
+  final List<int> _selectedDays = [1, 2, 3, 4, 5, 6, 7];
+
   bool _isTimerTask = false;
+  bool _isCustomTimer = false;
   int _timerMinutes = 25;
-  bool _notificationsEnabled = true;
+  final bool _notificationsEnabled = true;
 
   final List<Map<String, dynamic>> _categories = [
     {"name": "CODING", "icon": Icons.code_rounded},
@@ -47,12 +51,26 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
     {"name": "HOBBY", "icon": Icons.palette_rounded},
   ];
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _targetController.dispose();
+    _customTimerController.dispose();
+    super.dispose();
+  }
+
   void _submit() {
     final name = _nameController.text.trim();
     if (name.isNotEmpty) {
       HapticFeedback.heavyImpact();
 
-      // FIXED: Passing context as required by updated HabitProvider
+      // Resolve final timer value based on selection mode
+      int finalMinutes = _timerMinutes;
+      if (_isTimerTask && _isCustomTimer) {
+        finalMinutes =
+            int.tryParse(_customTimerController.text) ?? _timerMinutes;
+      }
+
       context.read<HabitProvider>().addHabit(
         name,
         dailyTarget: int.tryParse(_targetController.text) ?? 1,
@@ -62,7 +80,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
         scheduledDays: _selectedDays,
         isNotificationsEnabled: _notificationsEnabled,
         isTimerEnabled: _isTimerTask,
-        timerMinutes: _isTimerTask ? _timerMinutes : null,
+        timerMinutes: _isTimerTask ? finalMinutes : null,
         context: context,
       );
 
@@ -83,7 +101,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
         child: Container(
           height: MediaQuery.of(context).size.height * 0.85,
           decoration: BoxDecoration(
-            color: const Color(0xFF060912).withOpacity(0.95),
+            color: const Color(0xFF03050B),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
             border: Border.all(color: Colors.cyanAccent.withOpacity(0.15)),
           ),
@@ -95,13 +113,16 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                 const Text(
                   "PROTOCOL INITIALIZATION",
                   style: TextStyle(
+                    fontFamily: 'Orbitron',
                     color: Colors.cyanAccent,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 4,
                     fontSize: 12,
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
+                _buildAISuggestButton(),
+                const SizedBox(height: 20),
                 _buildCyberTextField(
                   controller: _nameController,
                   hint: "Protocol Label (e.g., Deep Work)",
@@ -133,7 +154,149 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
     );
   }
 
-  // --- UI COMPONENTS ---
+  // --- REVERSE TIME PRESETS & CUSTOM INPUT ---
+  Widget _buildTimerPicker() {
+    final List<int> presets = [15, 25, 45, 60];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              ...presets.map((time) {
+                bool isSelected = _timerMinutes == time && !_isCustomTimer;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: _buildTimeChip(
+                    label: "$time MIN",
+                    isSelected: isSelected,
+                    onTap: () => setState(() {
+                      _timerMinutes = time;
+                      _isCustomTimer = false;
+                    }),
+                  ),
+                );
+              }),
+              _buildTimeChip(
+                label: "CUSTOM",
+                isSelected: _isCustomTimer,
+                activeColor: Colors.purpleAccent,
+                onTap: () => setState(() => _isCustomTimer = true),
+              ),
+            ],
+          ),
+        ),
+        if (_isCustomTimer)
+          FadeInDown(
+            duration: const Duration(milliseconds: 300),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: _buildCyberTextField(
+                controller: _customTimerController,
+                hint: "Enter custom minutes...",
+                icon: Icons.edit_calendar_rounded,
+                isNumber: true,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildTimeChip({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+    Color activeColor = Colors.cyanAccent,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? activeColor.withOpacity(0.1)
+              : Colors.white.withOpacity(0.02),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isSelected ? activeColor : Colors.white10),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontFamily: 'SpaceMono',
+            color: isSelected ? activeColor : Colors.white24,
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- REMAINING UI COMPONENTS ---
+
+  Widget _buildAISuggestButton() {
+    final ai = context.watch<AIProvider>();
+    final habitProvider = context.read<HabitProvider>();
+    return GestureDetector(
+      onTap: () async {
+        HapticFeedback.mediumImpact();
+        final suggestion = await ai.generateHabitSuggestion(
+          habitProvider.currentLevel,
+        );
+        final cleanName = suggestion
+            .split(':')
+            .first
+            .replaceAll('"', '')
+            .trim();
+        setState(() => _nameController.text = cleanName);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.cyanAccent.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.cyanAccent.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (ai.isLoading)
+              const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.cyanAccent,
+                ),
+              )
+            else
+              const Icon(
+                Icons.psychology_alt_rounded,
+                color: Colors.cyanAccent,
+                size: 16,
+              ),
+            const SizedBox(width: 10),
+            const Text(
+              "AI SUGGEST PROTOCOL",
+              style: TextStyle(
+                fontFamily: 'Orbitron',
+                color: Colors.cyanAccent,
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildCategoryGrid() {
     return GridView.builder(
@@ -151,7 +314,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
         bool selected = _selectedCategory == cat['name'];
         return GestureDetector(
           onTap: () {
-            HapticFeedback.selectionClick(); // Tactile feedback
+            HapticFeedback.selectionClick();
             setState(() => _selectedCategory = cat['name']);
           },
           child: AnimatedContainer(
@@ -164,14 +327,6 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
               border: Border.all(
                 color: selected ? Colors.cyanAccent : Colors.white10,
               ),
-              boxShadow: selected
-                  ? [
-                      BoxShadow(
-                        color: Colors.cyanAccent.withOpacity(0.1),
-                        blurRadius: 8,
-                      ),
-                    ]
-                  : [],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -185,6 +340,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                 Text(
                   cat['name'],
                   style: TextStyle(
+                    fontFamily: 'SpaceMono',
                     color: selected ? Colors.white : Colors.white24,
                     fontSize: 8,
                     fontWeight: FontWeight.bold,
@@ -225,6 +381,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                 child: Text(
                   p,
                   style: TextStyle(
+                    fontFamily: 'SpaceMono',
                     color: selected ? Colors.cyanAccent : Colors.white24,
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
@@ -235,61 +392,6 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
           ),
         );
       }).toList(),
-    );
-  }
-
-  // Helper builders...
-  Widget _buildSectionLabel(String label) => Align(
-    alignment: Alignment.centerLeft,
-    child: Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Colors.white24,
-          fontSize: 8,
-          letterSpacing: 2,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ),
-  );
-
-  Widget _buildHandleBar() => Container(
-    width: 40,
-    height: 4,
-    margin: const EdgeInsets.only(bottom: 25),
-    decoration: BoxDecoration(
-      color: Colors.white12,
-      borderRadius: BorderRadius.circular(10),
-    ),
-  );
-
-  Widget _buildCyberTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    bool isNumber = false,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      style: const TextStyle(color: Colors.white, fontSize: 14),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white10),
-        prefixIcon: Icon(icon, color: Colors.cyanAccent, size: 20),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.02),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(color: Colors.white10),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(color: Colors.cyanAccent),
-        ),
-      ),
     );
   }
 
@@ -318,6 +420,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                   const Text(
                     "REMINDER UPLINK",
                     style: TextStyle(
+                      fontFamily: 'Orbitron',
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
@@ -325,7 +428,11 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                   ),
                   Text(
                     _reminderTime.format(context),
-                    style: const TextStyle(color: Colors.white38, fontSize: 9),
+                    style: const TextStyle(
+                      fontFamily: 'SpaceMono',
+                      color: Colors.white38,
+                      fontSize: 9,
+                    ),
                   ),
                 ],
               ),
@@ -341,7 +448,11 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
             },
             child: const Text(
               "SET TIME",
-              style: TextStyle(color: Colors.cyanAccent, fontSize: 10),
+              style: TextStyle(
+                fontFamily: 'Orbitron',
+                color: Colors.cyanAccent,
+                fontSize: 10,
+              ),
             ),
           ),
         ],
@@ -378,6 +489,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
               child: Text(
                 days[index],
                 style: TextStyle(
+                  fontFamily: 'SpaceMono',
                   color: selected ? Colors.black : Colors.white24,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
@@ -427,6 +539,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
               Text(
                 label,
                 style: TextStyle(
+                  fontFamily: 'Orbitron',
                   color: selected ? Colors.white : Colors.white24,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
@@ -434,6 +547,38 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCyberTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool isNumber = false,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      style: const TextStyle(
+        fontFamily: 'SpaceMono',
+        color: Colors.white,
+        fontSize: 14,
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white10),
+        prefixIcon: Icon(icon, color: Colors.cyanAccent, size: 20),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.02),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: Colors.white10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: Colors.cyanAccent),
         ),
       ),
     );
@@ -448,47 +593,31 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
     );
   }
 
-  Widget _buildTimerPicker() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white10),
+  Widget _buildSectionLabel(String label) => Align(
+    alignment: Alignment.centerLeft,
+    child: Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontFamily: 'Orbitron',
+          color: Colors.white24,
+          fontSize: 8,
+          letterSpacing: 2,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            "DURATION",
-            style: TextStyle(color: Colors.white24, fontSize: 10),
-          ),
-          Row(
-            children: [
-              IconButton(
-                onPressed: () => setState(
-                  () => _timerMinutes > 5 ? _timerMinutes -= 5 : null,
-                ),
-                icon: const Icon(Icons.remove, color: Colors.cyanAccent),
-              ),
-              Text(
-                "$_timerMinutes MIN",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              IconButton(
-                onPressed: () => setState(() => _timerMinutes += 5),
-                icon: const Icon(Icons.add, color: Colors.cyanAccent),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
+    ),
+  );
+  Widget _buildHandleBar() => Container(
+    width: 40,
+    height: 4,
+    margin: const EdgeInsets.only(bottom: 25),
+    decoration: BoxDecoration(
+      color: Colors.white12,
+      borderRadius: BorderRadius.circular(10),
+    ),
+  );
   Widget _buildInitializeButton() {
     return FadeInUp(
       child: Container(
@@ -515,6 +644,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
           child: const Text(
             "INITIALIZE PROTOCOL",
             style: TextStyle(
+              fontFamily: 'Orbitron',
               fontWeight: FontWeight.w900,
               letterSpacing: 2,
               fontSize: 13,

@@ -9,6 +9,7 @@ import '../providers/ai_provider.dart';
 import '../screens/global_leaderboard_screen.dart';
 import '../widgets/RewardScratchDialog.dart';
 import '../widgets/rewardcontent.dart';
+import '../widgets/RobotGuideOverlay.dart';
 
 class GameHubScreen extends StatefulWidget {
   const GameHubScreen({super.key});
@@ -18,23 +19,69 @@ class GameHubScreen extends StatefulWidget {
 }
 
 class _GameHubScreenState extends State<GameHubScreen> {
-  // Toggle between pending rewards and the collected card archive
   bool _showVault = false;
+  bool _isGuideVisible = false;
+  int _guideStepIndex = 0;
+
+  final List<Map<String, String>> _hubSequence = [
+    {
+      'label': 'NEURAL_HUB',
+      'message':
+          'Welcome to the Neural Hub. This is where your habit synchronization is converted into tangible system rewards.',
+    },
+    {
+      'label': 'HIVE_STABILITY',
+      'message':
+          'Monitor the collective Hive Stability. High stability ensures optimal reward generation during squad missions.',
+    },
+    {
+      'label': 'SYSTEM_RANK',
+      'message':
+          'This telemetry displays your Sentinel evolution. Progress the bar to unlock higher tier neural protocols.',
+    },
+    {
+      'label': 'DATA_PACKS',
+      'message':
+          'Synchronized habits generate encrypted Data Packs. Decrypt them here to collect rare Bot Cards for your archive.',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkHubGuide());
+  }
+
+  Future<void> _checkHubGuide() async {
+    final habitProvider = Provider.of<HabitProvider>(context, listen: false);
+    bool shouldShow = await habitProvider.shouldShowGuide('gamehub');
+    if (shouldShow && mounted) {
+      setState(() {
+        _isGuideVisible = true;
+        _guideStepIndex = 0;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final habitProvider = context.watch<HabitProvider>();
     final hiveProvider = context.watch<HiveProvider>();
 
-    // LOGIC: Filter for logs that have bot rewards but have NOT been collected yet
-    final pendingLogs = habitProvider.systemLogs
-        .where(
-          (log) => log['reward_bot_id'] != null && log['is_collected'] != true,
-        )
-        .toList();
+    // FIX: Refined filtering to catch all rewards and separate by collection status
+    final pendingLogs = habitProvider.systemLogs.where((log) {
+      return log['reward_bot_id'] != null && log['is_collected'] != true;
+    }).toList();
+
+    final collectedLogs = habitProvider.systemLogs.where((log) {
+      return log['reward_bot_id'] != null && log['is_collected'] == true;
+    }).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF060912),
+      backgroundColor: const Color(
+        0xFF03050B,
+      ), // Solid Matte Black for continuity
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           _buildAmbientGlows(),
@@ -44,18 +91,28 @@ class _GameHubScreenState extends State<GameHubScreen> {
               slivers: [
                 _buildAppBar(context),
 
+                // 1. Hive Status
                 SliverToBoxAdapter(
-                  child: FadeInDown(child: _buildHiveStatusCard(hiveProvider)),
-                ),
-
-                SliverToBoxAdapter(
-                  child: FadeInDown(
-                    delay: const Duration(milliseconds: 100),
-                    child: _buildLevelCard(habitProvider),
+                  child: _buildHighlightWrapper(
+                    isActive: _isGuideVisible && _guideStepIndex == 1,
+                    child: FadeInDown(
+                      child: _buildHiveStatusCard(hiveProvider),
+                    ),
                   ),
                 ),
 
-                // --- TAB SWITCHER: NEURAL SELECTOR ---
+                // 2. Level Card
+                SliverToBoxAdapter(
+                  child: _buildHighlightWrapper(
+                    isActive: _isGuideVisible && _guideStepIndex == 2,
+                    child: FadeInDown(
+                      delay: const Duration(milliseconds: 100),
+                      child: _buildLevelCard(habitProvider),
+                    ),
+                  ),
+                ),
+
+                // --- TAB SWITCHER ---
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -67,7 +124,9 @@ class _GameHubScreenState extends State<GameHubScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.03),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white10),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.08),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -79,23 +138,42 @@ class _GameHubScreenState extends State<GameHubScreen> {
                   ),
                 ),
 
-                // Logic: Show pending items only in the ACTIVE_UPLINKS tab
-                if (!_showVault && pendingLogs.isEmpty)
-                  _buildEmptyState(
-                    "NO PENDING UPLINKS\nSynchronize habits to generate data packs.",
-                  )
-                else if (_showVault)
-                  // Redirecting Vault view to show that items are moved to the Archive Screen
-                  _buildEmptyState(
-                    "NEURAL VAULT TRANSFERRED\nAll collected cards are now stored in the Neural Archive.",
-                  )
+                // 3. Conditional Grid (Uplinks vs Vault)
+                if (!_showVault)
+                  pendingLogs.isEmpty
+                      ? _buildEmptyState(
+                          "NO PENDING UPLINKS\nComplete protocols to generate data packs.",
+                        )
+                      : _buildRewardGrid(pendingLogs, isVault: false)
                 else
-                  _buildRewardGrid(pendingLogs),
+                  collectedLogs.isEmpty
+                      ? _buildEmptyState(
+                          "NEURAL VAULT EMPTY\nCollected cards will be archived here.",
+                        )
+                      : _buildRewardGrid(collectedLogs, isVault: true),
 
                 const SliverToBoxAdapter(child: SizedBox(height: 120)),
               ],
             ),
           ),
+
+          if (_isGuideVisible)
+            RobotGuideOverlay(
+              label: _hubSequence[_guideStepIndex]['label']!,
+              message: _hubSequence[_guideStepIndex]['message']!,
+              onDismiss: () {
+                setState(() {
+                  if (_guideStepIndex < _hubSequence.length - 1) {
+                    _guideStepIndex++;
+                    HapticFeedback.lightImpact();
+                  } else {
+                    _isGuideVisible = false;
+                    context.read<HabitProvider>().markGuideAsSeen('gamehub');
+                    HapticFeedback.mediumImpact();
+                  }
+                });
+              },
+            ),
         ],
       ),
     );
@@ -123,9 +201,9 @@ class _GameHubScreenState extends State<GameHubScreen> {
               style: TextStyle(
                 fontFamily: 'Orbitron',
                 color: isActive ? Colors.cyanAccent : Colors.white24,
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 2,
+                letterSpacing: 1,
               ),
             ),
           ),
@@ -134,7 +212,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
     );
   }
 
-  Widget _buildRewardGrid(List<dynamic> logs) {
+  Widget _buildRewardGrid(List<dynamic> logs, {required bool isVault}) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       sliver: SliverGrid(
@@ -145,85 +223,123 @@ class _GameHubScreenState extends State<GameHubScreen> {
           childAspectRatio: 0.8,
         ),
         delegate: SliverChildBuilderDelegate((context, index) {
-          final log = logs[index];
           return FadeInUp(
             delay: Duration(milliseconds: index * 50),
-            child: _buildPendingItem(context, log),
+            child: _buildRewardCard(context, logs[index], isVault),
           );
         }, childCount: logs.length),
       ),
     );
   }
 
-  Widget _buildPendingItem(BuildContext context, dynamic log) {
+  Widget _buildRewardCard(BuildContext context, dynamic log, bool isVault) {
+    final String botId = log['reward_bot_id'];
+    final reward = RewardGenerator.getByName(botId);
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.heavyImpact();
-        // Reconstruct reward from log metadata
-        final reward = RewardGenerator.getByName(log['reward_bot_id']);
-
-        // Open scratch dialog with the specific timestamp to handle collection logic
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) =>
-              RewardScratchDialog(reward: reward, timestamp: log['timestamp']),
-        );
+        // Fire static show method with timestamp handshake
+        RewardScratchDialog.show(context, reward, log['timestamp']);
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(25),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.cyanAccent.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: Colors.cyanAccent.withOpacity(0.3)),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isVault
+                ? Colors.white.withOpacity(0.02)
+                : Colors.cyanAccent.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(
+              color: isVault
+                  ? Colors.white10
+                  : Colors.cyanAccent.withOpacity(0.3),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isVault)
+                Image.asset(
+                  reward.frontImagePath,
+                  height: 80,
+                  fit: BoxFit.contain,
+                )
+              else
                 Pulse(
                   infinite: true,
-                  child: const Icon(
-                    Icons.qr_code_scanner_rounded,
-                    color: Colors.cyanAccent,
-                    size: 45,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.cyanAccent.withOpacity(0.1),
+                    ),
+                    child: const Icon(
+                      Icons.qr_code_scanner_rounded,
+                      color: Colors.cyanAccent,
+                      size: 35,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 15),
-                Text(
-                  "DATA PACK",
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontFamily: 'Orbitron',
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  ),
+              const SizedBox(height: 15),
+              Text(
+                isVault ? reward.botName.toUpperCase() : "ENCRYPTED PACK",
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: 'Orbitron',
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  log['timestamp'].toString().substring(
-                    11,
-                    16,
-                  ), // Show time of generation
-                  style: TextStyle(
-                    fontFamily: 'SpaceMono',
-                    color: Colors.cyanAccent,
-                    fontSize: 8,
-                    letterSpacing: 2,
-                  ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                isVault ? "DECRYPTED_SENTINEL" : "TAP TO DECRYPT",
+                style: TextStyle(
+                  fontFamily: 'SpaceMono',
+                  color: isVault
+                      ? Colors.white24
+                      : Colors.cyanAccent.withOpacity(0.5),
+                  fontSize: 7,
+                  letterSpacing: 1,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  // --- HUD CARDS ---
+  // --- EXISTING UI BUILDERS ---
+
+  Widget _buildAppBar(BuildContext context) {
+    return SliverAppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      centerTitle: true,
+      pinned: true,
+      title: const Text(
+        "NEURAL_HUB",
+        style: TextStyle(
+          letterSpacing: 6,
+          fontWeight: FontWeight.w900,
+          fontSize: 14,
+          color: Colors.white,
+          fontFamily: 'Orbitron',
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.leaderboard_rounded, color: Colors.cyanAccent),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const GlobalLeaderboardScreen()),
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildHiveStatusCard(HiveProvider hive) {
     final bool isCritical = hive.hiveStability < 0.5;
@@ -304,10 +420,10 @@ class _GameHubScreenState extends State<GameHubScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "SYSTEM RANK",
                     style: TextStyle(
                       color: Colors.white38,
@@ -316,7 +432,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
                       fontFamily: 'SpaceMono',
                     ),
                   ),
-                  const Text(
+                  Text(
                     "SENTINEL",
                     style: TextStyle(
                       color: Colors.white,
@@ -364,34 +480,6 @@ class _GameHubScreenState extends State<GameHubScreen> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return SliverAppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      centerTitle: true,
-      pinned: true,
-      title: const Text(
-        "NEURAL_HUB",
-        style: TextStyle(
-          letterSpacing: 6,
-          fontWeight: FontWeight.w900,
-          fontSize: 14,
-          color: Colors.white,
-          fontFamily: 'Orbitron',
-        ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.leaderboard_rounded, color: Colors.cyanAccent),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const GlobalLeaderboardScreen()),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildEmptyState(String msg) {
     return SliverFillRemaining(
       hasScrollBody: false,
@@ -435,4 +523,34 @@ class _GameHubScreenState extends State<GameHubScreen> {
       boxShadow: [BoxShadow(color: color, blurRadius: 150, spreadRadius: 50)],
     ),
   );
+
+  Widget _buildHighlightWrapper({
+    required Widget child,
+    required bool isActive,
+    EdgeInsets padding = EdgeInsets.zero,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      margin: padding,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: isActive
+              ? Colors.cyanAccent.withOpacity(0.8)
+              : Colors.transparent,
+          width: 2,
+        ),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: Colors.cyanAccent.withOpacity(0.15),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ]
+            : [],
+      ),
+      child: child,
+    );
+  }
 }

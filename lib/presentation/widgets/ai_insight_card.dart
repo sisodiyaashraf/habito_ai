@@ -14,6 +14,9 @@ class AIInsightCard extends StatelessWidget {
     final habitProvider = context.watch<HabitProvider>();
     final aiProvider = context.watch<AIProvider>();
 
+    // Detect Multiplier state for UI enhancement
+    final bool hasStreakBonus = habitProvider.streakMultiplier > 1.0;
+
     Color themeColor;
     switch (aiProvider.currentPersona) {
       case AIPersonality.gentle:
@@ -24,7 +27,10 @@ class AIInsightCard extends StatelessWidget {
         break;
       case AIPersonality.neutral:
       default:
-        themeColor = Colors.cyanAccent;
+        // Switch to Cyan if bonus is active, else stay default
+        themeColor = hasStreakBonus
+            ? Colors.cyanAccent
+            : const Color(0xFF64FFDA);
     }
 
     return ClipRRect(
@@ -35,14 +41,19 @@ class AIInsightCard extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: 10),
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            // Increased opacity slightly for better card definition
             color: Colors.white.withOpacity(0.04),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: themeColor.withOpacity(0.25), width: 1),
+            border: Border.all(
+              color: hasStreakBonus ? themeColor : themeColor.withOpacity(0.25),
+              width: hasStreakBonus ? 1.5 : 1,
+            ),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [themeColor.withOpacity(0.08), Colors.transparent],
+              colors: [
+                themeColor.withOpacity(hasStreakBonus ? 0.15 : 0.08),
+                Colors.transparent,
+              ],
             ),
           ),
           child: Column(
@@ -62,22 +73,18 @@ class AIInsightCard extends StatelessWidget {
                           Text(
                             "NEURAL ADVISOR v2.0",
                             style: TextStyle(
-                              fontFamily:
-                                  'Orbitron', // Using your headline font
-                              color:
-                                  themeColor, // Full opacity for primary label
+                              fontFamily: 'Orbitron',
+                              color: themeColor,
                               fontWeight: FontWeight.w900,
                               fontSize: 9,
                               letterSpacing: 2,
                             ),
                           ),
                           Text(
-                            "LEVEL ${habitProvider.currentLevel} PROTOCOL",
+                            "LEVEL ${habitProvider.currentLevel} PROTOCOL // STREAK: ${habitProvider.highestStreak}",
                             style: TextStyle(
                               fontFamily: 'SpaceMono',
-                              color: Colors.white.withOpacity(
-                                0.5,
-                              ), // Increased visibility
+                              color: Colors.white.withOpacity(0.5),
                               fontSize: 7,
                               fontWeight: FontWeight.bold,
                             ),
@@ -88,6 +95,11 @@ class AIInsightCard extends StatelessWidget {
                   ),
                   if (aiProvider.isLoading)
                     const _BlinkingTerminalCursor()
+                  else if (hasStreakBonus)
+                    _buildMultiplierBadge(
+                      habitProvider.streakMultiplier,
+                      themeColor,
+                    )
                   else
                     Icon(Icons.bolt_rounded, color: themeColor, size: 14),
                 ],
@@ -99,9 +111,7 @@ class AIInsightCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(
-                    0.4,
-                  ), // Darker for text contrast
+                  color: Colors.black.withOpacity(0.4),
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(color: themeColor.withOpacity(0.1)),
                 ),
@@ -120,12 +130,10 @@ class AIInsightCard extends StatelessWidget {
                                 .substring(0, value)
                                 .toUpperCase(),
                             style: TextStyle(
-                              color: Colors.white.withOpacity(
-                                0.95,
-                              ), // High visibility
+                              color: Colors.white.withOpacity(0.95),
                               fontSize: 12,
                               height: 1.6,
-                              fontFamily: 'SpaceMono', // Your terminal font
+                              fontFamily: 'SpaceMono',
                               letterSpacing: 0.5,
                               shadows: [
                                 Shadow(
@@ -143,7 +151,7 @@ class AIInsightCard extends StatelessWidget {
               const PersonaSelector(),
               const SizedBox(height: 24),
 
-              // --- NEURAL PROGRESS BAR ---
+              // --- NEURAL PROGRESS & MULTIPLIER STATS ---
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -151,21 +159,19 @@ class AIInsightCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "SYNC XP: ${habitProvider.totalXP}",
+                        "CORE_XP: ${habitProvider.totalXP}",
                         style: TextStyle(
                           fontFamily: 'SpaceMono',
-                          color: Colors.white.withOpacity(
-                            0.7,
-                          ), // Increased visibility
+                          color: Colors.white.withOpacity(0.7),
                           fontSize: 8,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        "${(habitProvider.levelProgress * 100).toInt()}% TO LEVEL UP",
+                        "${(habitProvider.levelProgress * 100).toInt()}% EVOLUTION",
                         style: TextStyle(
                           fontFamily: 'SpaceMono',
-                          color: themeColor, // Brighter color
+                          color: themeColor,
                           fontSize: 8,
                           fontWeight: FontWeight.bold,
                         ),
@@ -189,8 +195,20 @@ class AIInsightCard extends StatelessWidget {
 
               // --- ACTION ROW ---
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  if (hasStreakBonus)
+                    Text(
+                      "» SYSTEM EFFICIENCY: ${habitProvider.streakMultiplier}x",
+                      style: TextStyle(
+                        fontFamily: 'SpaceMono',
+                        color: themeColor.withOpacity(0.8),
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  else
+                    const SizedBox(),
                   GestureDetector(
                     onTap: () {
                       HapticFeedback.mediumImpact();
@@ -219,7 +237,7 @@ class AIInsightCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            "FORCE RE-SYNC",
+                            "RE-SYNC",
                             style: TextStyle(
                               fontFamily: 'Orbitron',
                               color: themeColor,
@@ -241,7 +259,27 @@ class AIInsightCard extends StatelessWidget {
     );
   }
 
-  // Keep your existing _buildPulseDot, _buildLoadingShimmer, and _BlinkingTerminalCursor
+  // --- UI COMPONENTS ---
+
+  Widget _buildMultiplierBadge(double multiplier, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.5)),
+      ),
+      child: Text(
+        "${multiplier}x BOOST",
+        style: TextStyle(
+          fontFamily: 'Orbitron',
+          color: color,
+          fontSize: 8,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
 
   Widget _buildPulseDot(Color color) {
     return Container(
@@ -282,7 +320,6 @@ class AIInsightCard extends StatelessWidget {
   }
 }
 
-// Internal widget for that blinking "system active" cursor
 class _BlinkingTerminalCursor extends StatefulWidget {
   const _BlinkingTerminalCursor();
 

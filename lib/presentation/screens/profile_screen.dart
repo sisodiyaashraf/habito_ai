@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:habito_ai/presentation/screens/settingsScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -9,29 +10,84 @@ import '../providers/habit_provider.dart';
 import '../providers/ai_provider.dart';
 import '../providers/notification_provider.dart';
 
-// Screens
+// Screens & Widgets
 import 'neural_archive_screen.dart';
 import 'neural_customizer_screen.dart';
-import 'neural_backup_screen.dart';
+import 'neural_backup_screen.dart'; // Ensure this screen exists
+import '../widgets/RobotGuideOverlay.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  // --- GUIDE STATE ENGINE ---
+  bool _isGuideVisible = false;
+  int _guideStepIndex = 0;
+
+  final List<Map<String, String>> _profileSequence = [
+    {
+      'label': 'SENTINEL_DOSSIER',
+      'message':
+          'This is your encrypted Dossier. Here you can monitor your neural evolution and system-wide configurations.',
+    },
+    {
+      'label': 'IDENTITY_CORE',
+      'message':
+          'Your Level and XP progress are tracked here. Use the Generate button if you need to mask your neural signature with a new ID.',
+    },
+    {
+      'label': 'NEURAL_SETTINGS',
+      'message':
+          'Toggle Ghost Mode for stealth operation during active timers, or use Stealth Audio to silence non-critical system chimes.',
+    },
+    {
+      'label': 'SYSTEM_MODULES',
+      'message':
+          'Access the Archive for legacy logs, customize your AI persona, or uplink data to the Secure Backup vault.',
+    },
+    {
+      'label': 'SECURITY_OVERRIDE',
+      'message':
+          'WARNING: The Reset sequence will permanently wipe all local neural history. Only initiate in case of total system compromise.',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkProfileGuide());
+  }
+
+  Future<void> _checkProfileGuide() async {
+    final habitProvider = Provider.of<HabitProvider>(context, listen: false);
+    bool shouldShow = await habitProvider.shouldShowGuide('profile');
+    if (shouldShow && mounted) {
+      setState(() {
+        _isGuideVisible = true;
+        _guideStepIndex = 0;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer3<HabitProvider, AIProvider, NotificationProvider>(
       builder:
           (context, habitProvider, aiProvider, notificationProvider, child) {
-            final String activePersona = aiProvider.currentPersona ?? "NEUTRAL";
             final int currentLevel = habitProvider.currentLevel;
             final double progress = habitProvider.levelProgress;
             final String name = aiProvider.userName;
+            final String activePersona = aiProvider.currentPersona ?? "NEUTRAL";
 
             return Scaffold(
-              backgroundColor: const Color(0xFF03050B), // Unified background
+              backgroundColor: const Color(0xFF03050B),
+              resizeToAvoidBottomInset: false,
               body: Stack(
                 children: [
-                  // Subtle background glow
                   Positioned(
                     top: -100,
                     right: -50,
@@ -41,22 +97,25 @@ class ProfileScreen extends StatelessWidget {
                   CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     slivers: [
-                      _buildSliverAppBar(),
+                      _buildSliverAppBar(context),
 
-                      // 1. IDENTITY HEADER
+                      // 1. IDENTITY HEADER (Highlight Step 1)
                       SliverToBoxAdapter(
-                        child: FadeInDown(
-                          child: _buildIdentityHeader(
-                            context,
-                            aiProvider,
-                            currentLevel,
-                            progress,
-                            name,
+                        child: _buildFeatureHighlight(
+                          isActive: _isGuideVisible && _guideStepIndex == 1,
+                          child: FadeInDown(
+                            child: _buildIdentityHeader(
+                              context,
+                              aiProvider,
+                              currentLevel,
+                              progress,
+                              name,
+                            ),
                           ),
                         ),
                       ),
 
-                      // 2. NEURAL STATISTICS (Real-time HUD)
+                      // 2. NEURAL STATISTICS
                       SliverToBoxAdapter(
                         child: FadeInUp(
                           delay: const Duration(milliseconds: 100),
@@ -66,34 +125,71 @@ class ProfileScreen extends StatelessWidget {
 
                       const SliverToBoxAdapter(child: SizedBox(height: 10)),
 
-                      // 3. NEURAL SETTINGS (Ghost Mode & Stealth Audio)
+                      // 3. NEURAL SETTINGS (Highlight Step 2)
                       SliverToBoxAdapter(
-                        child: FadeInUp(
-                          delay: const Duration(milliseconds: 150),
-                          child: _buildNeuralSettings(
-                            context,
-                            notificationProvider,
+                        child: _buildFeatureHighlight(
+                          isActive: _isGuideVisible && _guideStepIndex == 2,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: FadeInUp(
+                            delay: const Duration(milliseconds: 150),
+                            child: _buildNeuralSettings(
+                              context,
+                              notificationProvider,
+                            ),
                           ),
                         ),
                       ),
 
                       const SliverToBoxAdapter(child: SizedBox(height: 25)),
 
-                      // 4. SYSTEM MODULES
-                      _buildModuleList(context, activePersona),
+                      // 4. SYSTEM MODULES (Highlight Step 3)
+                      SliverToBoxAdapter(
+                        child: _buildFeatureHighlight(
+                          isActive: _isGuideVisible && _guideStepIndex == 3,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: _buildModuleList(
+                            context,
+                            persona: activePersona,
+                          ),
+                        ),
+                      ),
 
-                      // 5. SECURITY OVERRIDE (Wipe Data)
+                      // 5. SECURITY OVERRIDE (Highlight Step 4)
                       const SliverToBoxAdapter(child: SizedBox(height: 60)),
                       SliverToBoxAdapter(
-                        child: FadeIn(
-                          delay: const Duration(milliseconds: 500),
-                          child: _buildResetButton(context),
+                        child: _buildFeatureHighlight(
+                          isActive: _isGuideVisible && _guideStepIndex == 4,
+                          isWarning: true,
+                          child: FadeIn(
+                            delay: const Duration(milliseconds: 500),
+                            child: _buildResetButton(context),
+                          ),
                         ),
                       ),
 
                       const SliverToBoxAdapter(child: SizedBox(height: 120)),
                     ],
                   ),
+
+                  if (_isGuideVisible)
+                    RobotGuideOverlay(
+                      label: _profileSequence[_guideStepIndex]['label']!,
+                      message: _profileSequence[_guideStepIndex]['message']!,
+                      onDismiss: () {
+                        setState(() {
+                          if (_guideStepIndex < _profileSequence.length - 1) {
+                            _guideStepIndex++;
+                            HapticFeedback.lightImpact();
+                          } else {
+                            _isGuideVisible = false;
+                            context.read<HabitProvider>().markGuideAsSeen(
+                              'profile',
+                            );
+                            HapticFeedback.mediumImpact();
+                          }
+                        });
+                      },
+                    ),
                 ],
               ),
             );
@@ -101,47 +197,113 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  // --- HIGHLIGHT SYSTEM ---
+  Widget _buildFeatureHighlight({
+    required Widget child,
+    required bool isActive,
+    bool isWarning = false,
+    EdgeInsets padding = EdgeInsets.zero,
+  }) {
+    final Color color = isWarning ? Colors.redAccent : Colors.cyanAccent;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      margin: padding,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: isActive ? color.withOpacity(0.8) : Colors.transparent,
+          width: 2,
+        ),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: color.withOpacity(0.15),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ]
+            : [],
+      ),
+      child: child,
+    );
+  }
+
+  // --- UI BUILDING BLOCKS ---
+
+  Widget _buildSliverAppBar(BuildContext context) => SliverAppBar(
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+    pinned: true, // Keeps title visible while scrolling
+    centerTitle: true,
+    title: const Text(
+      "SENTINEL DOSSIER",
+      style: TextStyle(
+        fontFamily: 'Orbitron',
+        letterSpacing: 6,
+        fontSize: 10,
+        fontWeight: FontWeight.w900,
+        color: Colors.white38,
+      ),
+    ),
+    actions: [
+      Padding(
+        padding: const EdgeInsets.only(right: 15),
+        child: IconButton(
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SettingsScreen()),
+            );
+          },
+          icon: const Icon(
+            Icons.settings_outlined,
+            color: Colors.cyanAccent,
+            size: 22,
+          ),
+        ),
+      ),
+    ],
+  );
+
   Widget _buildNeuralSettings(
     BuildContext context,
     NotificationProvider notify,
   ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
-          borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
-        ),
-        child: Column(
-          children: [
-            _buildSettingToggle(
-              title: "GHOST MODE",
-              subtitle: "AUTO-DND DURING ACTIVE TIMERS",
-              value: notify.isGhostModeEnabled,
-              icon: Icons.visibility_off_rounded,
-              onChanged: (val) {
-                HapticFeedback.lightImpact();
-                notify.toggleGhostMode(val);
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Divider(color: Colors.white.withOpacity(0.05), height: 1),
-            ),
-            _buildSettingToggle(
-              title: "STEALTH AUDIO",
-              subtitle: "MUTE VICTORY CHIMES",
-              value: notify.isMuteEnabled,
-              icon: Icons.volume_off_rounded,
-              onChanged: (val) {
-                HapticFeedback.lightImpact();
-                notify.toggleMute(val);
-              },
-            ),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Column(
+        children: [
+          _buildSettingToggle(
+            title: "GHOST MODE",
+            subtitle: "AUTO-DND DURING ACTIVE TIMERS",
+            value: notify.isGhostModeEnabled,
+            icon: Icons.visibility_off_rounded,
+            onChanged: (val) {
+              HapticFeedback.lightImpact();
+              notify.toggleGhostMode(val);
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Divider(color: Colors.white.withOpacity(0.05), height: 1),
+          ),
+          _buildSettingToggle(
+            title: "STEALTH AUDIO",
+            subtitle: "MUTE VICTORY CHIMES",
+            value: notify.isMuteEnabled,
+            icon: Icons.volume_off_rounded,
+            onChanged: (val) {
+              HapticFeedback.lightImpact();
+              notify.toggleMute(val);
+            },
+          ),
+        ],
       ),
     );
   }
@@ -162,30 +324,19 @@ class ProfileScreen extends StatelessWidget {
           color: Colors.white,
           fontSize: 11,
           fontWeight: FontWeight.bold,
-          letterSpacing: 1,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-          fontFamily: 'SpaceMono',
-          color: Colors.white.withOpacity(0.4),
-          fontSize: 7,
-          letterSpacing: 0.5,
         ),
       ),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
         activeColor: Colors.cyanAccent,
-        activeTrackColor: Colors.cyanAccent.withOpacity(0.2),
       ),
     );
   }
 
-  Widget _buildModuleList(BuildContext context, String persona) {
-    return SliverList(
-      delegate: SliverChildListDelegate([
+  Widget _buildModuleList(BuildContext context, {required String persona}) {
+    return Column(
+      children: [
         _buildActionTile(
           context,
           title: "NEURAL CUSTOMIZER",
@@ -201,7 +352,7 @@ class ProfileScreen extends StatelessWidget {
         _buildActionTile(
           context,
           title: "MISSION ARCHIVE",
-          subtitle: "VIEW EARNED BADGES AND LEGACY LOGS",
+          subtitle: "VIEW EARNED BADGES",
           icon: Icons.shield_outlined,
           onTap: () => Navigator.push(
             context,
@@ -213,14 +364,14 @@ class ProfileScreen extends StatelessWidget {
         _buildActionTile(
           context,
           title: "SECURE BACKUP",
-          subtitle: "UPLINK DATA TO LEGACY VAULT",
+          subtitle: "UPLINK TO VAULT",
           icon: Icons.cloud_upload_outlined,
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const NeuralBackupScreen()),
           ),
         ),
-      ]),
+      ],
     );
   }
 
@@ -243,7 +394,6 @@ class ProfileScreen extends StatelessWidget {
               child: CircularProgressIndicator(
                 value: progress,
                 strokeWidth: 4,
-                backgroundColor: Colors.white10,
                 valueColor: const AlwaysStoppedAnimation<Color>(
                   Colors.cyanAccent,
                 ),
@@ -271,7 +421,6 @@ class ProfileScreen extends StatelessWidget {
             letterSpacing: 2,
           ),
         ),
-        const SizedBox(height: 6),
         Text(
           "LVL $level SENTINEL",
           style: const TextStyle(
@@ -280,30 +429,6 @@ class ProfileScreen extends StatelessWidget {
             fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 4,
-          ),
-        ),
-        const SizedBox(height: 20),
-        OutlinedButton.icon(
-          onPressed: () {
-            HapticFeedback.heavyImpact();
-            ai.randomizeIdentity();
-          },
-          icon: const Icon(
-            Icons.cached_rounded,
-            size: 14,
-            color: Colors.white38,
-          ),
-          label: const Text(
-            "GENERATE NEW IDENTITY",
-            style: TextStyle(
-              fontFamily: 'Orbitron',
-              color: Colors.white38,
-              fontSize: 10,
-            ),
-          ),
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Colors.white10),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           ),
         ),
       ],
@@ -339,14 +464,12 @@ class ProfileScreen extends StatelessWidget {
             fontWeight: FontWeight.w900,
           ),
         ),
-        const SizedBox(height: 4),
         Text(
           label,
           style: TextStyle(
             fontFamily: 'SpaceMono',
             color: Colors.white.withOpacity(0.3),
             fontSize: 8,
-            letterSpacing: 1,
           ),
         ),
       ],
@@ -387,10 +510,8 @@ class ProfileScreen extends StatelessWidget {
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
-                        letterSpacing: 1,
                       ),
                     ),
-                    const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: TextStyle(
@@ -423,7 +544,6 @@ class ProfileScreen extends StatelessWidget {
             fontFamily: 'SpaceMono',
             color: Colors.redAccent,
             fontSize: 8,
-            letterSpacing: 2,
           ),
         ),
         const SizedBox(height: 15),
@@ -449,18 +569,8 @@ class ProfileScreen extends StatelessWidget {
                 color: Colors.redAccent,
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 1,
               ),
             ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          "LONG PRESS TO START WIPE SEQUENCE",
-          style: TextStyle(
-            fontFamily: 'SpaceMono',
-            color: Colors.white.withOpacity(0.2),
-            fontSize: 8,
           ),
         ),
       ],
@@ -507,7 +617,6 @@ class ProfileScreen extends StatelessWidget {
             TextButton(
               onPressed: () {
                 HapticFeedback.heavyImpact();
-                // Add Wipe Logic Here
                 Navigator.pop(context);
               },
               child: const Text(
@@ -524,22 +633,6 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildSliverAppBar() => const SliverAppBar(
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    centerTitle: true,
-    title: Text(
-      "SENTINEL DOSSIER",
-      style: TextStyle(
-        fontFamily: 'Orbitron',
-        letterSpacing: 6,
-        fontSize: 10,
-        fontWeight: FontWeight.w900,
-        color: Colors.white38,
-      ),
-    ),
-  );
 
   Widget _buildGlow(Color color) => Container(
     width: 300,

@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:habito_ai/presentation/widgets/rewardcontent.dart';
 import 'package:provider/provider.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:do_not_disturb/do_not_disturb.dart';
 
+// Internal Logic Imports
 import '../providers/habit_provider.dart';
 import '../providers/notification_provider.dart';
 import '../widgets/RewardScratchDialog.dart';
+import '../../presentation/widgets/rewardcontent.dart';
 
 class SessionTimerWidget extends StatefulWidget {
   final dynamic habit;
@@ -31,8 +32,8 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> {
   @override
   void initState() {
     super.initState();
-    // habit.timerMinutes is the target for the session
-    final minutes = widget.habit.timerMinutes ?? widget.habit.dailyTarget;
+    // Default to 25 mins if not specified (Pomodoro Standard)
+    final minutes = widget.habit.timerMinutes ?? 25;
     _totalDurationSeconds = (minutes * 60).toInt();
     _secondsRemaining = _totalDurationSeconds;
   }
@@ -45,10 +46,10 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> {
     try {
       if (enable) {
         await _dndPlugin.setInterruptionFilter(InterruptionFilter.none);
-        debugPrint("GHOST MODE: DND Protocol Active");
+        debugPrint("NEURAL_UPLINK: Ghost Mode Engaged");
       } else {
         await _dndPlugin.setInterruptionFilter(InterruptionFilter.all);
-        debugPrint("GHOST MODE: DND Protocol Deactivated");
+        debugPrint("NEURAL_UPLINK: Ghost Mode Disengaged");
       }
     } catch (e) {
       debugPrint("Ghost Mode Error: $e");
@@ -65,7 +66,7 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> {
       _handleGhostMode(true);
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (_secondsRemaining > 0) {
-          setState(() => _secondsRemaining--);
+          if (mounted) setState(() => _secondsRemaining--);
         } else {
           _completeSession();
         }
@@ -79,54 +80,34 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> {
     final habitProvider = context.read<HabitProvider>();
     final notifyPrefs = context.read<NotificationProvider>();
 
-    // 1. Play Victory Sound
+    // 1. DISENGAGE HARDWARE LOCKS
+    await _handleGhostMode(false);
+    HapticFeedback.vibrate();
+
+    // 2. AUDIO FEEDBACK
     if (!notifyPrefs.isMuteEnabled) {
       try {
-        await _audioPlayer.play(
-          AssetSource('sounds/scratchonix-victory-chime-366449.mp3'),
-        );
+        // Ensure path matches your pubspec.yaml assets
+        await _audioPlayer.play(AssetSource('sounds/victory_chime.mp3'));
       } catch (e) {
         debugPrint("Audio Playback Error: $e");
       }
     }
 
-    HapticFeedback.vibrate();
-    await _handleGhostMode(false);
-
-    // 2. LOGIC: Identify Reward Tier & Generate Timestamp
-    final timestamp = DateTime.now();
-
-    // Check daily completions to see if we trigger Gold Card
-    int todayCount =
-        habitProvider.habits.where((h) {
-          return h.completionDates.any(
-            (d) =>
-                d.year == timestamp.year &&
-                d.month == timestamp.month &&
-                d.day == timestamp.day,
-          );
-        }).length +
-        1; // +1 for the current session
-
-    final reward = todayCount >= 8
-        ? RewardGenerator.getRandomGold()
-        : RewardGenerator.getRandom();
-
-    // 3. UPDATE SYSTEM: Add XP and Record to History
-    await habitProvider.addXP(reward.points);
-
-    // Update the habit entity as complete
-    await habitProvider.toggleHabit(widget.habit.id, context);
-
-    // 4. SHOW REWARD: Show the scratch card mapped to this specific session timestamp
+    // 3. ATOMIC REWARD PROTOCOL
+    // We trigger the reward via the HabitProvider to ensure
+    // it follows the central XP/Log/Reward logic.
     if (mounted) {
-      RewardScratchDialog.show(context, reward, timestamp);
+      // Use the toggleHabit which contains the _processCompletion logic
+      await habitProvider.toggleHabit(widget.habit.id, context);
     }
 
-    setState(() {
-      _isRunning = false;
-      _secondsRemaining = _totalDurationSeconds;
-    });
+    if (mounted) {
+      setState(() {
+        _isRunning = false;
+        _secondsRemaining = _totalDurationSeconds;
+      });
+    }
   }
 
   @override
@@ -165,15 +146,6 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> {
               : Colors.white.withOpacity(0.1),
           width: _isRunning ? 1.5 : 1,
         ),
-        boxShadow: _isRunning
-            ? [
-                BoxShadow(
-                  color: Colors.cyanAccent.withOpacity(0.1),
-                  blurRadius: 25,
-                  spreadRadius: 2,
-                ),
-              ]
-            : [],
       ),
       child: Column(
         children: [

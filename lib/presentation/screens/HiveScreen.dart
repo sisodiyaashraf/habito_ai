@@ -3,13 +3,70 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
+
+// Providers
 import '../providers/hive_provider.dart';
+import '../providers/habit_provider.dart';
+
+// Widgets
 import '../widgets/SquadStatsWidget.dart';
 import '../widgets/sentient_core.dart';
 import '../widgets/hive_chat_terminal.dart';
+import '../widgets/RobotGuideOverlay.dart';
 
-class HiveScreen extends StatelessWidget {
+class HiveScreen extends StatefulWidget {
   const HiveScreen({super.key});
+
+  @override
+  State<HiveScreen> createState() => _HiveScreenState();
+}
+
+class _HiveScreenState extends State<HiveScreen> {
+  // --- GUIDE STATE ENGINE ---
+  bool _isGuideVisible = false;
+  int _guideStepIndex = 0;
+
+  // Walkthrough sequence
+  final List<Map<String, String>> _hiveSequence = [
+    {
+      'label': 'HIVE_UPLINK',
+      'message':
+          'Welcome to the Hive, Operator. This is your shared neural network for squad synchronization.',
+    },
+    {
+      'label': 'SQUAD_MISSION',
+      'message':
+          'Initialize or track active squad missions here. Collective efforts yield significantly higher system rewards.',
+    },
+    {
+      'label': 'STABILITY_SYNC',
+      'message':
+          'Monitor Hive-wide stability. If total sync falls below critical levels, system glitches will propagate.',
+    },
+    {
+      'label': 'ENCRYPTED_TERMINAL',
+      'message':
+          'This is your secure channel. Communicate with other operatives and monitor live system logs.',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Trigger guide check after first build frame
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkHiveGuide());
+  }
+
+  Future<void> _checkHiveGuide() async {
+    final habitProvider = Provider.of<HabitProvider>(context, listen: false);
+    bool shouldShow = await habitProvider.shouldShowGuide('hive');
+    if (shouldShow && mounted) {
+      setState(() {
+        _isGuideVisible = true;
+        _guideStepIndex = 0;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +75,8 @@ class HiveScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFF03050B),
-      // Crucial: This ensures the keyboard doesn't break the UI layout
-      resizeToAvoidBottomInset: true,
+      // --- CRITICAL FIX: STABILIZE GUIDE POSITION ---
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           // Background Atmospheric Glow
@@ -36,10 +93,7 @@ class HiveScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                // 1. FIXED HEADER
                 _buildHeader(context, hive),
-
-                // 2. SCROLLABLE TELEMETRY HUD
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -47,13 +101,16 @@ class HiveScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // --- MISSION LOGIC ---
-                        if (hive.isMissionActive)
-                          FadeInDown(child: _buildMissionProgress(hive))
-                        else
-                          FadeInDown(
-                            child: _buildMissionDispatcher(context, hive),
-                          ),
+                        // --- MISSION LOGIC (Highlight Step 1) ---
+                        _buildHighlightWrapper(
+                          isActive: _isGuideVisible && _guideStepIndex == 1,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: hive.isMissionActive
+                              ? FadeInDown(child: _buildMissionProgress(hive))
+                              : FadeInDown(
+                                  child: _buildMissionDispatcher(context, hive),
+                                ),
+                        ),
 
                         // --- SQUADRON RADAR HUD ---
                         Padding(
@@ -67,32 +124,33 @@ class HiveScreen extends StatelessWidget {
                           ),
                         ),
 
-                        // --- SYSTEM STABILITY HUD ---
-                        FadeInDown(
-                          delay: const Duration(milliseconds: 150),
-                          child: _buildStabilityCard(hive),
+                        // --- SYSTEM STABILITY HUD (Highlight Step 2) ---
+                        _buildHighlightWrapper(
+                          isActive: _isGuideVisible && _guideStepIndex == 2,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: FadeInDown(
+                            delay: const Duration(milliseconds: 150),
+                            child: _buildStabilityCard(hive),
+                          ),
                         ),
 
-                        // --- SECTION LABEL: SQUAD ---
                         _buildSectionLabel("ACTIVE SQUADRON", isCritical),
-
-                        // --- SQUAD MEMBER NODES ---
                         FadeInUp(child: _buildMemberGrid(hive)),
 
                         const SizedBox(height: 25),
 
-                        // --- SECTION LABEL: TERMINAL ---
+                        // --- TERMINAL (Highlight Step 3) ---
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: _buildSectionLabelTerminal(),
                         ),
-                        SizedBox(height: 10),
-                        // --- ENCRYPTED CHAT TERMINAL ---
-                        Padding(
+                        const SizedBox(height: 10),
+
+                        _buildHighlightWrapper(
+                          isActive: _isGuideVisible && _guideStepIndex == 3,
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: Container(
-                            height:
-                                400, // Constrained height safe inside ScrollView
+                            height: 400,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(color: Colors.white10),
@@ -113,8 +171,58 @@ class HiveScreen extends StatelessWidget {
               ],
             ),
           ),
+
+          // --- SENTINEL GUIDE OVERLAY ---
+          if (_isGuideVisible)
+            RobotGuideOverlay(
+              label: _hiveSequence[_guideStepIndex]['label']!,
+              message: _hiveSequence[_guideStepIndex]['message']!,
+              onDismiss: () {
+                setState(() {
+                  if (_guideStepIndex < _hiveSequence.length - 1) {
+                    _guideStepIndex++;
+                    HapticFeedback.lightImpact();
+                  } else {
+                    _isGuideVisible = false;
+                    context.read<HabitProvider>().markGuideAsSeen('hive');
+                    HapticFeedback.mediumImpact();
+                  }
+                });
+              },
+            ),
         ],
       ),
+    );
+  }
+
+  // --- HIGHLIGHT SYSTEM (Stationary implementation for UI stability) ---
+  Widget _buildHighlightWrapper({
+    required Widget child,
+    required bool isActive,
+    EdgeInsets padding = EdgeInsets.zero,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      margin: padding,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isActive
+              ? Colors.cyanAccent.withOpacity(0.8)
+              : Colors.transparent,
+          width: 2,
+        ),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: Colors.cyanAccent.withOpacity(0.2),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                ),
+              ]
+            : [],
+      ),
+      child: child,
     );
   }
 
@@ -163,7 +271,7 @@ class HiveScreen extends StatelessWidget {
                   style: const TextStyle(
                     fontFamily: 'Orbitron',
                     color: Colors.white,
-                    fontSize: 20, // Slightly smaller for better fit
+                    fontSize: 20,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -260,8 +368,8 @@ class HiveScreen extends StatelessWidget {
 
   Widget _buildGlow(Color color) {
     return Container(
-      width: 300,
-      height: 300,
+      width: 100,
+      height: 100,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [BoxShadow(color: color, blurRadius: 100, spreadRadius: 30)],
@@ -273,7 +381,6 @@ class HiveScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => hive.dispatchMission(context, "SYNC 50 PROTOCOLS"),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: BoxDecoration(
           color: Colors.cyanAccent.withOpacity(0.05),
@@ -300,7 +407,6 @@ class HiveScreen extends StatelessWidget {
 
   Widget _buildMissionProgress(HiveProvider hive) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.03),
@@ -346,7 +452,6 @@ class HiveScreen extends StatelessWidget {
   Widget _buildStabilityCard(HiveProvider hive) {
     final bool isCritical = hive.hiveStability < 0.5;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: isCritical

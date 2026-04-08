@@ -21,6 +21,7 @@ import '../widgets/achievement_overlay.dart';
 import '../widgets/level_up_overlay.dart';
 import '../widgets/session_sheet.dart';
 import '../widgets/SessionTimerWidget.dart';
+import '../widgets/RobotGuideOverlay.dart';
 import 'GameHubScreen.dart';
 import 'HiveScreen.dart';
 import 'history_screen.dart';
@@ -36,15 +37,69 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _currentNavIndex = 0;
 
+  // --- GUIDE STATE ENGINE ---
+  bool _isGuideVisible = false;
+  int _guideStepIndex = 0;
+  bool _isInitialSyncComplete = false;
+
+  // Walkthrough sequence for the Command Hub
+  final List<Map<String, String>> _coreSequence = [
+    {
+      'label': 'COMMAND_HUB',
+      'message':
+          'Welcome back, Operator. This is your Neural command center. Let us calibrate your interface.',
+    },
+    {
+      'label': 'NEURAL_INSIGHTS',
+      'message':
+          'This sector uses AI to analyze your behavioral patterns and provide real-time optimization strategies.',
+    },
+    {
+      'label': 'STABILITY_LOG',
+      'message':
+          'This telemetry chart tracks your sync consistency. Maintain high stability to prevent system glitches.',
+    },
+    {
+      'label': 'ACTIVE_PROTOCOLS',
+      'message':
+          'These are your primary habits. Tap any protocol to initiate a session and upload progress.',
+    },
+    {
+      'label': 'ADD_PROTOCOL',
+      'message':
+          'Use the pulse-button to initiate a new neural protocol and expand system capabilities.',
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // CRITICAL: Initialize neural links immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _recalibrateNeuralSystems();
+      if (mounted) {
+        _performInitialSystemSync();
+      }
     });
+  }
+
+  Future<void> _performInitialSystemSync() async {
+    await _recalibrateNeuralSystems();
+    await _checkSentinelGuide();
+    if (mounted) {
+      setState(() => _isInitialSyncComplete = true);
+    }
+  }
+
+  Future<void> _checkSentinelGuide() async {
+    final habitProvider = Provider.of<HabitProvider>(context, listen: false);
+    bool shouldShow = await habitProvider.shouldShowGuide('core');
+    if (shouldShow && mounted) {
+      setState(() {
+        _isGuideVisible = true;
+        _guideStepIndex = 0;
+      });
+    }
   }
 
   @override
@@ -55,7 +110,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // When app returns from background, refresh the nudge schedule
     if (state == AppLifecycleState.resumed) {
       _recalibrateNeuralSystems();
     }
@@ -71,21 +125,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     await habitProvider.loadHabits();
 
-    // Sync rotation engine with current active persona and habit list
     if (mounted) {
       await notificationProvider.scheduleDailySmartNudges(
         habitProvider.habits,
         hiveProvider.activePersona,
       );
     }
-    debugPrint("SYSTEM: Neural Nudge protocols synchronized.");
   }
 
   @override
   Widget build(BuildContext context) {
     final hive = context.watch<HiveProvider>();
-
-    // Dynamic System Color Mapping
     final Color systemColor = hive.hiveStability < 0.3
         ? Colors.redAccent
         : (hive.hiveStability < 0.6 ? Colors.orangeAccent : Colors.cyanAccent);
@@ -93,37 +143,44 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       extendBody: true,
       backgroundColor: const Color(0xFF03050B),
+      // --- CRITICAL FIX: STABILIZE GUIDE POSITION ---
+      resizeToAvoidBottomInset: false,
       floatingActionButton: _currentNavIndex == 0
           ? FadeInUp(
-              child: FloatingActionButton(
-                onPressed: () {
-                  HapticFeedback.heavyImpact();
-                  AddHabitSheet.show(context);
-                },
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                child: Container(
-                  width: 65,
-                  height: 65,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [systemColor, systemColor.withOpacity(0.4)],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: systemColor.withOpacity(0.3),
-                        blurRadius: 20,
-                        spreadRadius: 2,
+              child: _buildHighlightWrapper(
+                isActive: _isGuideVisible && _guideStepIndex == 4,
+                isCircular: true,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    if (_isGuideVisible) return;
+                    HapticFeedback.heavyImpact();
+                    AddHabitSheet.show(context);
+                  },
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  child: Container(
+                    width: 65,
+                    height: 65,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [systemColor, systemColor.withOpacity(0.4)],
                       ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.add_rounded,
-                    color: Colors.black,
-                    size: 35,
+                      boxShadow: [
+                        BoxShadow(
+                          color: systemColor.withOpacity(0.3),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.add_rounded,
+                      color: Colors.black,
+                      size: 35,
+                    ),
                   ),
                 ),
               ),
@@ -154,10 +211,63 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               const HiveScreen(),
             ],
           ),
+
+          // --- SENTINEL GUIDE OVERLAY ---
+          if (_currentNavIndex == 0 && _isGuideVisible)
+            RobotGuideOverlay(
+              label: _coreSequence[_guideStepIndex]['label']!,
+              message: _coreSequence[_guideStepIndex]['message']!,
+              onDismiss: () {
+                setState(() {
+                  if (_guideStepIndex < _coreSequence.length - 1) {
+                    _guideStepIndex++;
+                    HapticFeedback.lightImpact();
+                  } else {
+                    _isGuideVisible = false;
+                    context.read<HabitProvider>().markGuideAsSeen('core');
+                    HapticFeedback.mediumImpact();
+                  }
+                });
+              },
+            ),
+
           const AchievementOverlay(),
           const LevelUpOverlay(),
         ],
       ),
+    );
+  }
+
+  // --- HIGHLIGHT SYSTEM (Stationary implementation for UI stability) ---
+  Widget _buildHighlightWrapper({
+    required Widget child,
+    required bool isActive,
+    bool isCircular = false,
+    EdgeInsets padding = EdgeInsets.zero,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      margin: padding,
+      decoration: BoxDecoration(
+        shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: isCircular ? null : BorderRadius.circular(30),
+        border: Border.all(
+          color: isActive
+              ? Colors.cyanAccent.withOpacity(0.8)
+              : Colors.transparent,
+          width: 2,
+        ),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: Colors.cyanAccent.withOpacity(0.2),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                ),
+              ]
+            : [],
+      ),
+      child: child,
     );
   }
 
@@ -172,7 +282,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
 
           SliverToBoxAdapter(
-            child: Padding(
+            child: _buildHighlightWrapper(
+              isActive: _isGuideVisible && _guideStepIndex == 1,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _buildGlassContainer(child: const AIInsightCard()),
             ),
@@ -180,10 +291,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
           const SliverToBoxAdapter(child: SizedBox(height: 25)),
 
-          // --- ANALYTICS SECTOR ---
           SliverToBoxAdapter(
-            child: FadeInUp(child: const WeeklyProgressChart()),
+            child: _buildHighlightWrapper(
+              isActive: _isGuideVisible && _guideStepIndex == 2,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: const WeeklyProgressChart(),
+            ),
           ),
+
           SliverToBoxAdapter(
             child: FadeInUp(
               delay: const Duration(milliseconds: 200),
@@ -208,35 +323,53 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           ),
 
           Consumer<HabitProvider>(
+            // lib/presentation/screens/home_screen.dart
+
+            // ... existing code ...Consumer<HabitProvider>(
             builder: (context, provider, _) {
+              if (!_isInitialSyncComplete && provider.habits.isEmpty) {
+                return const SliverFillRemaining(
+                  child: Center(
+                    child: CircularProgressIndicator(color: Colors.cyanAccent),
+                  ),
+                );
+              }
+
               if (provider.habits.isEmpty) {
                 return const SliverFillRemaining(child: EmptyHabitsView());
               }
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    final habit = provider.habits[index];
-                    return FadeInUp(
-                      delay: Duration(milliseconds: index * 40),
-                      child: habit.isTimerEnabled
-                          ? Padding(
-                              padding: const EdgeInsets.only(bottom: 15),
-                              child: SessionTimerWidget(habit: habit),
-                            )
-                          : _buildHyperHabitCard(context, habit, systemColor),
-                    );
-                  }, childCount: provider.habits.length),
+
+              // FIXED: Changed SliverPadding to SliverToBoxAdapter to support the Box-based highlight wrapper
+              return SliverToBoxAdapter(
+                child: _buildHighlightWrapper(
+                  isActive: _isGuideVisible && _guideStepIndex == 3,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: provider.habits.map((habit) {
+                      return FadeInUp(
+                        duration: const Duration(milliseconds: 400),
+                        child: habit.isTimerEnabled
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 15),
+                                child: SessionTimerWidget(habit: habit),
+                              )
+                            : _buildHyperHabitCard(context, habit, systemColor),
+                      );
+                    }).toList(),
+                  ),
                 ),
               );
             },
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 140)),
+
+          // ... rest of the file ...
+          const SliverToBoxAdapter(child: SizedBox(height: 160)),
         ],
       ),
     );
   }
 
+  // ... [Keep _buildHyperHabitCard, _buildHeader, _buildMiniBadge, _buildProgressRing, _buildCyberGrid, _buildGlassContainer, _buildGlowSphere helper methods as they were]
   Widget _buildHyperHabitCard(
     BuildContext context,
     dynamic habit,
@@ -244,7 +377,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   ) {
     final bool isCompleted = habit.isGoalMet(DateTime.now());
     final Color cardAccent = isCompleted ? systemColor : Colors.white;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
       child: _buildGlassContainer(
@@ -255,6 +387,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         child: InkWell(
           borderRadius: BorderRadius.circular(30),
           onTap: () {
+            if (_isGuideVisible) return;
             HapticFeedback.mediumImpact();
             showModalBottomSheet(
               context: context,
@@ -322,8 +455,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
     );
   }
-
-  // --- UI COMPONENTS ---
 
   Widget _buildHeader(Color systemColor) {
     return Padding(

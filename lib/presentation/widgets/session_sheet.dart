@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../domain/entities/habit.dart';
 import '../providers/habit_provider.dart';
 import '../providers/hive_provider.dart';
-import 'neural_timer.dart';
+import 'neural_timer.dart'; // Ensure this matches your timer widget file
 
 class SessionSheet extends StatefulWidget {
   final Habit habit;
@@ -69,13 +69,23 @@ class _SessionSheetState extends State<SessionSheet> {
                 _buildHeader(),
                 const SizedBox(height: 30),
 
+                // Timer Module (Handles Reverse if habit is timer-based)
+                NeuralTimer(
+                  habitName: widget.habit.name,
+                  isReverse: widget.habit.isTimerEnabled,
+                  targetMinutes: widget.habit.timerMinutes ?? 25,
+                  onComplete: () {
+                    HapticFeedback.vibrate();
+                    // Optional: Auto-increment progress or mood prompt
+                  },
+                ),
+
+                const SizedBox(height: 30),
+
                 if (widget.habit.unit != "units") ...[
                   _buildProgressSection(),
                   const SizedBox(height: 30),
                 ],
-
-                const NeuralTimer(habitName: "EXECUTION TIME"),
-                const SizedBox(height: 30),
 
                 _buildMoodSection(),
                 const SizedBox(height: 30),
@@ -97,13 +107,17 @@ class _SessionSheetState extends State<SessionSheet> {
       width: 40,
       height: 4,
       decoration: BoxDecoration(
-        color: Colors.white10,
+        color: Colors.white12,
         borderRadius: BorderRadius.circular(10),
       ),
     );
   }
 
   Widget _buildHeader() {
+    final provider = context.watch<HabitProvider>();
+    final double multiplier = provider.streakMultiplier;
+    final bool hasBonus = multiplier > 1.0;
+
     return Column(
       children: [
         Text(
@@ -118,21 +132,39 @@ class _SessionSheetState extends State<SessionSheet> {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.bolt, color: Colors.amberAccent, size: 12),
-            const SizedBox(width: 4),
-            Text(
-              "EARN +50 XP ON SYNC",
-              style: TextStyle(
-                fontFamily: 'SpaceMono',
-                color: Colors.amberAccent.withOpacity(0.7),
-                fontSize: 9,
-                letterSpacing: 1,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: hasBonus
+                ? Colors.cyanAccent.withOpacity(0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.bolt,
+                color: hasBonus ? Colors.cyanAccent : Colors.amberAccent,
+                size: 14,
               ),
-            ),
-          ],
+              const SizedBox(width: 6),
+              Text(
+                hasBonus
+                    ? "NEURAL STREAK: ${multiplier}x XP"
+                    : "STANDARD UPLINK: +50 XP",
+                style: TextStyle(
+                  fontFamily: 'SpaceMono',
+                  color: hasBonus
+                      ? Colors.cyanAccent
+                      : Colors.amberAccent.withOpacity(0.7),
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -221,14 +253,6 @@ class _SessionSheetState extends State<SessionSheet> {
                         ? Colors.cyanAccent
                         : Colors.white.withOpacity(0.05),
                   ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: Colors.cyanAccent.withOpacity(0.1),
-                            blurRadius: 10,
-                          ),
-                        ]
-                      : [],
                 ),
                 child: Icon(
                   _moodIcons[index],
@@ -265,13 +289,27 @@ class _SessionSheetState extends State<SessionSheet> {
             color: Colors.white.withOpacity(0.1),
             fontSize: 11,
           ),
+          border: InputBorder.none,
         ),
       ),
     );
   }
 
   Widget _buildSyncButton() {
-    return SizedBox(
+    bool isTargetMet = _currentValue >= widget.habit.dailyTarget;
+
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: isTargetMet
+            ? [
+                BoxShadow(
+                  color: Colors.cyanAccent.withOpacity(0.2),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ]
+            : [],
+      ),
       width: double.infinity,
       height: 60,
       child: ElevatedButton(
@@ -296,34 +334,49 @@ class _SessionSheetState extends State<SessionSheet> {
     );
   }
 
-  void _syncAllData() {
+  void _syncAllData() async {
     FocusManager.instance.primaryFocus?.unfocus();
 
-    final habitProvider = context.read<HabitProvider>();
+    final habitProvider = Provider.of<HabitProvider>(context, listen: false);
+    final scaffoldContext = context;
 
-    // 1. Update the Value Progress
-    if (_currentValue != widget.habit.currentValue) {
-      habitProvider.updateHabitProgress(
-        widget.habit.id,
-        _currentValue - widget.habit.currentValue,
-        context,
-      );
-    }
+    final DateTime today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    bool wasCompletedToday = widget.habit.completionDates.any(
+      (d) =>
+          d.year == today.year && d.month == today.month && d.day == today.day,
+    );
+    bool hitsTargetNow = _currentValue >= widget.habit.dailyTarget;
 
-    // 2. Log Mood and Note
+    // Persist logs
     habitProvider.logReflection(
       widget.habit.id,
       _noteController.text,
       _selectedMood,
     );
-
-    // 3. Add XP for completing a session
     habitProvider.addXP(50);
-
     HapticFeedback.heavyImpact();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) Navigator.pop(context);
-    });
+    Navigator.of(context).pop();
+
+    // Delay for UI smoothness
+    await Future.delayed(const Duration(milliseconds: 350));
+
+    if (scaffoldContext.mounted) {
+      if (hitsTargetNow && !wasCompletedToday) {
+        // Trigger completion & Reward Card
+        habitProvider.toggleHabit(widget.habit.id, scaffoldContext);
+      } else if (_currentValue != widget.habit.currentValue) {
+        // Just update progress
+        habitProvider.updateHabitProgress(
+          widget.habit.id,
+          _currentValue - widget.habit.currentValue,
+          scaffoldContext,
+        );
+      }
+    }
   }
 }
