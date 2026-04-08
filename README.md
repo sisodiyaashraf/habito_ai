@@ -1,114 +1,183 @@
-# 🌌 HABITO AI: SENTIENT HABIT TRACKER  
-### *The Future of Self-Mastery. Powered by Neural Intelligence.*
+<h1 align="center">🌌 HABITO AI</h1>
 
-[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
-[![Gemini AI](https://img.shields.io/badge/Gemini%20AI-8E75C2?style=for-the-badge&logo=google-gemini&logoColor=white)](https://ai.google.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <strong>Sentient Habit Tracker • AI-Powered Productivity System</strong>
+</p>
 
----
-
-## 📽️ Visual Interface & Experience
-
-### 🎬 System Walkthrough
-> *[IMAGE/GIF PLACEHOLDER: App Dashboard Flow]*
-
-### 📱 Screens Preview
-
-| Neural Initialization | Habit Protocol Hub | Sentient Insights |
-|----------------------|------------------|------------------|
-| ![](https://via.placeholder.com/200x400?text=Neural+Init) | ![](https://via.placeholder.com/200x400?text=Habit+Hub) | ![](https://via.placeholder.com/200x400?text=AI+Suggestions) |
+<p align="center">
+  A next-generation Flutter application that combines <b>AI intelligence</b>, 
+  <b>gamification</b>, and <b>clean architecture</b> to transform habits into a 
+  measurable system of personal growth.
+</p>
 
 ---
 
-## ⚡ Core Systems (Advanced Features)
+## 🏆 Badges
 
-### 🧠 Neural Link (AI Engine)
+<p align="center">
 
-- **Sentient Nudges:** Dynamic AI-generated encouragement based on your persona  
-- **Predictive Scheduling:** Suggests optimal focus times using behavior analysis  
-- **Intelligent Onboarding:** Context-aware *Sentinel Guide* for initial setup  
+![Stars](https://img.shields.io/github/stars/sisodiyaashraf/habito_ai?style=for-the-badge)
+![Forks](https://img.shields.io/github/forks/sisodiyaashraf/habito_ai?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/sisodiyaashraf/habito_ai?style=for-the-badge)
 
----
+![CI](https://img.shields.io/badge/CI-Pending-blue?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Platform-Android-green?style=for-the-badge)
 
-### 🎮 Gamified RPG Mechanics
+[![Flutter](https://img.shields.io/badge/Flutter-Framework-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Gemini AI](https://img.shields.io/badge/Gemini-AI-8E75C2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![Hive](https://img.shields.io/badge/Hive-NoSQL-orange?style=for-the-badge)](https://docs.hivedb.dev/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-- **XP / Leveling System:** Earn XP for completing habits  
-- **Commander Rank:** Progress from *Novice → Master Commander*  
-- **Reward Scratchers:** Unlock rewards through interactive UI  
-
----
-
-### 🛡️ Secure Infrastructure
-
-- **Neural Vault (Hive):** High-speed local encrypted storage  
-- **Environmental Shield:** `.env`-based API key protection  
-- **Android 14+ Precision:** Advanced notification scheduling  
+</p>
 
 ---
 
-## 🚀 Future Protocols (Roadmap)
+## 🎥 Demo (What This App Actually Does)
 
-- [ ] **Biometric Uplink** – FaceID / Fingerprint protection  
-- [ ] **Neural Analytics** – AI-generated monthly reports  
-- [ ] **Ghost Mode 2.0** – Deep DND integration  
-- [ ] **Multi-Persona AI** – Choose AI personalities:
-  - Drill Sergeant  
-  - Zen Monk  
-  - Supportive Peer  
+> ⚠️ This section is critical for recruiters — replace with a real recording
+
+### 🎬 Recommended Demo Flow
+1. Onboarding experience  
+2. Creating a habit  
+3. Completing a habit (XP gain)  
+4. AI suggestion / nudge  
+5. Analytics / progress tracking  
+
+📌 Add your demo here:
+
+![Demo](https://via.placeholder.com/900x450?text=Real+App+Demo+GIF)
 
 ---
 
-## 🛠️ Technical Architecture
+## 📱 Screens Preview
 
-<details>
-<summary><b>Click to View System Structure</b></summary>
+| Init System | Habit Engine | AI Insights |
+|------------|-------------|------------|
+| ![](https://via.placeholder.com/200x400?text=Init) | ![](https://via.placeholder.com/200x400?text=Hub) | ![](https://via.placeholder.com/200x400?text=AI) |
 
-```text
-habito_ai/
-├── android/              # Android 14+ optimized
-├── assets/               # Lottie files & fonts
-├── lib/
-│   ├── core/             # Theme & notification engine
-│   ├── data/             # Hive models & repositories
-│   ├── presentation/     # Providers & UI screens
-│   └── main.dart         # App entry point
-└── .env.example          # Environment template
+---
+
+## ⚡ Core Systems
+
+### 🧠 AI Habit Intelligence
+- Behavior-based smart nudges  
+- Predictive habit scheduling  
+- Context-aware onboarding system  
+
+### 🎮 Gamification Engine
+- XP & leveling system  
+- Rank progression (Novice → Commander)  
+- Reward unlocking mechanics  
+
+### 📊 Analytics Engine
+- 7-day trend analysis  
+- Habit performance insights  
+- Behavioral pattern tracking  
+
+### 🛡 Secure Offline Architecture
+- Hive local database (NoSQL)  
+- `.env` secure API isolation  
+- Fully offline-first design  
+
+---
+
+## 🧠 System Architecture (Visual)
+
+```mermaid
+flowchart TD
+    UI[Presentation Layer] --> Provider[State Management]
+    Provider --> Domain[Business Logic]
+    Domain --> Repo[Repository Layer]
+    Repo --> Hive[(Hive DB)]
+
+    Provider --> AI[Gemini AI Engine]
 ```
 
-</details>
+---
+
+## 🏗 Architecture Breakdown
+
+| Layer | Responsibility |
+|------|---------------|
+| Presentation | UI, Widgets, Screens |
+| State | Provider (Single Source of Truth) |
+| Domain | Business logic & rules |
+| Data | Hive storage & repositories |
 
 ---
 
-## 💻 Setup for Developers
+## 📂 Project Structure
 
-### 1️⃣ Clone Repository
+```text
+lib/
+├── core/           # Themes & utilities
+├── data/           # Models & storage
+├── presentation/   # UI + Providers
+└── main.dart
+```
+
+---
+
+## ⚙️ Setup Guide
+
+### 1. Clone Repository
 ```bash
 git clone https://github.com/sisodiyaashraf/habito_ai.git
 ```
 
-### 2️⃣ Setup Environment
-Create a `.env` file in the root directory:
-
+### 2. Configure Environment
 ```env
-GEMINI_API_KEY=YOUR_KEY_HERE
+GEMINI_API_KEY=YOUR_KEY
 ```
 
-### 3️⃣ Install Dependencies
+### 3. Install Dependencies
 ```bash
 flutter pub get
 ```
 
-### 4️⃣ Run the App
+### 4. Run Application
 ```bash
 flutter run
 ```
 
 ---
 
-## 👤 Author
+## 🚀 Roadmap
+
+- [ ] AI-generated habit reports  
+- [ ] Biometric authentication  
+- [ ] Focus mode (app blocking)  
+- [ ] Multi-persona AI system  
+- [ ] Cloud sync  
+
+---
+
+## 💼 Why This Project Stands Out
+
+This is not just a UI project — it demonstrates:
+
+- 🧠 Real-world architecture design  
+- ⚙️ Scalable state management  
+- 📦 Production-ready structure  
+- 🤖 AI integration capability  
+- 🎯 Problem-solving mindset  
+
+---
+
+## 🧪 Engineering Highlights
+
+- Clean Architecture implementation  
+- Offline-first system design  
+- Modular, testable codebase  
+- Performance-optimized local DB  
+- Separation of concerns (SOLID principles)  
+
+---
+
+## 👨‍💻 Author
 
 **Ashraf**  
-Flutter Engineer & AI Enthusiast  
+Flutter Developer • AI Enthusiast  
 
 - LinkedIn  
 - Portfolio  
@@ -116,15 +185,16 @@ Flutter Engineer & AI Enthusiast
 
 ---
 
-## ⭐ Why This README Stands Out
+## ⭐ Support & Growth
 
-- Clean Markdown structure (GitHub optimized)  
-- SEO-friendly headings & keywords  
-- Table-based UI previews (no HTML clutter)  
-- Collapsible architecture section  
-- Clear developer onboarding steps  
-- Professional open-source presentation  
+If you find this project valuable:
+
+- ⭐ Star the repository  
+- 🍴 Fork and experiment  
+- 🚀 Share with developers  
 
 ---
 
-> 🚀 *Commander, your documentation is now as powerful as your code.*
+<p align="center">
+  <b>“Your habits are a system. This app makes them intelligent.”</b>
+</p>
