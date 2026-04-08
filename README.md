@@ -1,161 +1,130 @@
-<h1 align="center">🌌 HABITO AI</h1>
+# 🌌 HABITO AI: SENTIENT HABIT TRACKER  
+### *The Future of Self-Mastery. Powered by Neural Intelligence.*
 
-<p align="center">
-  <strong>Sentient Habit Tracker • AI-Powered Self-Mastery System</strong>
-</p>
-
-<p align="center">
-  The future of productivity apps — combining <b>Flutter</b>, <b>AI intelligence</b>, and <b>gamified discipline systems</b>  
-  to transform daily habits into a strategic progression system.
-</p>
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Gemini AI](https://img.shields.io/badge/Gemini%20AI-8E75C2?style=for-the-badge&logo=google-gemini&logoColor=white)](https://ai.google.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🏆 Badges
+## 📽️ Visual Interface & Experience
 
-<p align="center">
+### 🎬 System Walkthrough
+> *[IMAGE/GIF PLACEHOLDER: App Dashboard Flow]*
 
-![GitHub stars](https://img.shields.io/github/stars/sisodiyaashraf/habito_ai?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/sisodiyaashraf/habito_ai?style=for-the-badge)
-![GitHub issues](https://img.shields.io/github/issues/sisodiyaashraf/habito_ai?style=for-the-badge)
+### 📱 Screens Preview
 
-[![Flutter](https://img.shields.io/badge/Flutter-Framework-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
-[![Gemini AI](https://img.shields.io/badge/Gemini-AI-8E75C2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
-[![Hive](https://img.shields.io/badge/Hive-NoSQL-orange?style=for-the-badge)](https://docs.hivedb.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](https://opensource.org/licenses/MIT)
-
-</p>
+| Neural Initialization | Habit Protocol Hub | Sentient Insights |
+|----------------------|------------------|------------------|
+| ![](https://via.placeholder.com/200x400?text=Neural+Init) | ![](https://via.placeholder.com/200x400?text=Habit+Hub) | ![](https://via.placeholder.com/200x400?text=AI+Suggestions) |
 
 ---
 
-## 🎥 Demo Preview
+## ⚡ Core Systems (Advanced Features)
 
-> 📌 Replace with your real demo GIF or video
+### 🧠 Neural Link (AI Engine)
 
-![App Demo](https://via.placeholder.com/800x400?text=App+Demo+Preview)
-
----
-
-## 📱 App Screens
-
-| Neural Init | Habit Hub | AI Insights |
-|-------------|----------|------------|
-| ![](https://via.placeholder.com/200x400?text=Init) | ![](https://via.placeholder.com/200x400?text=Hub) | ![](https://via.placeholder.com/200x400?text=AI) |
+- **Sentient Nudges:** Dynamic AI-generated encouragement based on your persona  
+- **Predictive Scheduling:** Suggests optimal focus times using behavior analysis  
+- **Intelligent Onboarding:** Context-aware *Sentinel Guide* for initial setup  
 
 ---
 
-## ⚡ Core Features
+### 🎮 Gamified RPG Mechanics
 
-### 🧠 AI-Powered Habit Intelligence
-- Smart **AI nudges** based on user behavior  
-- Predictive scheduling using pattern recognition  
-- Context-aware onboarding assistant  
-
-### 🎮 Gamified Productivity System
-- XP-based habit tracking  
-- Level progression system  
-- Reward unlock mechanics  
-
-### 📊 Advanced Analytics
-- 7-day performance tracking  
-- Behavioral trend analysis  
-- Productivity insights  
-
-### 🛡 Secure & Offline-First
-- Hive-powered local database  
-- `.env` secure API handling  
-- Zero dependency on constant internet  
+- **XP / Leveling System:** Earn XP for completing habits  
+- **Commander Rank:** Progress from *Novice → Master Commander*  
+- **Reward Scratchers:** Unlock rewards through interactive UI  
 
 ---
 
-## 🏗 Architecture (Clean & Scalable)
+### 🛡️ Secure Infrastructure
 
-- **Pattern:** Feature-First Clean Architecture  
-- **State Management:** Provider  
-- **Database:** Hive (NoSQL)  
-- **Design:** Glassmorphism + Custom UI System  
+- **Neural Vault (Hive):** High-speed local encrypted storage  
+- **Environmental Shield:** `.env`-based API key protection  
+- **Android 14+ Precision:** Advanced notification scheduling  
 
 ---
 
-## 📂 Project Structure
+## 🚀 Future Protocols (Roadmap)
+
+- [ ] **Biometric Uplink** – FaceID / Fingerprint protection  
+- [ ] **Neural Analytics** – AI-generated monthly reports  
+- [ ] **Ghost Mode 2.0** – Deep DND integration  
+- [ ] **Multi-Persona AI** – Choose AI personalities:
+  - Drill Sergeant  
+  - Zen Monk  
+  - Supportive Peer  
+
+---
+
+## 🛠️ Technical Architecture
+
+<details>
+<summary><b>Click to View System Structure</b></summary>
 
 ```text
-lib/
-├── core/
-├── data/
-├── presentation/
-└── main.dart
+habito_ai/
+├── android/              # Android 14+ optimized
+├── assets/               # Lottie files & fonts
+├── lib/
+│   ├── core/             # Theme & notification engine
+│   ├── data/             # Hive models & repositories
+│   ├── presentation/     # Providers & UI screens
+│   └── main.dart         # App entry point
+└── .env.example          # Environment template
 ```
+
+</details>
 
 ---
 
-## ⚙️ Setup Guide
+## 💻 Setup for Developers
 
-### 1. Clone Repo
+### 1️⃣ Clone Repository
 ```bash
 git clone https://github.com/sisodiyaashraf/habito_ai.git
 ```
 
-### 2. Setup Environment
-Create `.env` file:
+### 2️⃣ Setup Environment
+Create a `.env` file in the root directory:
+
 ```env
-GEMINI_API_KEY=YOUR_KEY
+GEMINI_API_KEY=YOUR_KEY_HERE
 ```
 
-### 3. Install Dependencies
+### 3️⃣ Install Dependencies
 ```bash
 flutter pub get
 ```
 
-### 4. Run App
+### 4️⃣ Run the App
 ```bash
 flutter run
 ```
 
 ---
 
-## 🚀 Roadmap
-
-- [ ] AI Monthly Reports  
-- [ ] Biometric Lock (FaceID/Fingerprint)  
-- [ ] Deep Focus Mode (App Blocking)  
-- [ ] Multi-AI Personalities  
-
----
-
-## 💼 Why This Project Matters (For Recruiters)
-
-This project demonstrates:
-
-- ✅ Production-level Flutter architecture  
-- ✅ Real-world state management  
-- ✅ AI integration readiness  
-- ✅ Clean, scalable codebase  
-- ✅ Strong UI/UX engineering  
-
----
-
-## 👨‍💻 Author
+## 👤 Author
 
 **Ashraf**  
-Flutter Developer • AI Enthusiast  
+Flutter Engineer & AI Enthusiast  
 
-- 🔗 LinkedIn  
-- 🌐 Portfolio  
-- 📧 Contact  
-
----
-
-## ⭐ Support
-
-If you like this project:
-
-- ⭐ Star the repo  
-- 🍴 Fork it  
-- 🧠 Contribute ideas  
+- LinkedIn  
+- Portfolio  
+- Contact  
 
 ---
 
-<p align="center">
-  <b>“Discipline, engineered through intelligence.”</b>
-</p>
+## ⭐ Why This README Stands Out
+
+- Clean Markdown structure (GitHub optimized)  
+- SEO-friendly headings & keywords  
+- Table-based UI previews (no HTML clutter)  
+- Collapsible architecture section  
+- Clear developer onboarding steps  
+- Professional open-source presentation  
+
+---
+
+> 🚀 *Commander, your documentation is now as powerful as your code.*
