@@ -177,7 +177,7 @@ This is not just a UI project — it demonstrates:
 ## 👨‍💻 Author
 
 **Ashraf**  
-Flutter Developer • AI Enthusiast  
+Flutter Developer 
 
 - LinkedIn  
 - Portfolio  
