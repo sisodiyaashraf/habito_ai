@@ -18,6 +18,7 @@ class FuturisticNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<HabitProvider>();
+    final theme = Theme.of(context);
 
     // Dynamic Daily Progress Logic
     double dailyProgress = 0.0;
@@ -42,20 +43,22 @@ class FuturisticNavBar extends StatelessWidget {
               child: Container(
                 height: 70,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.03),
+                  color: theme.colorScheme.surface.withOpacity(0.7),
                   borderRadius: BorderRadius.circular(35),
-                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                  border: Border.all(color: theme.colorScheme.outline.withOpacity(0.5)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     // LEFT WING: Core Utilities
                     _buildNavItem(
+                      context,
                       icon: Icons.grid_view_rounded,
                       label: "CORE",
                       index: 0,
                     ),
                     _buildNavItem(
+                      context,
                       icon: Icons.receipt_long_rounded,
                       label: "VAULT",
                       index: 1,
@@ -65,15 +68,15 @@ class FuturisticNavBar extends StatelessWidget {
                     const SizedBox(width: 70),
 
                     // RIGHT WING: Essential Squad & Identity Features
-                    // Index 4: Social Hive Coordination
                     _buildNavItem(
+                      context,
                       icon: Icons.groups_2_outlined,
                       label: "SQUAD",
                       index: 4,
                     ),
 
-                    // Index 3: Personal Dossier
                     _buildNavItem(
+                      context,
                       icon: Icons.person_outline_rounded,
                       label: "DOSSIER",
                       index: 3,
@@ -92,7 +95,7 @@ class FuturisticNavBar extends StatelessWidget {
                 HapticFeedback.heavyImpact();
                 onItemSelected(2);
               },
-              child: _buildCentralHub(dailyProgress, selectedIndex == 2),
+              child: _buildCentralHub(context, dailyProgress, selectedIndex == 2),
             ),
           ),
         ],
@@ -100,18 +103,21 @@ class FuturisticNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildCentralHub(double progress, bool isActive) {
+  Widget _buildCentralHub(BuildContext context, double progress, bool isActive) {
+    final theme = Theme.of(context);
+    final accent = theme.colorScheme.primary;
+
     return Container(
       width: 70,
       height: 70,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: const Color(0xFF060912),
+        color: theme.brightness == Brightness.dark ? const Color(0xFF060912) : Colors.white,
         boxShadow: [
           BoxShadow(
             color: isActive
-                ? Colors.cyanAccent.withOpacity(0.4)
-                : Colors.black.withOpacity(0.6),
+                ? accent.withOpacity(0.4)
+                : (theme.brightness == Brightness.dark ? Colors.black : Colors.black12),
             blurRadius: 25,
             spreadRadius: 2,
           ),
@@ -125,9 +131,9 @@ class FuturisticNavBar extends StatelessWidget {
               infinite: true,
               child: Opacity(
                 opacity: 0.1,
-                child: const Icon(
+                child: Icon(
                   Icons.circle,
-                  color: Colors.cyanAccent,
+                  color: accent,
                   size: 65,
                 ),
               ),
@@ -138,17 +144,17 @@ class FuturisticNavBar extends StatelessWidget {
             child: CircularProgressIndicator(
               value: progress,
               strokeWidth: 4,
-              backgroundColor: Colors.white.withOpacity(0.05),
+              backgroundColor: theme.colorScheme.onSurface.withOpacity(0.05),
               valueColor: AlwaysStoppedAnimation<Color>(
                 isActive
-                    ? Colors.cyanAccent
-                    : Colors.cyanAccent.withOpacity(0.4),
+                    ? accent
+                    : accent.withOpacity(0.4),
               ),
             ),
           ),
           Icon(
             Icons.auto_awesome_motion_rounded,
-            color: isActive ? Colors.cyanAccent : Colors.white38,
+            color: isActive ? accent : theme.colorScheme.onSurface.withOpacity(0.38),
             size: 28,
           ),
         ],
@@ -156,11 +162,14 @@ class FuturisticNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem({
+  Widget _buildNavItem(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required int index,
   }) {
+    final theme = Theme.of(context);
+    final accent = theme.colorScheme.primary;
     bool isSelected = selectedIndex == index;
 
     return GestureDetector(
@@ -177,8 +186,8 @@ class FuturisticNavBar extends StatelessWidget {
             Icon(
               icon,
               color: isSelected
-                  ? Colors.cyanAccent
-                  : Colors.white.withOpacity(0.4),
+                  ? accent
+                  : theme.colorScheme.onSurface.withOpacity(0.4),
               size: 22,
             ),
             const SizedBox(height: 5),
@@ -186,8 +195,8 @@ class FuturisticNavBar extends StatelessWidget {
               label,
               style: TextStyle(
                 color: isSelected
-                    ? Colors.cyanAccent
-                    : Colors.white.withOpacity(0.4),
+                    ? accent
+                    : theme.colorScheme.onSurface.withOpacity(0.4),
                 fontSize: 8,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.5,

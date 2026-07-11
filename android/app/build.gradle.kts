@@ -10,7 +10,7 @@ plugins {
 android {
     // 2. Set to SDK 36 as required by your modern dependencies
     compileSdk = 36
-    namespace = "com.example.habito_ai"
+    namespace = "com.mohdashraf.habito_ai"
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -30,7 +30,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.habito_ai"
+        applicationId = "com.mohdashraf.habito_ai"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
         versionCode = flutter.versionCode
@@ -40,6 +40,13 @@ android {
 
     buildTypes {
         release {
+            // Enable code shrinking, obfuscation, and optimization
+            isMinifyEnabled = true
+            // Enable resource shrinking
+            isShrinkResources = true
+            // Standard ProGuard rules
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            
             signingConfig = signingConfigs.getByName("debug")
         }
     }

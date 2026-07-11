@@ -44,7 +44,7 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
     HapticFeedback.mediumImpact();
 
     try {
-      final suggestion = await AIService(ai.apiKey).generateGhostwriterMessage(
+      final suggestion = await ai.aiService.generateGhostwriterMessage(
         stability: hive.hiveStability,
         persona: ai.currentPersona,
       );
@@ -78,17 +78,19 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF060912).withOpacity(0.98),
+              color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
               borderRadius: BorderRadius.circular(25),
               border: Border.all(
                 color: isCritical
-                    ? Colors.redAccent.withOpacity(0.4)
-                    : Colors.cyanAccent.withOpacity(0.2),
+                    ? Theme.of(context).colorScheme.error.withOpacity(0.4)
+                    : Theme.of(context).colorScheme.outline.withOpacity(0.4),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: (isCritical ? Colors.redAccent : Colors.cyanAccent)
+                  color: (isCritical
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).colorScheme.primary)
                       .withOpacity(0.05),
                   blurRadius: 40,
                   spreadRadius: 2,
@@ -99,9 +101,9 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildTerminalHeader(stability, isCritical),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Divider(color: Colors.white10, height: 1),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Divider(color: Theme.of(context).colorScheme.outline.withOpacity(0.2), height: 1),
                 ),
                 Expanded(child: _buildMessageList(hive)),
                 const SizedBox(height: 12),

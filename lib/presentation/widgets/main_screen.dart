@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../screens/GameHubScreen.dart';
-import '../screens/HiveScreen.dart';
+import '../screens/game_hub_screen.dart';
+import '../screens/hive_screen.dart';
 import '../screens/history_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/profile_screen.dart';

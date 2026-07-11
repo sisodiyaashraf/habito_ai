@@ -1,7 +1,9 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:animate_do/animate_do.dart';
+import '../widgets/GridPainter.dart';
 
 class HabitoSplashScreen extends StatefulWidget {
   final Widget nextScreen; // Dynamic destination passed from main.dart
@@ -55,7 +57,12 @@ class _HabitoSplashScreenState extends State<HabitoSplashScreen> {
       body: Stack(
         children: [
           // Cyber Grid Layer
-          _buildBackgroundGrid(),
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.05,
+              child: CustomPaint(painter: GridPainter()),
+            ),
+          ),
 
           Center(
             child: Column(
@@ -76,8 +83,8 @@ class _HabitoSplashScreenState extends State<HabitoSplashScreen> {
 
                 const SizedBox(height: 20),
 
-                // 2. BRANDING
-                _buildBrandingText(),
+                // 2. BRANDING WITH GLITCH
+                _buildGlitchBranding(),
 
                 const SizedBox(height: 10),
 
@@ -98,35 +105,45 @@ class _HabitoSplashScreenState extends State<HabitoSplashScreen> {
     );
   }
 
-  Widget _buildBackgroundGrid() {
-    return Opacity(
-      opacity: 0.1,
-      child: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(
-              'https://www.transparenttextures.com/patterns/carbon-fibre.png',
+  Widget _buildGlitchBranding() {
+    return StreamBuilder<int>(
+      stream: Stream.periodic(const Duration(milliseconds: 2000), (i) => i),
+      builder: (context, snapshot) {
+        bool isGlitching = (snapshot.data ?? 0) % 3 == 0;
+        
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            if (isGlitching)
+              ...List.generate(3, (index) => Positioned(
+                left: (index - 1) * 2.0,
+                child: Opacity(
+                  opacity: 0.5,
+                  child: Text(
+                    "HABITO",
+                    style: TextStyle(
+                      color: index == 0 ? Colors.red : Colors.blue,
+                      fontSize: 42,
+                      letterSpacing: 14,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Orbitron',
+                    ),
+                  ),
+                ),
+              )),
+            const Text(
+              "HABITO",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 42,
+                letterSpacing: 14,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Orbitron',
+              ),
             ),
-            repeat: ImageRepeat.repeat,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBrandingText() {
-    return FadeInUp(
-      duration: const Duration(seconds: 1),
-      child: const Text(
-        "HABITO",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 42,
-          letterSpacing: 14,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Orbitron',
-        ),
-      ),
+          ],
+        );
+      },
     );
   }
 

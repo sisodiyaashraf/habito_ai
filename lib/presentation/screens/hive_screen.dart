@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +11,7 @@ import '../providers/habit_provider.dart';
 import '../widgets/SquadStatsWidget.dart';
 import '../widgets/sentient_core.dart';
 import '../widgets/hive_chat_terminal.dart';
-import '../widgets/RobotGuideOverlay.dart';
+import '../widgets/robot_guide_overlay.dart';
 
 class HiveScreen extends StatefulWidget {
   const HiveScreen({super.key});
@@ -72,9 +71,10 @@ class _HiveScreenState extends State<HiveScreen> {
   Widget build(BuildContext context) {
     final hive = context.watch<HiveProvider>();
     final bool isCritical = hive.hiveStability < 0.5;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF03050B),
+      backgroundColor: theme.scaffoldBackgroundColor,
       // --- CRITICAL FIX: STABILIZE GUIDE POSITION ---
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -84,9 +84,10 @@ class _HiveScreenState extends State<HiveScreen> {
             top: -50,
             right: -50,
             child: _buildGlow(
+              context,
               isCritical
-                  ? Colors.redAccent.withOpacity(0.12)
-                  : Colors.cyanAccent.withOpacity(0.08),
+                  ? theme.colorScheme.error.withAlpha((0.12 * 255).toInt())
+                  : theme.colorScheme.primary.withAlpha((0.08 * 255).toInt()),
             ),
           ),
 
@@ -103,10 +104,11 @@ class _HiveScreenState extends State<HiveScreen> {
                       children: [
                         // --- MISSION LOGIC (Highlight Step 1) ---
                         _buildHighlightWrapper(
+                          context,
                           isActive: _isGuideVisible && _guideStepIndex == 1,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: hive.isMissionActive
-                              ? FadeInDown(child: _buildMissionProgress(hive))
+                              ? FadeInDown(child: _buildMissionProgress(context, hive))
                               : FadeInDown(
                                   child: _buildMissionDispatcher(context, hive),
                                 ),
@@ -126,35 +128,37 @@ class _HiveScreenState extends State<HiveScreen> {
 
                         // --- SYSTEM STABILITY HUD (Highlight Step 2) ---
                         _buildHighlightWrapper(
+                          context,
                           isActive: _isGuideVisible && _guideStepIndex == 2,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: FadeInDown(
                             delay: const Duration(milliseconds: 150),
-                            child: _buildStabilityCard(hive),
+                            child: _buildStabilityCard(context, hive),
                           ),
                         ),
 
-                        _buildSectionLabel("ACTIVE SQUADRON", isCritical),
-                        FadeInUp(child: _buildMemberGrid(hive)),
+                        _buildSectionLabel(context, "ACTIVE SQUADRON", isCritical),
+                        FadeInUp(child: _buildMemberGrid(context, hive)),
 
                         const SizedBox(height: 25),
 
                         // --- TERMINAL (Highlight Step 3) ---
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: _buildSectionLabelTerminal(),
+                          child: _buildSectionLabelTerminal(context),
                         ),
                         const SizedBox(height: 10),
 
                         _buildHighlightWrapper(
+                          context,
                           isActive: _isGuideVisible && _guideStepIndex == 3,
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: Container(
                             height: 400,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.white10),
-                              color: Colors.black26,
+                              border: Border.all(color: theme.colorScheme.onSurface.withAlpha((0.1 * 255).toInt())),
+                              color: theme.colorScheme.surfaceContainerHighest.withAlpha((0.3 * 255).toInt()),
                             ),
                             child: const ClipRRect(
                               borderRadius: BorderRadius.all(
@@ -196,11 +200,13 @@ class _HiveScreenState extends State<HiveScreen> {
   }
 
   // --- HIGHLIGHT SYSTEM (Stationary implementation for UI stability) ---
-  Widget _buildHighlightWrapper({
+  Widget _buildHighlightWrapper(
+    BuildContext context, {
     required Widget child,
     required bool isActive,
     EdgeInsets padding = EdgeInsets.zero,
   }) {
+    final theme = Theme.of(context);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 400),
       margin: padding,
@@ -208,14 +214,14 @@ class _HiveScreenState extends State<HiveScreen> {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isActive
-              ? Colors.cyanAccent.withOpacity(0.8)
+              ? theme.colorScheme.primary.withAlpha((0.8 * 255).toInt())
               : Colors.transparent,
           width: 2,
         ),
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: Colors.cyanAccent.withOpacity(0.2),
+                  color: theme.colorScheme.primary.withAlpha((0.2 * 255).toInt()),
                   blurRadius: 15,
                   spreadRadius: 2,
                 ),
@@ -229,6 +235,7 @@ class _HiveScreenState extends State<HiveScreen> {
   // --- UI BUILDING BLOCKS ---
 
   Widget _buildHeader(BuildContext context, HiveProvider hive) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(25, 20, 25, 10),
       child: Row(
@@ -248,17 +255,17 @@ class _HiveScreenState extends State<HiveScreen> {
                     children: [
                       Text(
                         "UPLINK: ${hive.currentHiveId ?? 'DISCONNECTED'}",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'SpaceMono',
-                          color: Colors.cyanAccent,
+                          color: theme.colorScheme.primary,
                           fontSize: 8,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(width: 5),
-                      const Icon(
+                      Icon(
                         Icons.copy_rounded,
-                        color: Colors.cyanAccent,
+                        color: theme.colorScheme.primary,
                         size: 8,
                       ),
                     ],
@@ -268,9 +275,9 @@ class _HiveScreenState extends State<HiveScreen> {
                 Text(
                   "HIVE: ${hive.hiveName}",
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Orbitron',
-                    color: Colors.white,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
                   ),
@@ -284,7 +291,8 @@ class _HiveScreenState extends State<HiveScreen> {
     );
   }
 
-  Widget _buildMemberGrid(HiveProvider hive) {
+  Widget _buildMemberGrid(BuildContext context, HiveProvider hive) {
+    final theme = Theme.of(context);
     return GridView.builder(
       shrinkWrap: true,
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -302,11 +310,11 @@ class _HiveScreenState extends State<HiveScreen> {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundColor: Colors.white.withOpacity(0.05),
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
               child: Text(
                 member.displayName[0],
-                style: const TextStyle(
-                  color: Colors.cyanAccent,
+                style: TextStyle(
+                  color: theme.colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -314,8 +322,8 @@ class _HiveScreenState extends State<HiveScreen> {
             const SizedBox(height: 4),
             Text(
               member.displayName.split(' ')[0],
-              style: const TextStyle(
-                color: Colors.white38,
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 7,
                 fontFamily: 'SpaceMono',
               ),
@@ -327,7 +335,8 @@ class _HiveScreenState extends State<HiveScreen> {
     );
   }
 
-  Widget _buildSectionLabel(String title, bool isCritical) {
+  Widget _buildSectionLabel(BuildContext context, String title, bool isCritical) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(25, 20, 25, 12),
       child: Row(
@@ -335,9 +344,9 @@ class _HiveScreenState extends State<HiveScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Orbitron',
-              color: Colors.white24,
+              color: theme.colorScheme.onSurface.withAlpha((0.5 * 255).toInt()),
               fontSize: 9,
               fontWeight: FontWeight.w900,
               letterSpacing: 4,
@@ -345,7 +354,7 @@ class _HiveScreenState extends State<HiveScreen> {
           ),
           Icon(
             Icons.sensors,
-            color: isCritical ? Colors.redAccent : Colors.cyanAccent,
+            color: isCritical ? theme.colorScheme.error : theme.colorScheme.primary,
             size: 12,
           ),
         ],
@@ -353,12 +362,13 @@ class _HiveScreenState extends State<HiveScreen> {
     );
   }
 
-  Widget _buildSectionLabelTerminal() {
-    return const Text(
+  Widget _buildSectionLabelTerminal(BuildContext context) {
+    final theme = Theme.of(context);
+    return Text(
       "LIVE ENCRYPTED UPLINK",
       style: TextStyle(
         fontFamily: 'Orbitron',
-        color: Colors.white24,
+        color: theme.colorScheme.onSurface.withAlpha((0.5 * 255).toInt()),
         fontSize: 9,
         fontWeight: FontWeight.w900,
         letterSpacing: 4,
@@ -366,7 +376,7 @@ class _HiveScreenState extends State<HiveScreen> {
     );
   }
 
-  Widget _buildGlow(Color color) {
+  Widget _buildGlow(BuildContext context, Color color) {
     return Container(
       width: 100,
       height: 100,
@@ -378,24 +388,25 @@ class _HiveScreenState extends State<HiveScreen> {
   }
 
   Widget _buildMissionDispatcher(BuildContext context, HiveProvider hive) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () => hive.dispatchMission(context, "SYNC 50 PROTOCOLS"),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: BoxDecoration(
-          color: Colors.cyanAccent.withOpacity(0.05),
+          color: theme.colorScheme.primary.withAlpha((0.05 * 255).toInt()),
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: Colors.cyanAccent.withOpacity(0.3),
+            color: theme.colorScheme.primary.withAlpha((0.3 * 255).toInt()),
             width: 1.2,
           ),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             "INITIALIZE SQUAD MISSION",
             style: TextStyle(
               fontFamily: 'Orbitron',
-              color: Colors.cyanAccent,
+              color: theme.colorScheme.primary,
               fontSize: 10,
               letterSpacing: 2,
             ),
@@ -405,13 +416,14 @@ class _HiveScreenState extends State<HiveScreen> {
     );
   }
 
-  Widget _buildMissionProgress(HiveProvider hive) {
+  Widget _buildMissionProgress(BuildContext context, HiveProvider hive) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: theme.colorScheme.surfaceContainerHighest.withAlpha((0.5 * 255).toInt()),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: theme.colorScheme.onSurface.withAlpha((0.1 * 255).toInt())),
       ),
       child: Column(
         children: [
@@ -420,16 +432,16 @@ class _HiveScreenState extends State<HiveScreen> {
             children: [
               Text(
                 "MISSION: ${hive.activeMissionGoal}",
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Orbitron',
-                  color: Colors.white70,
+                  color: theme.colorScheme.onSurface.withAlpha((0.7 * 255).toInt()),
                   fontSize: 8,
                 ),
               ),
               Text(
                 "${(hive.collectiveMissionProgress * 100).toInt()}%",
-                style: const TextStyle(
-                  color: Colors.cyanAccent,
+                style: TextStyle(
+                  color: theme.colorScheme.primary,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'SpaceMono',
@@ -440,8 +452,8 @@ class _HiveScreenState extends State<HiveScreen> {
           const SizedBox(height: 10),
           LinearProgressIndicator(
             value: hive.collectiveMissionProgress,
-            backgroundColor: Colors.white10,
-            color: Colors.cyanAccent,
+            backgroundColor: theme.colorScheme.surfaceContainer,
+            color: theme.colorScheme.primary,
             minHeight: 3,
           ),
         ],
@@ -449,19 +461,20 @@ class _HiveScreenState extends State<HiveScreen> {
     );
   }
 
-  Widget _buildStabilityCard(HiveProvider hive) {
+  Widget _buildStabilityCard(BuildContext context, HiveProvider hive) {
+    final theme = Theme.of(context);
     final bool isCritical = hive.hiveStability < 0.5;
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: isCritical
-            ? Colors.redAccent.withOpacity(0.05)
-            : Colors.white.withOpacity(0.02),
+            ? theme.colorScheme.error.withOpacity(0.1)
+            : theme.colorScheme.surface.withOpacity(0.5),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isCritical
-              ? Colors.redAccent.withOpacity(0.2)
-              : Colors.white10,
+              ? theme.colorScheme.error.withOpacity(0.2)
+              : theme.colorScheme.outline.withOpacity(0.2),
         ),
       ),
       child: Row(
@@ -470,7 +483,9 @@ class _HiveScreenState extends State<HiveScreen> {
           Text(
             hive.systemStatus,
             style: TextStyle(
-              color: isCritical ? Colors.redAccent : Colors.white38,
+              color: isCritical
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.onSurfaceVariant,
               fontSize: 8,
               fontWeight: FontWeight.bold,
               fontFamily: 'SpaceMono',
@@ -479,7 +494,9 @@ class _HiveScreenState extends State<HiveScreen> {
           Text(
             "${(hive.hiveStability * 100).toInt()}% SYNC",
             style: TextStyle(
-              color: isCritical ? Colors.redAccent : Colors.cyanAccent,
+              color: isCritical
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.primary,
               fontSize: 9,
               fontWeight: FontWeight.bold,
               fontFamily: 'Orbitron',

@@ -1,14 +1,34 @@
 import 'dart:ui';
-
 import 'package:animate_do/animate_do.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/habit_provider.dart';
+import 'data_stream_painter.dart';
 
-class LevelUpOverlay extends StatelessWidget {
+class LevelUpOverlay extends StatefulWidget {
   const LevelUpOverlay({super.key});
+
+  @override
+  State<LevelUpOverlay> createState() => _LevelUpOverlayState();
+}
+
+class _LevelUpOverlayState extends State<LevelUpOverlay> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +51,19 @@ class LevelUpOverlay extends StatelessWidget {
               child: Container(color: Colors.black.withOpacity(0.9)),
             ),
           ),
+          
+          // Data Stream Background
+          Positioned.fill(
+            child: CustomPaint(
+              painter: DataStreamPainter(animation: _controller, color: Colors.cyanAccent),
+            ),
+          ),
 
           // 2. Invisible Full-Screen Tap-to-Dismiss
           Positioned.fill(
             child: GestureDetector(
-              behavior: HitTestBehavior.opaque, // Ensures clicks anywhere work
-              onTap: () {
-                debugPrint("Overlay Dismissed via Background");
-                provider.resetLevelUp();
-              },
+              behavior: HitTestBehavior.opaque,
+              onTap: () => provider.resetLevelUp(),
             ),
           ),
 
@@ -145,10 +169,7 @@ class LevelUpOverlay extends StatelessWidget {
                 FadeIn(
                   delay: const Duration(seconds: 1),
                   child: OutlinedButton(
-                    onPressed: () {
-                      debugPrint("Button Pressed");
-                      provider.resetLevelUp();
-                    },
+                    onPressed: () => provider.resetLevelUp(),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(
                         color: Colors.cyanAccent,

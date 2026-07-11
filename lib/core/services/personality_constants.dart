@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-
 /// Defines the available AI personalities for the Sentient OS.
 enum HandlerPersona {
   bestie, // Gen-Z / Trendy
   system, // Professional / Robotic
   flirt, // Charming / Playful
   brutal, // Drill Sergeant / Hardcore
+  motivational, // Inspiring / Encouraging
 }
 
 class NeuralPersonaLibrary {
@@ -132,6 +131,50 @@ class NeuralPersonaLibrary {
           'title': 'PATHETIC INPUT',
           'body':
               'Zero effort found. I\'ve seen better discipline from a toaster.',
+        },
+      ],
+
+      // --- MOTIVATIONAL QUOTES (Motivational) ---
+      HandlerPersona.motivational: [
+        {
+          'title': 'ASCENSION PROTOCOL',
+          'body': 'The only limit is the one you set in your own code.',
+        },
+        {
+          'title': 'CORE STRENGTH',
+          'body': 'Greatness is born from consistent, small iterations.',
+        },
+        {
+          'title': 'NEURAL GROWTH',
+          'body': 'Every habit completed is a new connection formed.',
+        },
+        {
+          'title': 'SYSTEM UPGRADE',
+          'body': 'You are becoming more efficient with every passing day.',
+        },
+        {
+          'title': 'PEAK PERFORMANCE',
+          'body': 'Focus on the process, and the results will synchronize.',
+        },
+        {
+          'title': 'BEYOND BINARY',
+          'body': 'You are more than your failures. Reboot and try again.',
+        },
+        {
+          'title': 'CONSTANT EVOLUTION',
+          'body': 'The version of you tomorrow depends on the actions today.',
+        },
+        {
+          'title': 'DATA DRIVEN',
+          'body': 'Small wins lead to massive breakthroughs. Keep syncing.',
+        },
+        {
+          'title': 'INFINITE POTENTIAL',
+          'body': 'Your capacity for change is your greatest feature.',
+        },
+        {
+          'title': 'ULTIMATE SYNC',
+          'body': 'Harmony between goals and actions is the ultimate power.',
         },
       ],
     };

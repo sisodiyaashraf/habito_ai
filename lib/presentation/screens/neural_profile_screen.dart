@@ -166,6 +166,9 @@ class NeuralProfileScreen extends StatelessWidget {
         message =
             "NEURAL_ANALYSIS: Sync rate is at ${(completion * 100).toInt()}%. Protocol stability maintained.";
         break;
+      case HandlerPersona.motivational:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
 
     return FadeIn(

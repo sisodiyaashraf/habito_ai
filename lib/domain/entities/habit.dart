@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-
 class Habit {
   final String id;
   final String name;
+  final String description;
   final List<DateTime> completionDates;
+  final List<DateTime> ignoredDates;
 
   // Domain & Ranking
   final String category; // e.g., 'CODING', 'MEDITATION', 'SPORTS', 'SLEEP'
@@ -33,9 +33,11 @@ class Habit {
   Habit({
     required this.id,
     required this.name,
+    this.description = "",
     this.category = "GENERAL",
     this.priority = "MEDIUM",
     this.completionDates = const [],
+    this.ignoredDates = const [],
     this.dailyTarget = 1,
     this.currentValue = 0.0,
     this.unit = "syncs",
@@ -59,8 +61,10 @@ class Habit {
   /// Total times this protocol was fully synchronized
   int get totalCompletions => completionDates.length;
 
+  /// Total times this protocol was ignored or terminated
+  int get totalTerminated => ignoredDates.length;
+
   /// Checks if the protocol is scheduled for a specific day
-  /// [weekday] corresponds to DateTime.weekday (1=Monday, 7=Sunday)
   bool isScheduledFor(int weekday) => scheduledDays.contains(weekday);
 
   /// Critical Helper: Checks if the goal was met on a specific date.
@@ -70,13 +74,22 @@ class Habit {
     );
   }
 
+  /// Helper: Checks if the protocol was ignored/terminated on a specific date.
+  bool isTerminatedOn(DateTime date) {
+    return ignoredDates.any(
+      (d) => d.year == date.year && d.month == date.month && d.day == date.day,
+    );
+  }
+
   /// Creates a copy of the habit with updated fields for immutable state updates.
   Habit copyWith({
     String? id,
     String? name,
+    String? description,
     String? category,
     String? priority,
     List<DateTime>? completionDates,
+    List<DateTime>? ignoredDates,
     int? dailyTarget,
     double? currentValue,
     String? unit,
@@ -92,9 +105,11 @@ class Habit {
     return Habit(
       id: id ?? this.id,
       name: name ?? this.name,
+      description: description ?? this.description,
       category: category ?? this.category,
       priority: priority ?? this.priority,
       completionDates: completionDates ?? this.completionDates,
+      ignoredDates: ignoredDates ?? this.ignoredDates,
       dailyTarget: dailyTarget ?? this.dailyTarget,
       currentValue: currentValue ?? this.currentValue,
       unit: unit ?? this.unit,

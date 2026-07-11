@@ -8,6 +8,8 @@ class MoodTrendChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final habits = context.watch<HabitProvider>().habits;
 
     // Extract weekly data (Mock logic provided below)
@@ -17,12 +19,20 @@ class MoodTrendChart extends StatelessWidget {
       height: 120, // Slightly taller for better resolution
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04), // Boosted visibility
+        color: isDark 
+            ? Colors.white.withOpacity(0.04) 
+            : theme.colorScheme.surface, 
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.12)),
+        border: Border.all(
+          color: isDark 
+              ? Colors.white.withOpacity(0.12) 
+              : theme.colorScheme.outline.withOpacity(0.5),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: isDark 
+                ? Colors.black.withOpacity(0.2) 
+                : theme.colorScheme.shadow.withOpacity(0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -39,15 +49,15 @@ class MoodTrendChart extends StatelessWidget {
                 "NEURAL STABILITY (7D)",
                 style: TextStyle(
                   fontFamily: 'SpaceMono',
-                  color: Colors.white.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withOpacity(0.6),
                   fontSize: 8,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.5,
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.query_stats_rounded,
-                color: Colors.cyanAccent,
+                color: theme.colorScheme.primary,
                 size: 12,
               ),
             ],
@@ -57,17 +67,17 @@ class MoodTrendChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: moodScores.map((score) => _buildMoodBar(score)).toList(),
+            children: moodScores.map((score) => _buildMoodBar(score, theme)).toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMoodBar(double score) {
+  Widget _buildMoodBar(double score, ThemeData theme) {
     // Score is 1-5. Map to heights 15-50 for a dramatic "HUD" look.
     double barHeight = (score * 8) + 10;
-    Color statusColor = _getMoodColor(score);
+    Color statusColor = _getMoodColor(score, theme);
 
     return Column(
       children: [
@@ -105,10 +115,10 @@ class MoodTrendChart extends StatelessWidget {
     );
   }
 
-  Color _getMoodColor(double score) {
+  Color _getMoodColor(double score, ThemeData theme) {
     if (score >= 4.0) return Colors.greenAccent;
     if (score <= 2.5) return Colors.redAccent;
-    return Colors.cyanAccent;
+    return theme.colorScheme.primary;
   }
 
   List<double> _getWeeklyMoodTrend(List<dynamic> habits) {

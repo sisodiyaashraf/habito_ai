@@ -22,20 +22,23 @@ class WeeklyProgressChart extends StatelessWidget {
       (index) => DateTime.now().subtract(Duration(days: 6 - index)),
     );
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       // Keep height fixed to prevent Column/Scrollview conflicts
       height: 240,
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1117).withOpacity(0.5),
+        color: theme.cardColor.withOpacity(isDark ? 0.5 : 0.8),
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: themeColor.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(themeColor, habitProvider),
+          _buildHeader(context, themeColor, habitProvider),
           const SizedBox(height: 25),
           Expanded(
             child: LineChart(
@@ -46,11 +49,11 @@ class WeeklyProgressChart extends StatelessWidget {
                   show: true,
                   drawVerticalLine: false,
                   getDrawingHorizontalLine: (value) => FlLine(
-                    color: Colors.white.withOpacity(0.03),
+                    color: theme.colorScheme.onSurface.withOpacity(0.03),
                     strokeWidth: 1,
                   ),
                 ),
-                titlesData: _buildTitles(last7Days, themeColor),
+                titlesData: _buildTitles(context, last7Days, themeColor),
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
                   LineChartBarData(
@@ -68,7 +71,7 @@ class WeeklyProgressChart extends StatelessWidget {
                             radius: index == 6 ? 4 : 2,
                             color: index == 6
                                 ? themeColor
-                                : const Color(0xFF03050B),
+                                : theme.scaffoldBackgroundColor,
                             strokeWidth: 2,
                             strokeColor: themeColor,
                           ),
@@ -86,7 +89,7 @@ class WeeklyProgressChart extends StatelessWidget {
                     ),
                   ),
                 ],
-                lineTouchData: _buildTouchData(themeColor),
+                lineTouchData: _buildTouchData(context, themeColor),
               ),
             ),
           ),
@@ -109,7 +112,8 @@ class WeeklyProgressChart extends StatelessWidget {
     });
   }
 
-  FlTitlesData _buildTitles(List<DateTime> days, Color themeColor) {
+  FlTitlesData _buildTitles(BuildContext context, List<DateTime> days, Color themeColor) {
+    final theme = Theme.of(context);
     return FlTitlesData(
       show: true,
       rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -126,7 +130,7 @@ class WeeklyProgressChart extends StatelessWidget {
             return Text(
               labels[date.weekday - 1],
               style: TextStyle(
-                color: _isToday(date) ? themeColor : Colors.white24,
+                color: _isToday(date) ? themeColor : theme.colorScheme.onSurface.withOpacity(0.24),
                 fontSize: 10,
                 fontFamily: 'SpaceMono',
               ),
@@ -137,15 +141,16 @@ class WeeklyProgressChart extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(Color themeColor, HabitProvider provider) {
+  Widget _buildHeader(BuildContext context, Color themeColor, HabitProvider provider) {
+    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           "STABILITY_LOG",
           style: TextStyle(
             fontFamily: 'Orbitron',
-            color: Colors.white24,
+            color: theme.colorScheme.onSurface.withOpacity(0.24),
             fontSize: 9,
             letterSpacing: 2,
           ),
@@ -159,10 +164,11 @@ class WeeklyProgressChart extends StatelessWidget {
     );
   }
 
-  LineTouchData _buildTouchData(Color themeColor) {
+  LineTouchData _buildTouchData(BuildContext context, Color themeColor) {
+    final theme = Theme.of(context);
     return LineTouchData(
       touchTooltipData: LineTouchTooltipData(
-        getTooltipColor: (spot) => const Color(0xFF1C1F2B),
+        getTooltipColor: (spot) => theme.brightness == Brightness.dark ? const Color(0xFF1C1F2B) : Colors.white,
         getTooltipItems: (spots) => spots
             .map(
               (s) => LineTooltipItem(

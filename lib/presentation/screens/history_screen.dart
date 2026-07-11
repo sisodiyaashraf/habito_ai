@@ -7,8 +7,9 @@ import 'package:animate_do/animate_do.dart';
 import '../providers/habit_provider.dart';
 import '../widgets/history_analytics_header.dart';
 import '../widgets/mood_trend_chart.dart';
-import '../widgets/RobotGuideOverlay.dart';
+import '../widgets/robot_guide_overlay.dart';
 import 'neural_archive_screen.dart';
+import '../../core/utils/responsive.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -18,7 +19,6 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  // --- GUIDE STATE ENGINE ---
   bool _isGuideVisible = false;
   int _guideStepIndex = 0;
 
@@ -66,30 +66,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     final habitProvider = context.watch<HabitProvider>();
     final logs = habitProvider.systemLogs;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF03050B), // Solid Matte Black
+      backgroundColor: theme.scaffoldBackgroundColor,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
+        title: Text(
           "MISSION VAULT",
           style: TextStyle(
             fontFamily: 'Orbitron',
             letterSpacing: 4,
-            fontSize: 14,
+            fontSize: Responsive.scaleText(context, 14),
             fontWeight: FontWeight.w900,
-            color: Colors.white,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.shield_outlined,
-              color: Colors.cyanAccent,
+              color: theme.colorScheme.primary,
               size: 20,
             ),
             onPressed: () {
@@ -108,41 +109,39 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
       body: Stack(
         children: [
-          // Cyber Grid removed for a cleaner look
           Column(
             children: [
-              // 1. REAL-TIME SYNC STATUS
-              _buildSyncIndicator(habitProvider.habits.isNotEmpty),
+              _buildSyncIndicator(habitProvider.habits.isNotEmpty, theme),
 
-              // 2. Lifetime Metrics Summary
               _buildHighlightWrapper(
+                theme,
                 isActive: _isGuideVisible && _guideStepIndex == 1,
                 child: const HistoryAnalyticsHeader(),
               ),
 
-              // 3. Neural Stability Graph
               _buildHighlightWrapper(
+                theme,
                 isActive: _isGuideVisible && _guideStepIndex == 2,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.scalePadding(context, 20),
                   vertical: 10,
                 ),
                 child: const MoodTrendChart(),
               ),
 
               const SizedBox(height: 10),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Divider(color: Colors.white10, height: 1),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Divider(color: theme.colorScheme.onSurface.withOpacity(0.1), height: 1),
               ),
 
-              // 4. Chronological Protocol Logs
               Expanded(
                 child: _buildHighlightWrapper(
+                  theme,
                   isActive: _isGuideVisible && _guideStepIndex == 3,
                   padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                   child: logs.isEmpty
-                      ? _buildEmptyState()
+                      ? _buildEmptyState(theme)
                       : ListView.builder(
                           itemCount: logs.length,
                           padding: const EdgeInsets.fromLTRB(5, 10, 5, 120),
@@ -152,6 +151,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             return _buildLogEntry(
                               log,
                               habitProvider.streakMultiplier,
+                              theme,
                             );
                           },
                         ),
@@ -160,7 +160,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ],
           ),
 
-          // --- SENTINEL GUIDE OVERLAY ---
           if (_isGuideVisible)
             RobotGuideOverlay(
               label: _historySequence[_guideStepIndex]['label']!,
@@ -186,8 +185,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  // --- HIGHLIGHT SYSTEM ---
-  Widget _buildHighlightWrapper({
+  Widget _buildHighlightWrapper(
+    ThemeData theme, {
     required Widget child,
     required bool isActive,
     EdgeInsets padding = EdgeInsets.zero,
@@ -199,14 +198,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
           color: isActive
-              ? Colors.cyanAccent.withOpacity(0.8)
+              ? theme.colorScheme.primary.withOpacity(0.8)
               : Colors.transparent,
           width: 2,
         ),
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: Colors.cyanAccent.withOpacity(0.15),
+                  color: theme.colorScheme.primary.withOpacity(0.15),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -217,9 +216,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  // --- UI BUILDING BLOCKS ---
-
-  Widget _buildSyncIndicator(bool isActive) {
+  Widget _buildSyncIndicator(bool isActive, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -230,11 +227,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
             height: 6,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isActive ? Colors.cyanAccent : Colors.white10,
+              color: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.1),
               boxShadow: isActive
                   ? [
                       BoxShadow(
-                        color: Colors.cyanAccent.withOpacity(0.5),
+                        color: theme.colorScheme.primary.withOpacity(0.5),
                         blurRadius: 4,
                       ),
                     ]
@@ -246,10 +243,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             isActive ? "NEURAL LINK: SYNCHRONIZED" : "LINK OFFLINE",
             style: TextStyle(
               fontFamily: 'SpaceMono',
-              fontSize: 8,
+              fontSize: Responsive.scaleText(context, 8),
               color: isActive
-                  ? Colors.cyanAccent.withOpacity(0.6)
-                  : Colors.white10,
+                  ? theme.colorScheme.primary.withOpacity(0.6)
+                  : theme.colorScheme.onSurface.withOpacity(0.1),
               letterSpacing: 1,
             ),
           ),
@@ -258,19 +255,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildLogEntry(Map<String, dynamic> log, double currentMultiplier) {
+  Widget _buildLogEntry(Map<String, dynamic> log, double currentMultiplier, ThemeData theme) {
     final bool isXPUpload = log['title'] == 'XP_UPLOAD';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: theme.colorScheme.onSurface.withOpacity(0.03),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isXPUpload
-              ? Colors.cyanAccent.withOpacity(0.1)
-              : Colors.white.withOpacity(0.08),
+              ? theme.colorScheme.primary.withOpacity(0.1)
+              : theme.colorScheme.onSurface.withOpacity(0.08),
         ),
       ),
       child: Row(
@@ -279,14 +276,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isXPUpload
-                  ? Colors.cyanAccent.withOpacity(0.1)
-                  : Colors.white.withOpacity(0.05),
+                  ? theme.colorScheme.primary.withOpacity(0.1)
+                  : theme.colorScheme.onSurface.withOpacity(0.05),
               shape: BoxShape.circle,
             ),
             child: Icon(
               log['icon'] ?? Icons.history,
-              color: isXPUpload ? Colors.cyanAccent : Colors.white24,
-              size: 18,
+              color: isXPUpload ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.24),
+              size: Responsive.scaleText(context, 18),
             ),
           ),
           const SizedBox(width: 16),
@@ -302,8 +299,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       style: TextStyle(
                         fontFamily: 'Orbitron',
                         fontWeight: FontWeight.bold,
-                        color: isXPUpload ? Colors.cyanAccent : Colors.white,
-                        fontSize: 10,
+                        color: isXPUpload ? theme.colorScheme.primary : theme.colorScheme.onSurface,
+                        fontSize: Responsive.scaleText(context, 10),
                         letterSpacing: 1,
                       ),
                     ),
@@ -314,14 +311,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.cyanAccent.withOpacity(0.2),
+                          color: theme.colorScheme.primary.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           "${currentMultiplier}x",
-                          style: const TextStyle(
-                            color: Colors.cyanAccent,
-                            fontSize: 8,
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            fontSize: Responsive.scaleText(context, 8),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -333,16 +330,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   log['description'],
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
-                    color: Colors.white.withOpacity(0.5),
-                    fontSize: 10,
+                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    fontSize: Responsive.scaleText(context, 10),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   DateFormat('HH:mm | dd MMM').format(log['timestamp']),
-                  style: const TextStyle(
-                    color: Colors.white10,
-                    fontSize: 8,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withOpacity(0.1),
+                    fontSize: Responsive.scaleText(context, 8),
                     fontFamily: 'SpaceMono',
                   ),
                 ),
@@ -354,24 +351,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(ThemeData theme) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.history_toggle_off_rounded,
-            color: Colors.white.withOpacity(0.1),
+            color: theme.colorScheme.onSurface.withOpacity(0.1),
             size: 60,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             "VAULT EMPTY: NO LOGS DETECTED",
             style: TextStyle(
               fontFamily: 'Orbitron',
-              color: Colors.white24,
+              color: theme.colorScheme.onSurface.withOpacity(0.24),
               letterSpacing: 2,
-              fontSize: 10,
+              fontSize: Responsive.scaleText(context, 10),
               fontWeight: FontWeight.bold,
             ),
           ),

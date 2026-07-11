@@ -6,23 +6,36 @@ class HabitHeatmap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return AspectRatio(
       aspectRatio: 1.7,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.02),
+          color: isDark ? Colors.white.withOpacity(0.02) : theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(
+            color: isDark ? Colors.white.withOpacity(0.05) : theme.colorScheme.outline.withOpacity(0.5),
+          ),
+          boxShadow: [
+            if (!isDark)
+              BoxShadow(
+                color: theme.colorScheme.shadow.withOpacity(0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "NEURAL ACTIVITY_LOG",
               style: TextStyle(
                 fontFamily: 'Orbitron',
-                color: Colors.white24,
+                color: theme.colorScheme.onSurface.withOpacity(0.24),
                 fontSize: 8,
                 letterSpacing: 2,
                 fontWeight: FontWeight.w900,
@@ -67,7 +80,7 @@ class HabitHeatmap extends StatelessWidget {
                               days[value.toInt()],
                               style: TextStyle(
                                 fontFamily: 'SpaceMono',
-                                color: Colors.white.withOpacity(0.2),
+                                color: theme.colorScheme.onSurface.withOpacity(0.4),
                                 fontSize: 7,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -81,7 +94,7 @@ class HabitHeatmap extends StatelessWidget {
                   borderData: FlBorderData(show: false),
                   barGroups: List.generate(
                     7,
-                    (i) => _makeGroupData(i, (i % 5 + 1).toDouble()),
+                    (i) => _makeGroupData(i, (i % 5 + 1).toDouble(), theme),
                   ),
                 ),
               ),
@@ -92,11 +105,12 @@ class HabitHeatmap extends StatelessWidget {
     );
   }
 
-  BarChartGroupData _makeGroupData(int x, double y) {
+  BarChartGroupData _makeGroupData(int x, double y, ThemeData theme) {
+    final isDark = theme.brightness == Brightness.dark;
     // Intensity mapping for neon glow
     final Color barColor = y >= 4
-        ? Colors.cyanAccent
-        : Colors.cyanAccent.withOpacity(0.4);
+        ? theme.colorScheme.primary
+        : theme.colorScheme.primary.withOpacity(0.4);
 
     return BarChartGroupData(
       x: x,
@@ -115,7 +129,7 @@ class HabitHeatmap extends StatelessWidget {
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
             toY: 5,
-            color: Colors.white.withOpacity(0.03),
+            color: isDark ? Colors.white.withOpacity(0.03) : theme.colorScheme.onSurface.withOpacity(0.03),
           ),
         ),
       ],

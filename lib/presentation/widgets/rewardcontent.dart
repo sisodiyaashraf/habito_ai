@@ -22,7 +22,7 @@ class RewardContent {
 }
 
 class RewardGenerator {
-  static final List<RewardContent> _rewards = [
+  static final List<RewardContent> rewards = [
     // --- PRODUCTIVITY NODES ---
     RewardContent(
       botName: "BRAIN-BO",
@@ -181,17 +181,17 @@ class RewardGenerator {
 
   /// FIX: Returns the Legendary Gold Bot for 8+ daily completions
   static RewardContent getRandomGold() {
-    return _rewards.firstWhere(
+    return rewards.firstWhere(
       (r) => r.isRare && r.botName == "GOLDEN-SENTINEL",
-      orElse: () => _rewards.last, // Fallback to last reward if not found
+      orElse: () => rewards.last, // Fallback to last reward if not found
     );
   }
 
   /// FIX: Finder helper for the Neural Vault to reconstruct history
   static RewardContent getByName(String name) {
-    return _rewards.firstWhere(
+    return rewards.firstWhere(
       (r) => r.botName == name,
-      orElse: () => _rewards.first, // Fallback to default
+      orElse: () => rewards.first, // Fallback to default
     );
   }
 
@@ -201,12 +201,12 @@ class RewardGenerator {
 
     // 8% chance for Legendary/Rare Anomalies in standard draw
     if (random < 8) {
-      final rares = _rewards.where((r) => r.isRare).toList();
+      final rares = rewards.where((r) => r.isRare).toList();
       return rares[Random().nextInt(rares.length)];
     }
 
     // Standard pool
-    final commons = _rewards.where((r) => !r.isRare).toList();
+    final commons = rewards.where((r) => !r.isRare).toList();
     return commons[Random().nextInt(commons.length)];
   }
 }

@@ -21,8 +21,22 @@ class HabitRepositoryImpl implements HabitRepository {
     final model = HabitModel(
       id: habit.id,
       name: habit.name,
+      description: habit.description,
       completionDates: habit.completionDates,
+      ignoredDates: habit.ignoredDates,
       dailyTarget: habit.dailyTarget,
+      category: habit.category,
+      priority: habit.priority,
+      unit: habit.unit,
+      currentValue: habit.currentValue,
+      isTimerEnabled: habit.isTimerEnabled,
+      timerMinutes: habit.timerMinutes,
+      reminderTime: habit.reminderTime,
+      scheduledDays: habit.scheduledDays,
+      isNotificationsEnabled: habit.isNotificationsEnabled,
+      dailyNotes: habit.dailyNotes,
+      dailyMood: habit.dailyMood,
+      totalTimeTracked: habit.totalTimeTracked,
     );
     await box.put(habit.id, model.toJson());
   }
@@ -31,5 +45,11 @@ class HabitRepositoryImpl implements HabitRepository {
   Future<void> deleteHabit(String id) async {
     final box = await Hive.openBox(_boxName);
     await box.delete(id);
+  }
+
+  @override
+  Future<void> clearAllHabits() async {
+    final box = await Hive.openBox(_boxName);
+    await box.clear();
   }
 }

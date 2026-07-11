@@ -8,6 +8,8 @@ class DisciplineHeatmap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final habits = context.watch<HabitProvider>().habits;
 
     // Aggregate all completion dates across all habits
@@ -24,17 +26,27 @@ class DisciplineHeatmap extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
+        color: isDark ? Colors.white.withOpacity(0.02) : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(
+          color: isDark ? Colors.white10 : theme.colorScheme.outline.withOpacity(0.5),
+        ),
+        boxShadow: [
+          if (!isDark)
+            BoxShadow(
+              color: theme.colorScheme.shadow.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "NEURAL UPLINK HISTORY",
             style: TextStyle(
-              color: Colors.cyanAccent,
+              color: theme.colorScheme.primary,
               fontSize: 10,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
@@ -45,15 +57,17 @@ class DisciplineHeatmap extends StatelessWidget {
           HeatMap(
             datasets: dataset,
             colorMode: ColorMode.opacity,
-            defaultColor: Colors.white.withOpacity(0.05),
-            textColor: Colors.white38,
+            defaultColor: isDark 
+                ? Colors.white.withOpacity(0.05) 
+                : theme.colorScheme.onSurface.withOpacity(0.05),
+            textColor: isDark ? Colors.white38 : theme.colorScheme.onSurfaceVariant,
             showColorTip: false,
             scrollable: true,
             size: 25,
             colorsets: {
-              1: Colors.cyanAccent.withOpacity(0.2),
-              3: Colors.cyanAccent.withOpacity(0.5),
-              5: Colors.cyanAccent, // Brighter if more habits are done
+              1: theme.colorScheme.primary.withOpacity(0.2),
+              3: theme.colorScheme.primary.withOpacity(0.5),
+              5: theme.colorScheme.primary, // Brighter if more habits are done
             },
             onClick: (value) {
               ScaffoldMessenger.of(context).showSnackBar(

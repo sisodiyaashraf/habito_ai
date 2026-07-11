@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../../domain/entities/habit.dart';
+import 'ai_usage_service.dart';
 
 class AIService {
   final String apiKey;
+  final AIUsageService usageService;
 
-  AIService(this.apiKey);
+  AIService(this.apiKey, this.usageService);
 
   /// Generates dynamic system instructions based on the selected persona
   /// UPDATED: Added logic for handling Overclocked (Multiplier) efficiency
@@ -37,9 +39,10 @@ class AIService {
     required String persona,
   }) async {
     final model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       apiKey: apiKey,
       systemInstruction: Content.system(_getSystemInstruction(persona)),
+      safetySettings: _defaultSafetySettings,
     );
 
     final logData = messages
@@ -71,9 +74,10 @@ class AIService {
     required String persona,
   }) async {
     final model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       apiKey: apiKey,
       systemInstruction: Content.system(_getSystemInstruction(persona)),
+      safetySettings: _defaultSafetySettings,
     );
 
     final stabilityPercent = (stability * 100).toInt();
@@ -92,9 +96,10 @@ class AIService {
     required bool isRiskDay,
   }) async {
     final model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       apiKey: apiKey,
       systemInstruction: Content.system(_getSystemInstruction(persona)),
+      safetySettings: _defaultSafetySettings,
     );
 
     String prompt =
@@ -109,9 +114,10 @@ class AIService {
   /// Executes a raw prompt with neutral persona context
   Future<String> generateCustomPrompt(String prompt) async {
     final model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       apiKey: apiKey,
       systemInstruction: Content.system(_getSystemInstruction('neutral')),
+      safetySettings: _defaultSafetySettings,
       generationConfig: GenerationConfig(
         temperature: 0.8,
         maxOutputTokens: 120,
@@ -131,9 +137,10 @@ class AIService {
     Map<String, String>? extraContext,
   }) async {
     final model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       apiKey: apiKey,
       systemInstruction: Content.system(_getSystemInstruction(persona)),
+      safetySettings: _defaultSafetySettings,
       generationConfig: GenerationConfig(
         temperature: persona == 'brutal' ? 0.9 : 0.7,
         maxOutputTokens: 120,
@@ -209,9 +216,10 @@ class AIService {
     String persona = 'neutral',
   }) async {
     final model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       apiKey: apiKey,
       systemInstruction: Content.system(_getSystemInstruction(persona)),
+      safetySettings: _defaultSafetySettings,
     );
 
     final prompt =
@@ -219,14 +227,29 @@ class AIService {
     return await _executePrompt(model, prompt);
   }
 
+  List<SafetySetting> get _defaultSafetySettings => [
+    SafetySetting(HarmCategory.harassment, HarmBlockThreshold.medium),
+    SafetySetting(HarmCategory.hateSpeech, HarmBlockThreshold.medium),
+    SafetySetting(HarmCategory.sexuallyExplicit, HarmBlockThreshold.medium),
+    SafetySetting(HarmCategory.dangerousContent, HarmBlockThreshold.medium),
+  ];
+
   /// Centralized prompt execution with sanitization and error handling
   Future<String> _executePrompt(GenerativeModel model, String prompt) async {
+    if (usageService.isLimitExceeded) {
+      return "RATE_LIMIT_EXCEEDED: Neural link temporarily throttled to conserve power. Reset in 1hr.";
+    }
+
     try {
+      usageService.incrementUsage();
       final response = await model.generateContent([Content.text(prompt)]);
       return response.text?.replaceAll('*', '').trim() ??
           "Habito: Connection dropped. Maintain protocol manually.";
     } catch (e) {
       debugPrint("Gemini Error: $e");
+      if (e.toString().contains('429')) {
+        return "RATE_LIMIT_EXCEEDED: Server-side throttling active. Please wait.";
+      }
       return "Habito: System recalibrating. The mission continues.";
     }
   }

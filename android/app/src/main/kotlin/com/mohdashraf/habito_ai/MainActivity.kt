@@ -1,4 +1,4 @@
-package com.example.habito_ai
+package com.mohdashraf.habito_ai
 
 import io.flutter.embedding.android.FlutterActivity
 

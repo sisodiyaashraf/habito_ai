@@ -93,8 +93,7 @@ class _GhostwriterPillState extends State<GhostwriterPill> {
     HapticFeedback.lightImpact();
 
     try {
-      final aiService = AIService(ai.apiKey);
-      final suggestion = await aiService.generateGhostwriterMessage(
+      final suggestion = await ai.aiService.generateGhostwriterMessage(
         stability: hive.hiveStability,
         persona: ai.currentPersona,
       );

@@ -7,15 +7,16 @@ class PersonaSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "NEURAL PERSONALITY",
             style: TextStyle(
-              color: Colors.white24,
+              color: theme.colorScheme.onSurface.withOpacity(0.24),
               fontSize: 9,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.5,
@@ -56,8 +57,9 @@ class PersonaSelector extends StatelessWidget {
     String label,
     Color color,
   ) {
+    final theme = Theme.of(context);
     // Watch the provider to rebuild when the persona changes
-    final currentPersona = context.watch<AIProvider>().currentPersona;
+    final currentPersona = context.watch<AIProvider>().activePersonaEnum;
     final bool isSelected = currentPersona == persona;
 
     return GestureDetector(
@@ -73,7 +75,7 @@ class PersonaSelector extends StatelessWidget {
           color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? color : Colors.white10,
+            color: isSelected ? color : theme.colorScheme.onSurface.withOpacity(0.1),
             width: isSelected ? 1.5 : 1,
           ),
           boxShadow: [
@@ -88,7 +90,7 @@ class PersonaSelector extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? color : Colors.white38,
+            color: isSelected ? color : theme.colorScheme.onSurface.withOpacity(0.38),
             fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,

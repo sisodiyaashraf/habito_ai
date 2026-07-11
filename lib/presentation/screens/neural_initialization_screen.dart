@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:android_intent_plus/android_intent.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'home_screen.dart';
 
 class NeuralInitializationScreen extends StatefulWidget {
@@ -112,7 +113,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
         await Future.delayed(const Duration(seconds: 2));
         const intent = AndroidIntent(
           action: 'android.settings.REQUEST_SCHEDULE_EXACT_ALARM',
-          data: 'package:com.example.habito_ai',
+          data: 'package:com.mohdashraf.habito_ai',
         );
         await intent.launch();
         return;
@@ -184,6 +185,11 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
       _isBootDone = true;
     });
     HapticFeedback.heavyImpact();
+
+    // PERSISTENCE FIX: Mark onboarding as complete in the local vault
+    final box = await Hive.openBox('settings');
+    await box.put('isFirstBoot', false);
+
     await Future.delayed(const Duration(milliseconds: 1500));
     if (mounted) {
       Navigator.pushReplacement(
@@ -207,11 +213,16 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+    final textColor = isLight ? Colors.black87 : theme.colorScheme.onSurface;
+    final variantColor = isLight ? Colors.black54 : theme.colorScheme.onSurfaceVariant;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF03050B),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
-          _buildAmbientGlow(),
+          _buildAmbientGlow(theme),
           _buildScanningLines(),
           SafeArea(
             child: SingleChildScrollView(
@@ -224,7 +235,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
                     child: Text(
                       "CORE INITIALIZATION",
                       style: TextStyle(
-                        color: Colors.cyanAccent.withOpacity(0.9),
+                        color: theme.colorScheme.primary.withOpacity(0.9),
                         fontWeight: FontWeight.w900,
                         letterSpacing: 6,
                         fontSize: 22,
@@ -235,10 +246,10 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
                   const SizedBox(height: 12),
                   FadeInDown(
                     delay: const Duration(milliseconds: 200),
-                    child: const Text(
+                    child: Text(
                       "Hardware sync required. Grant permissions to establish the Neural Link.",
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: variantColor,
                         fontSize: 14,
                         height: 1.6,
                       ),
@@ -259,24 +270,27 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
                           : Icon(
                               Icons.directions_bike_rounded,
                               size: 80,
-                              color: Colors.white.withOpacity(0.05),
+                              color: theme.colorScheme.outline.withOpacity(0.5),
                             ),
                     ),
                   ),
 
-                  _buildProgressBar(),
+                  _buildProgressBar(theme, textColor, variantColor),
                   const SizedBox(height: 40),
                   _buildStatusLine(
                     "UPLINK: NOTIFICATIONS",
                     _isNotificationsDone,
+                    theme,
+                    textColor,
+                    variantColor,
                   ),
-                  _buildStatusLine("HARDWARE: EXACT_ALARM", _isAlarmDone),
-                  _buildStatusLine("PROTOCOL: GHOST_MODE", _isDndDone),
+                  _buildStatusLine("HARDWARE: EXACT_ALARM", _isAlarmDone, theme, textColor, variantColor),
+                  _buildStatusLine("PROTOCOL: GHOST_MODE", _isDndDone, theme, textColor, variantColor),
 
                   const SizedBox(height: 30),
-                  if (!_isBootDone) Center(child: _buildInitializationButton()),
+                  if (!_isBootDone) Center(child: _buildInitializationButton(theme)),
                   const SizedBox(height: 40),
-                  _buildConsole(),
+                  _buildConsole(theme, textColor),
                 ],
               ),
             ),
@@ -284,33 +298,33 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
           if (_isBootDone)
             FadeIn(
               duration: const Duration(milliseconds: 300),
-              child: Container(color: Colors.cyanAccent.withOpacity(0.1)),
+              child: Container(color: theme.colorScheme.primary.withOpacity(0.1)),
             ),
         ],
       ),
     );
   }
 
-  // --- REUSED UI HELPERS (Unchanged) ---
-  Widget _buildProgressBar() {
+  // --- REUSED UI HELPERS ---
+  Widget _buildProgressBar(ThemeData theme, Color textColor, Color variantColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "SYNC STATUS",
               style: TextStyle(
-                color: Colors.white38,
+                color: variantColor,
                 fontSize: 11,
                 letterSpacing: 2,
               ),
             ),
             Text(
               "${(_loadProgress * 100).toInt()}%",
-              style: const TextStyle(
-                color: Colors.cyanAccent,
+              style: TextStyle(
+                color: theme.colorScheme.primary,
                 fontSize: 12,
                 fontFamily: 'monospace',
               ),
@@ -322,7 +336,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
           height: 6,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.white10,
+            color: theme.colorScheme.outline.withOpacity(0.2),
             borderRadius: BorderRadius.circular(10),
           ),
           child: FractionallySizedBox(
@@ -331,13 +345,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 500),
               decoration: BoxDecoration(
-                color: Colors.cyanAccent,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.cyanAccent.withOpacity(0.6),
-                    blurRadius: 15,
-                  ),
-                ],
+                color: theme.colorScheme.primary,
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -347,7 +355,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
     );
   }
 
-  Widget _buildInitializationButton() {
+  Widget _buildInitializationButton(ThemeData theme) {
     return FadeInUp(
       child: GestureDetector(
         onTap: _isInitializing ? null : _initializeSystem,
@@ -358,14 +366,14 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
             borderRadius: BorderRadius.circular(18),
             gradient: LinearGradient(
               colors: _isInitializing
-                  ? [Colors.white10, Colors.white10]
+                  ? [theme.colorScheme.surface, theme.colorScheme.surface]
                   : [
-                      Colors.cyanAccent.withOpacity(0.3),
-                      Colors.cyanAccent.withOpacity(0.05),
+                      theme.colorScheme.primary.withOpacity(0.3),
+                      theme.colorScheme.primary.withOpacity(0.05),
                     ],
             ),
             border: Border.all(
-              color: _isInitializing ? Colors.white24 : Colors.cyanAccent,
+              color: _isInitializing ? theme.colorScheme.outline : theme.colorScheme.primary,
               width: 2,
             ),
           ),
@@ -373,7 +381,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
             child: Text(
               _isInitializing ? "SYNCHRONIZING..." : "START INITIALIZATION",
               style: TextStyle(
-                color: _isInitializing ? Colors.white38 : Colors.cyanAccent,
+                color: _isInitializing ? theme.colorScheme.onSurfaceVariant : theme.colorScheme.primary,
                 fontWeight: FontWeight.w900,
                 fontSize: 14,
                 letterSpacing: 4,
@@ -386,7 +394,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
     );
   }
 
-  Widget _buildStatusLine(String label, bool isDone) {
+  Widget _buildStatusLine(String label, bool isDone, ThemeData theme, Color textColor, Color variantColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
@@ -397,21 +405,21 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
             height: 18,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isDone ? Colors.cyanAccent : Colors.transparent,
+              color: isDone ? theme.colorScheme.primary : Colors.transparent,
               border: Border.all(
-                color: isDone ? Colors.cyanAccent : Colors.white24,
+                color: isDone ? theme.colorScheme.primary : theme.colorScheme.outline,
                 width: 2,
               ),
             ),
             child: isDone
-                ? const Icon(Icons.check, color: Colors.black, size: 12)
+                ? Icon(Icons.check, color: theme.colorScheme.onPrimary, size: 12)
                 : null,
           ),
           const SizedBox(width: 25),
           Text(
             label,
             style: TextStyle(
-              color: isDone ? Colors.white : Colors.white38,
+              color: isDone ? textColor : variantColor,
               fontFamily: 'monospace',
               fontSize: 14,
             ),
@@ -421,22 +429,22 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
     );
   }
 
-  Widget _buildConsole() {
+  Widget _buildConsole(ThemeData theme, Color textColor) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.black45,
-          border: Border.all(color: Colors.white12),
+          color: theme.colorScheme.surface.withOpacity(0.5),
+          border: Border.all(color: theme.colorScheme.outline),
         ),
         child: Row(
           children: [
-            const Text(
+            Text(
               ">",
               style: TextStyle(
-                color: Colors.cyanAccent,
+                color: theme.colorScheme.primary,
                 fontFamily: 'monospace',
                 fontSize: 16,
               ),
@@ -445,8 +453,8 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
             Expanded(
               child: Text(
                 _consoleLog,
-                style: const TextStyle(
-                  color: Colors.cyanAccent,
+                style: TextStyle(
+                  color: theme.colorScheme.primary,
                   fontFamily: 'monospace',
                   fontSize: 11,
                 ),
@@ -473,7 +481,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
       ),
     ),
   );
-  Widget _buildAmbientGlow() => Positioned(
+  Widget _buildAmbientGlow(ThemeData theme) => Positioned(
     top: -100,
     left: -100,
     child: Container(
@@ -483,7 +491,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.cyanAccent.withOpacity(0.07),
+            color: theme.colorScheme.primary.withOpacity(0.07),
             blurRadius: 200,
             spreadRadius: 100,
           ),

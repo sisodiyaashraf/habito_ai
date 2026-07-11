@@ -11,6 +11,7 @@ class WeeklyRecapCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final habitProvider = context.watch<HabitProvider>();
     final hiveProvider = context.watch<HiveProvider>();
+    final theme = Theme.of(context);
     final analysis = habitProvider.weeklyPeakAnalysis;
 
     final Color themeColor = hiveProvider.hiveStability < 0.3
@@ -23,7 +24,7 @@ class WeeklyRecapCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.03),
+          color: theme.colorScheme.onSurface.withOpacity(0.03),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(color: themeColor.withOpacity(0.1)),
         ),
@@ -32,13 +33,15 @@ class WeeklyRecapCard extends StatelessWidget {
             Row(
               children: [
                 _buildStatItem(
+                  context,
                   "PEAK SYNC",
                   analysis['day'],
                   Icons.bolt_rounded,
                   themeColor,
                 ),
-                Container(width: 1, height: 40, color: Colors.white10),
+                Container(width: 1, height: 40, color: theme.colorScheme.onSurface.withOpacity(0.1)),
                 _buildStatItem(
+                  context,
                   "STABILITY",
                   "${(analysis['score'] * 100).toInt()}%",
                   Icons.auto_graph_rounded,
@@ -55,11 +58,13 @@ class WeeklyRecapCard extends StatelessWidget {
   }
 
   Widget _buildStatItem(
+    BuildContext context,
     String label,
     String value,
     IconData icon,
     Color theme,
   ) {
+    final appTheme = Theme.of(context);
     return Expanded(
       child: Column(
         children: [
@@ -72,7 +77,7 @@ class WeeklyRecapCard extends StatelessWidget {
                 label,
                 style: TextStyle(
                   fontFamily: 'SpaceMono',
-                  color: Colors.white38,
+                  color: appTheme.colorScheme.onSurface.withOpacity(0.38),
                   fontSize: 8,
                   letterSpacing: 1,
                 ),
@@ -84,7 +89,7 @@ class WeeklyRecapCard extends StatelessWidget {
             value,
             style: TextStyle(
               fontFamily: 'Orbitron',
-              color: Colors.white,
+              color: appTheme.colorScheme.onSurface,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),

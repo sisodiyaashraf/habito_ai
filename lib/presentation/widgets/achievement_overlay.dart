@@ -94,7 +94,7 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
       duration: const Duration(milliseconds: 600),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 30),
-        decoration: _bannerDecoration(Colors.cyanAccent),
+        decoration: _bannerDecoration(context, Colors.cyanAccent),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -143,7 +143,7 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
       duration: const Duration(milliseconds: 500),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 35),
-        decoration: _bannerDecoration(Colors.purpleAccent),
+        decoration: _bannerDecoration(context, Colors.purpleAccent),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -202,9 +202,10 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
     );
   }
 
-  BoxDecoration _bannerDecoration(Color glowColor) {
+  BoxDecoration _bannerDecoration(BuildContext context, Color glowColor) {
+    final theme = Theme.of(context);
     return BoxDecoration(
-      color: const Color(0xFF03050B).withOpacity(0.9),
+      color: theme.colorScheme.surface.withOpacity(0.9),
       borderRadius: BorderRadius.circular(35),
       border: Border.all(color: glowColor.withOpacity(0.8), width: 2),
       boxShadow: [
@@ -213,7 +214,10 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
           blurRadius: 50,
           spreadRadius: 2,
         ),
-        BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 20),
+        BoxShadow(
+          color: theme.colorScheme.shadow.withOpacity(0.2),
+          blurRadius: 20,
+        ),
       ],
     );
   }

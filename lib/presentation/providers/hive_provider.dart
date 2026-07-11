@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../domain/entities/hive_member.dart';
-import '../widgets/MissionLaunchOverlay.dart';
-import '../widgets/MissionSuccessGlitch.dart';
+import '../widgets/mission_launch_overlay.dart';
+import '../widgets/mission_success_glitch.dart';
 import '../../core/services/personality_constants.dart';
 
 class HiveProvider extends ChangeNotifier {
@@ -28,6 +28,7 @@ class HiveProvider extends ChangeNotifier {
   // --- Identity & Personality ---
   String _userName = "MOHD ASHRAF";
   HandlerPersona _activePersona = HandlerPersona.system;
+  bool _isDarkMode = true;
 
   // --- HUD & Animation States ---
   bool _isSystemGlitching = false;
@@ -40,6 +41,7 @@ class HiveProvider extends ChangeNotifier {
   bool _isMissionActive = false;
 
   // --- Getters ---
+  bool get isDarkMode => _isDarkMode;
   HandlerPersona get activePersona => _activePersona;
   String? get currentHiveId => _currentHiveId;
   String? get activePingId => _activePingId;
@@ -152,6 +154,9 @@ class HiveProvider extends ChangeNotifier {
       case HandlerPersona.brutal:
         logMsg = "PERSONALITY: TOXIC_MOTIVATION_ENGAGED. 🖤";
         break;
+      case HandlerPersona.motivational:
+        logMsg = "PERSONALITY: INSPIRATION_CORE_ONLINE. ✨";
+        break;
       case HandlerPersona.system:
         logMsg = "PERSONALITY: DEFAULT_OS_RESTORED. 🤖";
         break;
@@ -228,17 +233,19 @@ class HiveProvider extends ChangeNotifier {
 
     if (_collectiveMissionProgress >= 1.0) {
       _isMissionActive = false;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          Future.delayed(
-            const Duration(seconds: 4),
-            () => Navigator.pop(context),
-          );
-          return const MissionSuccessGlitch();
-        },
-      );
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            Future.delayed(
+              const Duration(seconds: 4),
+              () => Navigator.pop(context),
+            );
+            return const MissionSuccessGlitch();
+          },
+        );
+      }
       sendMessage("MISSION SECURED. REWARDS ENCRYPTED.", sender: "COMMAND");
     }
     notifyListeners();
@@ -249,11 +256,45 @@ class HiveProvider extends ChangeNotifier {
   Future<void> loadHiveSettings() async {
     final box = await Hive.openBox('settings');
     _currentHiveId = box.get('hive_id');
+    _isDarkMode = box.get('isDarkMode', defaultValue: true);
+    _userName = box.get('userName', defaultValue: "MOHD ASHRAF");
     int? personaIndex = box.get('handler_persona');
-    if (personaIndex != null)
+    if (personaIndex != null) {
       _activePersona = HandlerPersona.values[personaIndex];
+    }
     if (_currentHiveId != null) joinHive(_currentHiveId!);
     notifyListeners();
+  }
+
+  void setUserName(String name) async {
+    _userName = name;
+    final box = await Hive.openBox('settings');
+    await box.put('userName', name);
+    notifyListeners();
+  }
+
+  void toggleDarkMode() async {
+    _isDarkMode = !_isDarkMode;
+    final box = await Hive.openBox('settings');
+    await box.put('isDarkMode', _isDarkMode);
+    HapticFeedback.mediumImpact();
+    notifyListeners();
+  }
+
+  void updateUserSyncRate(double syncRate) {
+    if (_members.isEmpty) {
+      joinHive(_currentHiveId ?? "SENTINEL-ZERO");
+    }
+    int userIndex = _members.indexWhere((m) => m.id == "USR-01");
+    if (userIndex != -1) {
+      _members[userIndex] = HiveMember(
+        id: "USR-01",
+        displayName: userName,
+        syncRate: syncRate.clamp(0.0, 1.0),
+        isOnline: true,
+      );
+      notifyListeners();
+    }
   }
 
   void joinHive(String hiveId) {

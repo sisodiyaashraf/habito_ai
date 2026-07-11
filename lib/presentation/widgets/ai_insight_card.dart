@@ -13,6 +13,8 @@ class AIInsightCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final habitProvider = context.watch<HabitProvider>();
     final aiProvider = context.watch<AIProvider>();
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     // Detect Multiplier state for UI enhancement
     final bool hasStreakBonus = habitProvider.streakMultiplier > 1.0;
@@ -41,7 +43,7 @@ class AIInsightCard extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: 10),
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.04),
+            color: theme.colorScheme.onSurface.withOpacity(0.04),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
               color: hasStreakBonus ? themeColor : themeColor.withOpacity(0.25),
@@ -84,7 +86,7 @@ class AIInsightCard extends StatelessWidget {
                             "LEVEL ${habitProvider.currentLevel} PROTOCOL // STREAK: ${habitProvider.highestStreak}",
                             style: TextStyle(
                               fontFamily: 'SpaceMono',
-                              color: Colors.white.withOpacity(0.5),
+                              color: theme.colorScheme.onSurface.withOpacity(0.5),
                               fontSize: 7,
                               fontWeight: FontWeight.bold,
                             ),
@@ -111,12 +113,12 @@ class AIInsightCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.4),
+                  color: isDark ? Colors.black.withOpacity(0.4) : theme.colorScheme.surface.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: themeColor.withOpacity(0.1)),
+                  border: Border.all(color: themeColor.withOpacity(isDark ? 0.1 : 0.2)),
                 ),
                 child: aiProvider.isLoading
-                    ? _buildLoadingShimmer()
+                    ? _buildLoadingShimmer(context)
                     : TweenAnimationBuilder(
                         key: ValueKey(aiProvider.aiResponse),
                         duration: const Duration(milliseconds: 1500),
@@ -130,7 +132,7 @@ class AIInsightCard extends StatelessWidget {
                                 .substring(0, value)
                                 .toUpperCase(),
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.95),
+                              color: theme.colorScheme.onSurface.withOpacity(0.95),
                               fontSize: 12,
                               height: 1.6,
                               fontFamily: 'SpaceMono',
@@ -162,7 +164,7 @@ class AIInsightCard extends StatelessWidget {
                         "CORE_XP: ${habitProvider.totalXP}",
                         style: TextStyle(
                           fontFamily: 'SpaceMono',
-                          color: Colors.white.withOpacity(0.7),
+                          color: theme.colorScheme.onSurface.withOpacity(0.7),
                           fontSize: 8,
                           fontWeight: FontWeight.bold,
                         ),
@@ -183,7 +185,7 @@ class AIInsightCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
                       value: habitProvider.levelProgress,
-                      backgroundColor: Colors.white.withOpacity(0.1),
+                      backgroundColor: theme.colorScheme.onSurface.withOpacity(0.1),
                       valueColor: AlwaysStoppedAnimation<Color>(themeColor),
                       minHeight: 4,
                     ),
@@ -299,7 +301,7 @@ class AIInsightCard extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingShimmer() {
+  Widget _buildLoadingShimmer(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(
@@ -311,7 +313,7 @@ class AIInsightCard extends StatelessWidget {
             height: 10,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              color: Colors.white.withOpacity(0.05),
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
             ),
           ),
         ),
@@ -351,7 +353,11 @@ class _BlinkingTerminalCursorState extends State<_BlinkingTerminalCursor>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _controller,
-      child: Container(width: 8, height: 14, color: Colors.white24),
+      child: Container(
+        width: 8,
+        height: 14,
+        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.24),
+      ),
     );
   }
 }
