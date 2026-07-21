@@ -48,7 +48,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> with SingleTickerProvid
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Container(color: Colors.black.withOpacity(0.9)),
+              child: Container(color: Colors.black.withValues(alpha: 0.9)),
             ),
           ),
           
@@ -78,7 +78,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> with SingleTickerProvid
                     "NEURAL EVOLUTION DETECTED",
                     style: TextStyle(
                       fontFamily: 'SpaceMono',
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 4,
@@ -97,7 +97,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> with SingleTickerProvid
                         "LEVEL",
                         style: TextStyle(
                           fontFamily: 'Orbitron',
-                          color: Colors.cyanAccent.withOpacity(0.4),
+                          color: Colors.cyanAccent.withValues(alpha: 0.4),
                           fontSize: 18,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 12,
@@ -113,7 +113,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> with SingleTickerProvid
                           height: 1.0,
                           shadows: [
                             Shadow(
-                              color: Colors.cyanAccent.withOpacity(0.8),
+                              color: Colors.cyanAccent.withValues(alpha: 0.8),
                               blurRadius: 50,
                             ),
                           ],
@@ -146,7 +146,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> with SingleTickerProvid
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.cyanAccent.withOpacity(0.1),
+                          color: Colors.cyanAccent.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(

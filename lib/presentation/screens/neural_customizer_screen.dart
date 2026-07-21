@@ -610,7 +610,9 @@ class _NeuralCustomizerScreenState extends State<NeuralCustomizerScreen>
                   ),
                   Radio<AIPersonality>(
                     value: p,
+                    // ignore: deprecated_member_use
                     groupValue: ai.activePersonaEnum,
+                    // ignore: deprecated_member_use
                     onChanged: (val) => ai.setPersona(val!),
                     activeColor: color,
                   ),

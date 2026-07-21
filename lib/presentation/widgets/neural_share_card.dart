@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class NeuralShareCard extends StatelessWidget {
@@ -57,7 +56,7 @@ class NeuralShareCard extends StatelessWidget {
         const SizedBox(height: 20),
         Text(
           "LVL $level",
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 120,
             fontWeight: FontWeight.bold,

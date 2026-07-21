@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animate_do/animate_do.dart';
@@ -21,7 +20,7 @@ class RewardAnimationWidget extends StatefulWidget {
       context: context,
       barrierDismissible: false,
       barrierLabel: "Reward",
-      barrierColor: Colors.black.withOpacity(0.9),
+      barrierColor: Colors.black.withValues(alpha: 0.9),
       pageBuilder: (context, anim1, anim2) {
         return RewardAnimationWidget(
           reward: reward,
@@ -88,7 +87,7 @@ class _RewardAnimationWidgetState extends State<RewardAnimationWidget>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: themeColor.withOpacity(0.15),
+                          color: themeColor.withValues(alpha: 0.15),
                           blurRadius: 150,
                           spreadRadius: 50,
                         ),
@@ -177,7 +176,7 @@ class _RewardAnimationWidgetState extends State<RewardAnimationWidget>
                           fontWeight: FontWeight.w900,
                           letterSpacing: 5,
                           shadows: [
-                            Shadow(color: themeColor.withOpacity(0.5), blurRadius: 20),
+                            Shadow(color: themeColor.withValues(alpha: 0.5), blurRadius: 20),
                           ],
                         ),
                       ),
@@ -241,7 +240,7 @@ class _RewardAnimationWidgetState extends State<RewardAnimationWidget>
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data! % 5 == 0) {
             return Container(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
             );
           }
           return const SizedBox.shrink();

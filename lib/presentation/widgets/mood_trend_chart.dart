@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/habit_provider.dart';
@@ -20,19 +19,19 @@ class MoodTrendChart extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDark 
-            ? Colors.white.withOpacity(0.04) 
+            ? Colors.white.withValues(alpha: 0.04) 
             : theme.colorScheme.surface, 
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isDark 
-              ? Colors.white.withOpacity(0.12) 
-              : theme.colorScheme.outline.withOpacity(0.5),
+              ? Colors.white.withValues(alpha: 0.12) 
+              : theme.colorScheme.outline.withValues(alpha: 0.5),
         ),
         boxShadow: [
           BoxShadow(
             color: isDark 
-                ? Colors.black.withOpacity(0.2) 
-                : theme.colorScheme.shadow.withOpacity(0.05),
+                ? Colors.black.withValues(alpha: 0.2) 
+                : theme.colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -49,7 +48,7 @@ class MoodTrendChart extends StatelessWidget {
                 "NEURAL STABILITY (7D)",
                 style: TextStyle(
                   fontFamily: 'SpaceMono',
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   fontSize: 8,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.5,
@@ -89,12 +88,12 @@ class MoodTrendChart extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [statusColor, statusColor.withOpacity(0.2)],
+              colors: [statusColor, statusColor.withValues(alpha: 0.2)],
             ),
             borderRadius: BorderRadius.circular(4),
             boxShadow: [
               BoxShadow(
-                color: statusColor.withOpacity(0.4),
+                color: statusColor.withValues(alpha: 0.4),
                 blurRadius: 10,
                 spreadRadius: 1,
               ),
@@ -108,7 +107,7 @@ class MoodTrendChart extends StatelessWidget {
           height: 4,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: statusColor.withOpacity(0.5),
+            color: statusColor.withValues(alpha: 0.5),
           ),
         ),
       ],

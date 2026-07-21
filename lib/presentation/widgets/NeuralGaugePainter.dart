@@ -1,6 +1,6 @@
+// ignore_for_file: file_names
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class NeuralGaugePainter extends CustomPainter {
@@ -17,7 +17,7 @@ class NeuralGaugePainter extends CustomPainter {
 
     // Background track
     final trackPaint = Paint()
-      ..color = Colors.white.withOpacity(0.05)
+      ..color = Colors.white.withValues(alpha: 0.05)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth;
 
@@ -40,7 +40,7 @@ class NeuralGaugePainter extends CustomPainter {
     );
 
     // Decorative technical ticks
-    final tickPaint = Paint()..color = color.withOpacity(0.3);
+    final tickPaint = Paint()..color = color.withValues(alpha: 0.3);
     for (var i = 0; i < 8; i++) {
       final angle = (i * 45) * pi / 180;
       final start = Offset(

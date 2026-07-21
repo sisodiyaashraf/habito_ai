@@ -134,12 +134,12 @@ class SentinelStoreScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
+        color: Colors.white.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isLocked
               ? Colors.white10
-              : theme.primaryColor.withOpacity(0.3),
+              : theme.primaryColor.withValues(alpha: 0.3),
         ),
       ),
       child: ListTile(

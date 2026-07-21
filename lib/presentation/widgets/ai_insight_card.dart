@@ -42,17 +42,17 @@ class AIInsightCard extends StatelessWidget {
           margin: const EdgeInsets.symmetric(vertical: 10),
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: theme.colorScheme.onSurface.withOpacity(0.04),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(
-              color: hasStreakBonus ? themeColor : themeColor.withOpacity(0.25),
+              color: hasStreakBonus ? themeColor : themeColor.withValues(alpha: 0.25),
               width: hasStreakBonus ? 1.5 : 1,
             ),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                themeColor.withOpacity(hasStreakBonus ? 0.15 : 0.08),
+                themeColor.withValues(alpha: hasStreakBonus ? 0.15 : 0.08),
                 Colors.transparent,
               ],
             ),
@@ -85,7 +85,7 @@ class AIInsightCard extends StatelessWidget {
                             "LEVEL ${habitProvider.currentLevel} PROTOCOL // STREAK: ${habitProvider.highestStreak}",
                             style: TextStyle(
                               fontFamily: 'SpaceMono',
-                              color: theme.colorScheme.onSurface.withOpacity(0.5),
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                               fontSize: 7,
                               fontWeight: FontWeight.bold,
                             ),
@@ -112,9 +112,9 @@ class AIInsightCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.black.withOpacity(0.4) : theme.colorScheme.surface.withOpacity(0.5),
+                  color: isDark ? Colors.black.withValues(alpha: 0.4) : theme.colorScheme.surface.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: themeColor.withOpacity(isDark ? 0.1 : 0.2)),
+                  border: Border.all(color: themeColor.withValues(alpha: isDark ? 0.1 : 0.2)),
                 ),
                 child: aiProvider.isLoading
                     ? _buildLoadingShimmer(context)
@@ -131,14 +131,14 @@ class AIInsightCard extends StatelessWidget {
                                 .substring(0, value)
                                 .toUpperCase(),
                             style: TextStyle(
-                              color: theme.colorScheme.onSurface.withOpacity(0.95),
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.95),
                               fontSize: 12,
                               height: 1.6,
                               fontFamily: 'SpaceMono',
                               letterSpacing: 0.5,
                               shadows: [
                                 Shadow(
-                                  color: themeColor.withOpacity(0.3),
+                                  color: themeColor.withValues(alpha: 0.3),
                                   blurRadius: 4,
                                 ),
                               ],
@@ -163,7 +163,7 @@ class AIInsightCard extends StatelessWidget {
                         "CORE_XP: ${habitProvider.totalXP}",
                         style: TextStyle(
                           fontFamily: 'SpaceMono',
-                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                           fontSize: 8,
                           fontWeight: FontWeight.bold,
                         ),
@@ -184,7 +184,7 @@ class AIInsightCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
                       value: habitProvider.levelProgress,
-                      backgroundColor: theme.colorScheme.onSurface.withOpacity(0.1),
+                      backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                       valueColor: AlwaysStoppedAnimation<Color>(themeColor),
                       minHeight: 4,
                     ),
@@ -203,7 +203,7 @@ class AIInsightCard extends StatelessWidget {
                       "» SYSTEM EFFICIENCY: ${habitProvider.streakMultiplier}x",
                       style: TextStyle(
                         fontFamily: 'SpaceMono',
-                        color: themeColor.withOpacity(0.8),
+                        color: themeColor.withValues(alpha: 0.8),
                         fontSize: 8,
                         fontWeight: FontWeight.bold,
                       ),
@@ -225,9 +225,9 @@ class AIInsightCard extends StatelessWidget {
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: themeColor.withOpacity(0.15),
+                        color: themeColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: themeColor.withOpacity(0.5)),
+                        border: Border.all(color: themeColor.withValues(alpha: 0.5)),
                       ),
                       child: Row(
                         children: [
@@ -266,9 +266,9 @@ class AIInsightCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Text(
         "${multiplier}x BOOST",
@@ -291,7 +291,7 @@ class AIInsightCard extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.5),
+            color: color.withValues(alpha: 0.5),
             blurRadius: 8,
             spreadRadius: 2,
           ),
@@ -312,7 +312,7 @@ class AIInsightCard extends StatelessWidget {
             height: 10,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
             ),
           ),
         ),
@@ -355,7 +355,7 @@ class _BlinkingTerminalCursorState extends State<_BlinkingTerminalCursor>
       child: Container(
         width: 8,
         height: 14,
-        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.24),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.24),
       ),
     );
   }

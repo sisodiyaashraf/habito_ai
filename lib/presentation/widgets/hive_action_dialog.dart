@@ -12,19 +12,19 @@ class HiveActionDialog extends StatelessWidget {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
       child: AlertDialog(
-        backgroundColor: const Color(0xFF03050B).withOpacity(0.9),
+        backgroundColor: const Color(0xFF03050B).withValues(alpha: 0.9),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
           side: BorderSide(
-            color: Colors.cyanAccent.withOpacity(0.4),
+            color: Colors.cyanAccent.withValues(alpha: 0.4),
             width: 1.5,
           ),
         ),
-        title: Column(
+        title: const Column(
           children: [
-            const Icon(Icons.hub_rounded, color: Colors.cyanAccent, size: 30),
-            const SizedBox(height: 12),
-            const Text(
+            Icon(Icons.hub_rounded, color: Colors.cyanAccent, size: 30),
+            SizedBox(height: 12),
+            Text(
               "HIVE UPLINK",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -107,7 +107,7 @@ class HiveActionDialog extends StatelessWidget {
             ),
             decoration: InputDecoration(
               hintText: "HAB-XXXX-2026",
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.1)),
+              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.1)),
               enabledBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white10),
               ),
@@ -149,16 +149,16 @@ class HiveActionDialog extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.cyanAccent.withOpacity(0.1),
+                color: Colors.cyanAccent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: Colors.cyanAccent, size: 22),
@@ -183,7 +183,7 @@ class HiveActionDialog extends StatelessWidget {
                     subLabel,
                     style: TextStyle(
                       fontFamily: 'SpaceMono',
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       fontSize: 7,
                       fontWeight: FontWeight.bold,
                     ),

@@ -144,7 +144,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Colors.redAccent.withOpacity(0.9),
+        backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
         behavior: SnackBarBehavior.floating,
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -235,7 +235,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
                     child: Text(
                       "CORE INITIALIZATION",
                       style: TextStyle(
-                        color: theme.colorScheme.primary.withOpacity(0.9),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.9),
                         fontWeight: FontWeight.w900,
                         letterSpacing: 6,
                         fontSize: 22,
@@ -270,7 +270,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
                           : Icon(
                               Icons.directions_bike_rounded,
                               size: 80,
-                              color: theme.colorScheme.outline.withOpacity(0.5),
+                              color: theme.colorScheme.outline.withValues(alpha: 0.5),
                             ),
                     ),
                   ),
@@ -298,7 +298,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
           if (_isBootDone)
             FadeIn(
               duration: const Duration(milliseconds: 300),
-              child: Container(color: theme.colorScheme.primary.withOpacity(0.1)),
+              child: Container(color: theme.colorScheme.primary.withValues(alpha: 0.1)),
             ),
         ],
       ),
@@ -336,7 +336,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
           height: 6,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: theme.colorScheme.outline.withOpacity(0.2),
+            color: theme.colorScheme.outline.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(10),
           ),
           child: FractionallySizedBox(
@@ -368,8 +368,8 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
               colors: _isInitializing
                   ? [theme.colorScheme.surface, theme.colorScheme.surface]
                   : [
-                      theme.colorScheme.primary.withOpacity(0.3),
-                      theme.colorScheme.primary.withOpacity(0.05),
+                      theme.colorScheme.primary.withValues(alpha: 0.3),
+                      theme.colorScheme.primary.withValues(alpha: 0.05),
                     ],
             ),
             border: Border.all(
@@ -436,7 +436,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface.withOpacity(0.5),
+          color: theme.colorScheme.surface.withValues(alpha: 0.5),
           border: Border.all(color: theme.colorScheme.outline),
         ),
         child: Row(
@@ -491,7 +491,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.07),
+            color: theme.colorScheme.primary.withValues(alpha: 0.07),
             blurRadius: 200,
             spreadRadius: 100,
           ),

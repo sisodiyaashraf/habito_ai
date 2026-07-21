@@ -38,8 +38,10 @@ class _SystemBootScreenState extends State<SystemBootScreen> {
     // Phase 2: Load Hive & Habits
     await Future.delayed(const Duration(milliseconds: 1200));
     if (mounted) {
-      await context.read<HabitProvider>().loadHabits();
-      await context.read<HiveProvider>().loadHiveSettings();
+      final habitProvider = context.read<HabitProvider>();
+      final hiveProvider = context.read<HiveProvider>();
+      await habitProvider.loadHabits();
+      await hiveProvider.loadHiveSettings();
     }
     _updateStatus("SYNCHRONIZING PROTOCOLS...", "> DATA_VAULT: ONLINE");
 
@@ -84,7 +86,7 @@ class _SystemBootScreenState extends State<SystemBootScreen> {
             const SizedBox(height: 60),
 
             // 2. Tactical Log Feed
-            Container(
+            SizedBox(
               height: 100,
               child: ListView.builder(
                 itemCount: _logs.length,
@@ -115,7 +117,7 @@ class _SystemBootScreenState extends State<SystemBootScreen> {
             const SizedBox(height: 10),
             LinearProgressIndicator(
               value: _progress,
-              backgroundColor: Colors.white.withOpacity(0.05),
+              backgroundColor: Colors.white.withValues(alpha: 0.05),
               color: Colors.cyanAccent,
               minHeight: 2,
             ),

@@ -76,7 +76,7 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: Container(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 child: Center(
                   child: habitProvider.hasLeveledUp
                       ? _buildLevelUpBanner(habitProvider.currentLevel)
@@ -185,9 +185,9 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: accent.withOpacity(0.1),
+        color: accent.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: accent.withOpacity(0.2)),
+        border: Border.all(color: accent.withValues(alpha: 0.2)),
       ),
       child: Text(
         text,
@@ -205,17 +205,17 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
   BoxDecoration _bannerDecoration(BuildContext context, Color glowColor) {
     final theme = Theme.of(context);
     return BoxDecoration(
-      color: theme.colorScheme.surface.withOpacity(0.9),
+      color: theme.colorScheme.surface.withValues(alpha: 0.9),
       borderRadius: BorderRadius.circular(35),
-      border: Border.all(color: glowColor.withOpacity(0.8), width: 2),
+      border: Border.all(color: glowColor.withValues(alpha: 0.8), width: 2),
       boxShadow: [
         BoxShadow(
-          color: glowColor.withOpacity(0.4),
+          color: glowColor.withValues(alpha: 0.4),
           blurRadius: 50,
           spreadRadius: 2,
         ),
         BoxShadow(
-          color: theme.colorScheme.shadow.withOpacity(0.2),
+          color: theme.colorScheme.shadow.withValues(alpha: 0.2),
           blurRadius: 20,
         ),
       ],

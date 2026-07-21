@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: file_names
 import 'package:flutter/material.dart';
 
 class GlitchPainter extends CustomPainter {
@@ -7,7 +7,7 @@ class GlitchPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.redAccent.withOpacity(0.3);
+    final paint = Paint()..color = Colors.redAccent.withValues(alpha: 0.3);
     final random = DateTime.now().millisecond;
 
     // Draw random glitch strips

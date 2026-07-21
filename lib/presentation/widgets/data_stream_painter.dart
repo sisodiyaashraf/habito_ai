@@ -11,7 +11,7 @@ class DataStreamPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final random = Random(42);
     final paint = Paint()
-      ..color = color.withOpacity(0.2)
+      ..color = color.withValues(alpha: 0.2)
       ..strokeWidth = 1.0;
 
     for (int i = 0; i < 30; i++) {
@@ -30,7 +30,7 @@ class DataStreamPainter extends CustomPainter {
         final textPainter = TextPainter(
           text: TextSpan(
             text: random.nextBool() ? "1" : "0",
-            style: TextStyle(color: color.withOpacity(0.3), fontSize: 8, fontFamily: 'SpaceMono'),
+            style: TextStyle(color: color.withValues(alpha: 0.3), fontSize: 8, fontFamily: 'SpaceMono'),
           ),
           textDirection: TextDirection.ltr,
         )..layout();

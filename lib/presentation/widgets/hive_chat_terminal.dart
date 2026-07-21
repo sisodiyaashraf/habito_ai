@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -77,12 +76,12 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(25),
               border: Border.all(
                 color: isCritical
-                    ? Theme.of(context).colorScheme.error.withOpacity(0.4)
-                    : Theme.of(context).colorScheme.outline.withOpacity(0.4),
+                    ? Theme.of(context).colorScheme.error.withValues(alpha: 0.4)
+                    : Theme.of(context).colorScheme.outline.withValues(alpha: 0.4),
                 width: 1.5,
               ),
               boxShadow: [
@@ -90,7 +89,7 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
                   color: (isCritical
                           ? Theme.of(context).colorScheme.error
                           : Theme.of(context).colorScheme.primary)
-                      .withOpacity(0.05),
+                      .withValues(alpha: 0.05),
                   blurRadius: 40,
                   spreadRadius: 2,
                 ),
@@ -102,7 +101,7 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
                 _buildTerminalHeader(stability, isCritical),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Divider(color: Theme.of(context).colorScheme.outline.withOpacity(0.2), height: 1),
+                  child: Divider(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2), height: 1),
                 ),
                 Expanded(child: _buildMessageList(hive)),
                 const SizedBox(height: 12),
@@ -168,7 +167,7 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
               "NEURAL_UPLINK",
               style: TextStyle(
                 fontFamily: 'Orbitron',
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
                 fontSize: 8,
                 letterSpacing: 3,
                 fontWeight: FontWeight.w900,
@@ -211,15 +210,15 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.04),
+            color: Colors.white.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
-          child: Row(
+          child: const Row(
             children: [
-              const Icon(Icons.add_moderator, color: Colors.white24, size: 10),
-              const SizedBox(width: 6),
-              const Text(
+              Icon(Icons.add_moderator, color: Colors.white24, size: 10),
+              SizedBox(width: 6),
+              Text(
                 "NEW MISSION",
                 style: TextStyle(
                   fontFamily: 'SpaceMono',
@@ -242,10 +241,10 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: _isGenerating
-              ? Colors.cyanAccent.withOpacity(0.2)
-              : Colors.cyanAccent.withOpacity(0.08),
+              ? Colors.cyanAccent.withValues(alpha: 0.2)
+              : Colors.cyanAccent.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.cyanAccent.withOpacity(0.4)),
+          border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.4)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -317,8 +316,8 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
                   msg['text']!,
                   style: TextStyle(
                     color: isSystem
-                        ? Colors.redAccent.withOpacity(0.7)
-                        : Colors.white.withOpacity(0.8),
+                        ? Colors.redAccent.withValues(alpha: 0.7)
+                        : Colors.white.withValues(alpha: 0.8),
                     fontSize: 10,
                     fontFamily: 'SpaceMono',
                     height: 1.5,
@@ -337,12 +336,12 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
       margin: const EdgeInsets.only(top: 15),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.04),
+        color: Colors.white.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: isCritical
-              ? Colors.redAccent.withOpacity(0.2)
-              : Colors.white.withOpacity(0.1),
+              ? Colors.redAccent.withValues(alpha: 0.2)
+              : Colors.white.withValues(alpha: 0.1),
         ),
       ),
       child: TextField(
@@ -357,7 +356,7 @@ class _HiveChatTerminalState extends State<HiveChatTerminal> {
           hintText: "> SYNC_MESSAGE...",
           hintStyle: TextStyle(
             fontFamily: 'SpaceMono',
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             fontSize: 9,
           ),
           suffixIcon: IconButton(

@@ -53,7 +53,7 @@ class HabitScheduler {
       presentSound: true,
     );
 
-    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     for (int day in scheduledDays) {
       final int dailyId = 50000 + typeOffset + (id.abs() % 1000) * 10 + day;

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -120,7 +119,7 @@ class _SentientCoreState extends State<SentientCore>
                     ? Colors.orangeAccent
                     : theme.colorScheme.primary));
 
-    final Color ghostColor = Colors.purpleAccent;
+    const Color ghostColor = Colors.purpleAccent;
     final bool isGhostMode = notificationProvider.isGhostModeEnabled;
 
     const String defaultAvatar = 'assets/robots/robotguide2.png';
@@ -142,7 +141,7 @@ class _SentientCoreState extends State<SentientCore>
               children: [
                 // --- 1. AMBIENT GLOW ---
                 _buildAmbientGlow(
-                  !isOnline ? Colors.redAccent.withOpacity(0.5) : coreColor,
+                  !isOnline ? Colors.redAccent.withValues(alpha: 0.5) : coreColor,
                 ),
 
                 // --- 2. GLASS CIRCLE BACKGROUND ---
@@ -153,12 +152,12 @@ class _SentientCoreState extends State<SentientCore>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _isPressed
-                        ? coreColor.withOpacity(0.2)
-                        : theme.colorScheme.onSurface.withOpacity(0.05),
+                        ? coreColor.withValues(alpha: 0.2)
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.05),
                     border: Border.all(
                       color: _isPressed
                           ? coreColor
-                          : theme.colorScheme.onSurface.withOpacity(0.1),
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.1),
                       width: 1,
                     ),
                   ),
@@ -171,7 +170,7 @@ class _SentientCoreState extends State<SentientCore>
                   child: CircularProgressIndicator(
                     value: progress,
                     strokeWidth: 2,
-                    backgroundColor: theme.colorScheme.onSurface.withOpacity(
+                    backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 
                       0.05,
                     ),
                     valueColor: AlwaysStoppedAnimation<Color>(coreColor),
@@ -181,14 +180,14 @@ class _SentientCoreState extends State<SentientCore>
                 // --- 4. HUD DETAILING ---
                 _buildHUDRing(
                   isGhostMode
-                      ? ghostColor.withOpacity(0.5)
-                      : coreColor.withOpacity(0.3),
+                      ? ghostColor.withValues(alpha: 0.5)
+                      : coreColor.withValues(alpha: 0.3),
                   68,
                 ),
                 _buildHUDRing(
                   isGhostMode
-                      ? ghostColor.withOpacity(0.2)
-                      : coreColor.withOpacity(0.1),
+                      ? ghostColor.withValues(alpha: 0.2)
+                      : coreColor.withValues(alpha: 0.1),
                   74,
                 ),
 
@@ -226,8 +225,8 @@ class _SentientCoreState extends State<SentientCore>
                       shape: BoxShape.circle,
                       gradient: RadialGradient(
                         colors: [
-                          coreColor.withOpacity(0.8),
-                          coreColor.withOpacity(0.0),
+                          coreColor.withValues(alpha: 0.8),
+                          coreColor.withValues(alpha: 0.0),
                         ],
                       ),
                     ),
@@ -249,7 +248,7 @@ class _SentientCoreState extends State<SentientCore>
                         borderRadius: BorderRadius.circular(4),
                         boxShadow: [
                           BoxShadow(
-                            color: coreColor.withOpacity(0.5),
+                            color: coreColor.withValues(alpha: 0.5),
                             blurRadius: 8,
                           ),
                         ],
@@ -275,7 +274,7 @@ class _SentientCoreState extends State<SentientCore>
               "NEURAL LINK",
               style: TextStyle(
                 fontFamily: 'SpaceMono',
-                color: coreColor.withOpacity(0.5),
+                color: coreColor.withValues(alpha: 0.5),
                 fontSize: 7,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 2,
@@ -299,7 +298,7 @@ class _SentientCoreState extends State<SentientCore>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: coreColor.withOpacity(0.1 + (0.1 * value)),
+                color: coreColor.withValues(alpha: 0.1 + (0.1 * value)),
                 blurRadius: 15 + (5 * value),
                 spreadRadius: 2,
               ),
@@ -342,7 +341,7 @@ class _SentientCoreState extends State<SentientCore>
                       gradient: LinearGradient(
                         colors: [
                           Colors.transparent,
-                          coreColor.withOpacity(0.5),
+                          coreColor.withValues(alpha: 0.5),
                           Colors.transparent,
                         ],
                       ),

@@ -26,15 +26,15 @@ class DisciplineHeatmap extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.02) : theme.colorScheme.surface,
+        color: isDark ? Colors.white.withValues(alpha: 0.02) : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark ? Colors.white10 : theme.colorScheme.outline.withOpacity(0.5),
+          color: isDark ? Colors.white10 : theme.colorScheme.outline.withValues(alpha: 0.5),
         ),
         boxShadow: [
           if (!isDark)
             BoxShadow(
-              color: theme.colorScheme.shadow.withOpacity(0.05),
+              color: theme.colorScheme.shadow.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -58,15 +58,15 @@ class DisciplineHeatmap extends StatelessWidget {
             datasets: dataset,
             colorMode: ColorMode.opacity,
             defaultColor: isDark 
-                ? Colors.white.withOpacity(0.05) 
-                : theme.colorScheme.onSurface.withOpacity(0.05),
+                ? Colors.white.withValues(alpha: 0.05) 
+                : theme.colorScheme.onSurface.withValues(alpha: 0.05),
             textColor: isDark ? Colors.white38 : theme.colorScheme.onSurfaceVariant,
             showColorTip: false,
             scrollable: true,
             size: 25,
             colorsets: {
-              1: theme.colorScheme.primary.withOpacity(0.2),
-              3: theme.colorScheme.primary.withOpacity(0.5),
+              1: theme.colorScheme.primary.withValues(alpha: 0.2),
+              3: theme.colorScheme.primary.withValues(alpha: 0.5),
               5: theme.colorScheme.primary, // Brighter if more habits are done
             },
             onClick: (value) {

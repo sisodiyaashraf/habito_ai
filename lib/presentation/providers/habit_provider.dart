@@ -444,7 +444,9 @@ class HabitProvider extends ChangeNotifier {
 
       await addXP(reward.points);
       _checkAchievements();
-      _syncWithHiveProvider(context);
+      if (context.mounted) {
+        _syncWithHiveProvider(context);
+      }
       notifyListeners();
     } else {
       // Toggle OFF: Remove today's completion
@@ -460,7 +462,9 @@ class HabitProvider extends ChangeNotifier {
         "${habit.name} unverified.",
         Icons.undo_rounded,
       );
-      _syncWithHiveProvider(context);
+      if (context.mounted) {
+        _syncWithHiveProvider(context);
+      }
       notifyListeners();
     }
   }

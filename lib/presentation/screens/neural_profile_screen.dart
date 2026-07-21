@@ -114,8 +114,8 @@ class NeuralProfileScreen extends StatelessWidget {
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? color.withOpacity(0.1)
-              : Colors.white.withOpacity(0.02),
+              ? color.withValues(alpha: 0.1)
+              : Colors.white.withValues(alpha: 0.02),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? color : Colors.white10,
@@ -167,15 +167,17 @@ class NeuralProfileScreen extends StatelessWidget {
             "NEURAL_ANALYSIS: Sync rate is at ${(completion * 100).toInt()}%. Protocol stability maintained.";
         break;
       case HandlerPersona.motivational:
-        // TODO: Handle this case.
-        throw UnimplementedError();
+        message = completion > 0.7
+            ? "Outstanding momentum! You're breaking through barriers today. Keep pushing forward! 🔥"
+            : "Every step counts toward victory. Refocus, reload, and finish strong! ⚡";
+        break;
     }
 
     return FadeIn(
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.03),
+          color: Colors.white.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(25),
           border: Border.all(color: Colors.white10),
         ),
@@ -259,7 +261,7 @@ class NeuralProfileScreen extends StatelessWidget {
           border: Border.all(color: Colors.cyanAccent, width: 2),
           boxShadow: [
             BoxShadow(
-              color: Colors.cyanAccent.withOpacity(0.2),
+              color: Colors.cyanAccent.withValues(alpha: 0.2),
               blurRadius: 20,
             ),
           ],
@@ -307,7 +309,7 @@ class NeuralProfileScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
+        color: Colors.white.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white10),
       ),
@@ -374,7 +376,7 @@ class NeuralProfileScreen extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: unlocked
-                  ? Colors.cyanAccent.withOpacity(0.1)
+                  ? Colors.cyanAccent.withValues(alpha: 0.1)
                   : Colors.transparent,
               border: Border.all(
                 color: unlocked ? Colors.cyanAccent : Colors.white10,

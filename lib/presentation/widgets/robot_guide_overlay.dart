@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -39,7 +38,7 @@ class RobotGuideOverlay extends StatelessWidget {
                 borderRadius: BorderRadius.circular(25),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 25,
                     offset: const Offset(0, 10),
                   ),
@@ -74,10 +73,10 @@ class RobotGuideOverlay extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE67E22).withOpacity(0.1),
+                            color: const Color(0xFFE67E22).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: const Color(0xFFE67E22).withOpacity(0.2),
+                              color: const Color(0xFFE67E22).withValues(alpha: 0.2),
                             ),
                           ),
                           child: const Text(
@@ -123,7 +122,7 @@ class RobotGuideOverlay extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFE67E22).withOpacity(0.3),
+                      color: const Color(0xFFE67E22).withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),

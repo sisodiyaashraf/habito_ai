@@ -93,10 +93,11 @@ class HiveProvider extends ChangeNotifier {
   Map<String, String> get memberBadges {
     Map<String, String> badges = {};
     for (var member in _members) {
-      if (!member.isOnline || member.syncRate < 0.3)
+      if (!member.isOnline || member.syncRate < 0.3) {
         badges[member.id] = "⚠️ OFFLINE";
-      else if (member.syncRate > 0.85)
+      } else if (member.syncRate > 0.85) {
         badges[member.id] = "🛡️ GUARDIAN";
+      }
     }
     return badges;
   }
@@ -218,7 +219,9 @@ class HiveProvider extends ChangeNotifier {
       builder: (context) {
         Future.delayed(
           const Duration(seconds: 3),
-          () => Navigator.pop(context),
+          () {
+            if (context.mounted) Navigator.pop(context);
+          },
         );
         return MissionLaunchOverlay(goal: goal);
       },
@@ -240,7 +243,9 @@ class HiveProvider extends ChangeNotifier {
           builder: (context) {
             Future.delayed(
               const Duration(seconds: 4),
-              () => Navigator.pop(context),
+              () {
+                if (context.mounted) Navigator.pop(context);
+              },
             );
             return const MissionSuccessGlitch();
           },

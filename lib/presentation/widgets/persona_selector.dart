@@ -16,7 +16,7 @@ class PersonaSelector extends StatelessWidget {
           Text(
             "NEURAL PERSONALITY",
             style: TextStyle(
-              color: theme.colorScheme.onSurface.withOpacity(0.24),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.24),
               fontSize: 9,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.5,
@@ -72,16 +72,16 @@ class PersonaSelector extends StatelessWidget {
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.transparent,
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? color : theme.colorScheme.onSurface.withOpacity(0.1),
+            color: isSelected ? color : theme.colorScheme.onSurface.withValues(alpha: 0.1),
             width: isSelected ? 1.5 : 1,
           ),
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: color.withOpacity(0.2),
+                color: color.withValues(alpha: 0.2),
                 blurRadius: 8,
                 spreadRadius: 1,
               ),
@@ -90,7 +90,7 @@ class PersonaSelector extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? color : theme.colorScheme.onSurface.withOpacity(0.38),
+            color: isSelected ? color : theme.colorScheme.onSurface.withValues(alpha: 0.38),
             fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,

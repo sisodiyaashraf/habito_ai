@@ -24,9 +24,9 @@ class WeeklyRecapCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: theme.colorScheme.onSurface.withOpacity(0.03),
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: themeColor.withOpacity(0.1)),
+          border: Border.all(color: themeColor.withValues(alpha: 0.1)),
         ),
         child: Column(
           children: [
@@ -39,7 +39,7 @@ class WeeklyRecapCard extends StatelessWidget {
                   Icons.bolt_rounded,
                   themeColor,
                 ),
-                Container(width: 1, height: 40, color: theme.colorScheme.onSurface.withOpacity(0.1)),
+                Container(width: 1, height: 40, color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
                 _buildStatItem(
                   context,
                   "STABILITY",
@@ -71,13 +71,13 @@ class WeeklyRecapCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 12, color: theme.withOpacity(0.5)),
+              Icon(icon, size: 12, color: theme.withValues(alpha: 0.5)),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
                   fontFamily: 'SpaceMono',
-                  color: appTheme.colorScheme.onSurface.withOpacity(0.38),
+                  color: appTheme.colorScheme.onSurface.withValues(alpha: 0.38),
                   fontSize: 8,
                   letterSpacing: 1,
                 ),
@@ -108,7 +108,7 @@ class WeeklyRecapCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       decoration: BoxDecoration(
-        color: theme.withOpacity(0.05),
+        color: theme.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(

@@ -12,7 +12,7 @@ class TimerCompletionWidget extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       barrierLabel: "Timer Complete",
-      barrierColor: Colors.black.withOpacity(0.9),
+      barrierColor: Colors.black.withValues(alpha: 0.9),
       pageBuilder: (context, anim1, anim2) {
         return TimerCompletionWidget(
           onDismiss: () => Navigator.pop(context),
@@ -78,7 +78,7 @@ class TimerCompletionWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.cyanAccent.withOpacity(0.3),
+                      color: Colors.cyanAccent.withValues(alpha: 0.3),
                       blurRadius: 20,
                     ),
                   ],

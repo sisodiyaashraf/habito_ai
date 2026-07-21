@@ -72,7 +72,7 @@ class _SessionSheetState extends State<SessionSheet> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(50)),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.1),
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
             blurRadius: 50,
             spreadRadius: 10,
           ),
@@ -84,7 +84,7 @@ class _SessionSheetState extends State<SessionSheet> {
           Positioned(
             top: -100,
             left: -100,
-            child: _buildGlow(theme.colorScheme.primary.withOpacity(0.05), 300),
+            child: _buildGlow(theme.colorScheme.primary.withValues(alpha: 0.05), 300),
           ),
 
           ClipRRect(
@@ -177,7 +177,7 @@ class _SessionSheetState extends State<SessionSheet> {
         height: 4,
         margin: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
       ),
@@ -307,14 +307,14 @@ class _SessionSheetState extends State<SessionSheet> {
             Icon(
               Icons.psychology_rounded,
               size: 14,
-              color: theme.colorScheme.primary.withOpacity(0.5),
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(width: 8),
             Text(
               "COGNITIVE_VIBE_CHECK",
               style: TextStyle(
                 fontFamily: 'SpaceMono',
-                color: theme.colorScheme.onSurface.withOpacity(0.4),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                 fontSize: 10,
                 letterSpacing: 1.5,
               ),
@@ -340,8 +340,8 @@ class _SessionSheetState extends State<SessionSheet> {
                     padding: EdgeInsets.all(isSelected ? 16 : 12),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? (mood['color'] as Color).withOpacity(0.15)
-                          : theme.colorScheme.onSurface.withOpacity(0.03),
+                          ? (mood['color'] as Color).withValues(alpha: 0.15)
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.03),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isSelected
@@ -352,7 +352,7 @@ class _SessionSheetState extends State<SessionSheet> {
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: (mood['color'] as Color).withOpacity(
+                                color: (mood['color'] as Color).withValues(alpha: 
                                   0.2,
                                 ),
                                 blurRadius: 15,
@@ -364,7 +364,7 @@ class _SessionSheetState extends State<SessionSheet> {
                       mood['icon'] as IconData,
                       color: isSelected
                           ? (mood['color'] as Color)
-                          : theme.colorScheme.onSurface.withOpacity(0.2),
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.2),
                       size: isSelected ? 32 : 24,
                     ),
                   ),
@@ -401,14 +401,14 @@ class _SessionSheetState extends State<SessionSheet> {
             Icon(
               Icons.terminal_rounded,
               size: 14,
-              color: theme.colorScheme.primary.withOpacity(0.5),
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(width: 8),
             Text(
               "NEURAL_LOG_ENTRY",
               style: TextStyle(
                 fontFamily: 'SpaceMono',
-                color: theme.colorScheme.onSurface.withOpacity(0.4),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                 fontSize: 10,
                 letterSpacing: 1.5,
               ),
@@ -418,10 +418,10 @@ class _SessionSheetState extends State<SessionSheet> {
         const SizedBox(height: 20),
         Container(
           decoration: BoxDecoration(
-            color: theme.colorScheme.onSurface.withOpacity(0.04),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(25),
             border: Border.all(
-              color: theme.colorScheme.primary.withOpacity(0.1),
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
             ),
           ),
           child: TextField(
@@ -436,7 +436,7 @@ class _SessionSheetState extends State<SessionSheet> {
               contentPadding: const EdgeInsets.all(24),
               hintText: "// RECORD SYSTEM REFLECTION...",
               hintStyle: TextStyle(
-                color: theme.colorScheme.onSurface.withOpacity(0.15),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.15),
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
               ),

@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,20 +13,20 @@ class NeuralRecapDialog extends StatelessWidget {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
       child: AlertDialog(
-        backgroundColor: const Color(0xFF060912).withOpacity(0.9),
+        backgroundColor: const Color(0xFF060912).withValues(alpha: 0.9),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
-          side: BorderSide(color: Colors.cyanAccent.withOpacity(0.3), width: 1),
+          side: BorderSide(color: Colors.cyanAccent.withValues(alpha: 0.3), width: 1),
         ),
-        title: Column(
+        title: const Column(
           children: [
-            const Icon(
+            Icon(
               Icons.analytics_outlined,
               color: Colors.cyanAccent,
               size: 28,
             ),
-            const SizedBox(height: 12),
-            const Text(
+            SizedBox(height: 12),
+            Text(
               "DAILY MISSION RECAP",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -41,14 +42,14 @@ class NeuralRecapDialog extends StatelessWidget {
         content: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.03),
+            color: Colors.white.withValues(alpha: 0.03),
             borderRadius: BorderRadius.circular(15),
           ),
           child: Text(
             summary.toUpperCase(),
             style: TextStyle(
               fontFamily: 'SpaceMono',
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
               fontSize: 11,
               height: 1.6,
               letterSpacing: 0.5,

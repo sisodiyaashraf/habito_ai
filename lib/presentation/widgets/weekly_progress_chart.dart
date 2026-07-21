@@ -31,9 +31,9 @@ class WeeklyProgressChart extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: theme.cardColor.withOpacity(isDark ? 0.5 : 0.8),
+        color: theme.cardColor.withValues(alpha: isDark ? 0.5 : 0.8),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: themeColor.withOpacity(0.1)),
+        border: Border.all(color: themeColor.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +49,7 @@ class WeeklyProgressChart extends StatelessWidget {
                   show: true,
                   drawVerticalLine: false,
                   getDrawingHorizontalLine: (value) => FlLine(
-                    color: theme.colorScheme.onSurface.withOpacity(0.03),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
                     strokeWidth: 1,
                   ),
                 ),
@@ -82,7 +82,7 @@ class WeeklyProgressChart extends StatelessWidget {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          themeColor.withOpacity(0.15),
+                          themeColor.withValues(alpha: 0.15),
                           Colors.transparent,
                         ],
                       ),
@@ -130,7 +130,7 @@ class WeeklyProgressChart extends StatelessWidget {
             return Text(
               labels[date.weekday - 1],
               style: TextStyle(
-                color: _isToday(date) ? themeColor : theme.colorScheme.onSurface.withOpacity(0.24),
+                color: _isToday(date) ? themeColor : theme.colorScheme.onSurface.withValues(alpha: 0.24),
                 fontSize: 10,
                 fontFamily: 'SpaceMono',
               ),
@@ -150,14 +150,14 @@ class WeeklyProgressChart extends StatelessWidget {
           "STABILITY_LOG",
           style: TextStyle(
             fontFamily: 'Orbitron',
-            color: theme.colorScheme.onSurface.withOpacity(0.24),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.24),
             fontSize: 9,
             letterSpacing: 2,
           ),
         ),
         Icon(
           Icons.query_stats_rounded,
-          color: themeColor.withOpacity(0.5),
+          color: themeColor.withValues(alpha: 0.5),
           size: 14,
         ),
       ],

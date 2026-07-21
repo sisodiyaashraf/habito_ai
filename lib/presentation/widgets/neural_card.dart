@@ -85,12 +85,12 @@ class _NeuralCardState extends State<NeuralCard> with SingleTickerProviderStateM
         color: Colors.black,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: widget.themeColor.withOpacity(0.5),
+          color: widget.themeColor.withValues(alpha: 0.5),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: widget.themeColor.withOpacity(0.3),
+            color: widget.themeColor.withValues(alpha: 0.3),
             blurRadius: 20,
             spreadRadius: 5,
           ),
@@ -109,7 +109,7 @@ class _NeuralCardState extends State<NeuralCard> with SingleTickerProviderStateM
             
             if (!widget.isRevealed && isFront)
               Container(
-                color: Colors.black.withOpacity(0.9),
+                color: Colors.black.withValues(alpha: 0.9),
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -139,10 +139,10 @@ class _NeuralCardState extends State<NeuralCard> with SingleTickerProviderStateM
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Colors.white.withOpacity(0.1),
+                      Colors.white.withValues(alpha: 0.1),
                       Colors.transparent,
-                      widget.themeColor.withOpacity(0.05),
-                      Colors.white.withOpacity(0.05),
+                      widget.themeColor.withValues(alpha: 0.05),
+                      Colors.white.withValues(alpha: 0.05),
                     ],
                     stops: const [0.1, 0.4, 0.6, 0.9],
                   ),

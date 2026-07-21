@@ -7,7 +7,7 @@ class MissionSuccessGlitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.cyanAccent.withOpacity(0.1),
+      color: Colors.cyanAccent.withValues(alpha: 0.1),
       child: Stack(
         children: [
           // Background Noise

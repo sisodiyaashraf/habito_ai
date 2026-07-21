@@ -122,16 +122,16 @@ class _NeuralBackupScreenState extends State<NeuralBackupScreen> {
                 width: double.infinity,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.02),
+                  color: Colors.white.withValues(alpha: 0.02),
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
                 child: Text(
                   _currentLog,
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
                     color: _isSyncing
-                        ? Colors.cyanAccent.withOpacity(0.6)
+                        ? Colors.cyanAccent.withValues(alpha: 0.6)
                         : Colors.white10,
                     fontSize: 10,
                   ),
@@ -160,8 +160,8 @@ class _NeuralBackupScreenState extends State<NeuralBackupScreen> {
               height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.cyanAccent.withOpacity(0.05),
-                border: Border.all(color: Colors.cyanAccent.withOpacity(0.2)),
+                color: Colors.cyanAccent.withValues(alpha: 0.05),
+                border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.2)),
               ),
             ),
           ),
@@ -178,7 +178,7 @@ class _NeuralBackupScreenState extends State<NeuralBackupScreen> {
       child: Icon(
         Icons.cloud_done_outlined,
         size: 80,
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
       ),
     );
   }
@@ -190,13 +190,13 @@ class _NeuralBackupScreenState extends State<NeuralBackupScreen> {
       child: ElevatedButton(
         onPressed: _isSyncing ? null : _startSync,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.cyanAccent.withOpacity(0.1),
-          disabledBackgroundColor: Colors.white.withOpacity(0.03),
+          backgroundColor: Colors.cyanAccent.withValues(alpha: 0.1),
+          disabledBackgroundColor: Colors.white.withValues(alpha: 0.03),
           elevation: 0,
           side: BorderSide(
             color: _isSyncing
                 ? Colors.white10
-                : Colors.cyanAccent.withOpacity(0.5),
+                : Colors.cyanAccent.withValues(alpha: 0.5),
             width: 1.5,
           ),
           shape: RoundedRectangleBorder(

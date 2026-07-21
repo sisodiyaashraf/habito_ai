@@ -85,7 +85,7 @@ class _ParticlePainter extends CustomPainter {
       double y = p.vy * t * 50;
       double opacity = 1.0 - t;
       
-      paint.color = color.withOpacity(opacity);
+      paint.color = color.withValues(alpha: opacity);
       canvas.drawCircle(Offset(x, y), p.size * (1 - t), paint);
     }
   }

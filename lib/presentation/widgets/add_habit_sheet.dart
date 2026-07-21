@@ -17,7 +17,7 @@ class AddHabitSheet extends StatefulWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: Theme.of(context).colorScheme.shadow.withOpacity(0.5),
+      barrierColor: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.5),
       builder: (context) => const AddHabitSheet(),
     );
   }
@@ -119,6 +119,8 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
       final notificationProvider = context.read<NotificationProvider>();
       final hiveProvider = context.read<HiveProvider>();
 
+      final reminderStr = _reminderTime.format(context);
+
       await habitProvider.addHabit(
         name,
         description: description,
@@ -132,8 +134,6 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
         timerMinutes: finalTimerMinutes,
         context: context,
       );
-
-      final reminderStr = _reminderTime.format(context);
 
       // 1. Instantly trigger a push notification confirming task creation!
       if (_notificationsEnabled) {
@@ -197,7 +197,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
           decoration: BoxDecoration(
             color: theme.scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-            border: Border.all(color: theme.colorScheme.outline.withOpacity(0.5)),
+            border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.5)),
           ),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(26),
@@ -272,13 +272,13 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
                 color: _isTimerMode
-                    ? theme.colorScheme.primary.withOpacity(0.15)
-                    : theme.colorScheme.surface.withOpacity(0.05),
+                    ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                    : theme.colorScheme.surface.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(
                   color: _isTimerMode
                       ? theme.colorScheme.primary
-                      : theme.colorScheme.outline.withOpacity(0.3),
+                      : theme.colorScheme.outline.withValues(alpha: 0.3),
                   width: _isTimerMode ? 2 : 1,
                 ),
               ),
@@ -290,7 +290,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                     size: 16,
                     color: _isTimerMode
                         ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                        : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -301,7 +301,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                       fontWeight: FontWeight.bold,
                       color: _isTimerMode
                           ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                          : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                     ),
                   ),
                 ],
@@ -321,13 +321,13 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
                 color: !_isTimerMode
-                    ? theme.colorScheme.secondary.withOpacity(0.15)
-                    : theme.colorScheme.surface.withOpacity(0.05),
+                    ? theme.colorScheme.secondary.withValues(alpha: 0.15)
+                    : theme.colorScheme.surface.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(
                   color: !_isTimerMode
                       ? theme.colorScheme.secondary
-                      : theme.colorScheme.outline.withOpacity(0.3),
+                      : theme.colorScheme.outline.withValues(alpha: 0.3),
                   width: !_isTimerMode ? 2 : 1,
                 ),
               ),
@@ -339,7 +339,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                     size: 16,
                     color: !_isTimerMode
                         ? theme.colorScheme.secondary
-                        : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                        : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -350,7 +350,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                       fontWeight: FontWeight.bold,
                       color: !_isTimerMode
                           ? theme.colorScheme.secondary
-                          : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                          : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                     ),
                   ),
                 ],
@@ -487,16 +487,16 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? color.withOpacity(0.15)
-              : theme.colorScheme.onSurface.withOpacity(0.02),
+              ? color.withValues(alpha: 0.15)
+              : theme.colorScheme.onSurface.withValues(alpha: 0.02),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isSelected ? color : theme.colorScheme.outline.withOpacity(0.5)),
+          border: Border.all(color: isSelected ? color : theme.colorScheme.outline.withValues(alpha: 0.5)),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontFamily: 'SpaceMono',
-            color: isSelected ? color : theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+            color: isSelected ? color : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             fontSize: 10,
             fontWeight: FontWeight.bold,
           ),
@@ -555,13 +555,13 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withOpacity(0.05),
+          color: theme.colorScheme.primary.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
+          border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
           boxShadow: [
             if (ai.isLoading)
               BoxShadow(
-                color: theme.colorScheme.primary.withOpacity(0.2),
+                color: theme.colorScheme.primary.withValues(alpha: 0.2),
                 blurRadius: 10,
                 spreadRadius: 2,
               )
@@ -625,19 +625,19 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
             curve: Curves.easeOutCubic,
             decoration: BoxDecoration(
               color: selected
-                  ? theme.colorScheme.primary.withOpacity(0.12)
-                  : theme.colorScheme.surface.withOpacity(0.06),
+                  ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                  : theme.colorScheme.surface.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
                 color: selected 
                   ? theme.colorScheme.primary 
-                  : theme.colorScheme.outline.withOpacity(0.15),
+                  : theme.colorScheme.outline.withValues(alpha: 0.15),
                 width: selected ? 2 : 1,
               ),
               boxShadow: [
                 if (selected)
                   BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.25),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.25),
                     blurRadius: 12,
                     spreadRadius: -2,
                   )
@@ -651,7 +651,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                   size: selected ? 18 : 15,
                   color: selected 
                     ? theme.colorScheme.primary 
-                    : theme.colorScheme.onSurfaceVariant.withOpacity(0.35),
+                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -660,7 +660,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                     fontFamily: 'SpaceMono',
                     color: selected 
                       ? theme.colorScheme.onSurface 
-                      : theme.colorScheme.onSurfaceVariant.withOpacity(0.35),
+                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
                     fontSize: 8,
                     fontWeight: FontWeight.bold,
                   ),
@@ -689,11 +689,11 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
                 color: selected
-                    ? theme.colorScheme.primary.withOpacity(0.1)
+                    ? theme.colorScheme.primary.withValues(alpha: 0.1)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(
-                  color: selected ? theme.colorScheme.primary : theme.colorScheme.outline.withOpacity(0.5),
+                  color: selected ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.5),
                   width: selected ? 2 : 1,
                 ),
               ),
@@ -702,7 +702,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                   p,
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
-                    color: selected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withOpacity(0.3),
+                    color: selected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
                   ),
@@ -721,13 +721,13 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: _notificationsEnabled
-            ? theme.colorScheme.primary.withOpacity(0.05)
-            : theme.colorScheme.surface.withOpacity(0.02),
+            ? theme.colorScheme.primary.withValues(alpha: 0.05)
+            : theme.colorScheme.surface.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: _notificationsEnabled
-              ? theme.colorScheme.primary.withOpacity(0.4)
-              : theme.colorScheme.outline.withOpacity(0.3),
+              ? theme.colorScheme.primary.withValues(alpha: 0.4)
+              : theme.colorScheme.outline.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -744,7 +744,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                           : Icons.notifications_off_rounded,
                       color: _notificationsEnabled
                           ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                          : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                       size: 20,
                     ),
                     const SizedBox(width: 10),
@@ -770,7 +770,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                               fontFamily: 'SpaceMono',
                               color: _notificationsEnabled
                                   ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
                             ),
@@ -806,7 +806,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                     "SPECIFIC ALARM TIME:",
                     style: TextStyle(
                       fontFamily: 'SpaceMono',
-                      color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                       fontSize: 9,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -872,7 +872,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                   shape: BoxShape.circle,
                   color: selected ? theme.colorScheme.primary : Colors.transparent,
                   border: Border.all(
-                    color: selected ? theme.colorScheme.primary : theme.colorScheme.outline.withOpacity(0.5),
+                    color: selected ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.5),
                     width: selected ? 2 : 1,
                   ),
                 ),
@@ -881,7 +881,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                     days[index],
                     style: TextStyle(
                       fontFamily: 'SpaceMono',
-                      color: selected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                      color: selected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
@@ -930,15 +930,15 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface.withOpacity(0.05),
+          color: theme.colorScheme.surface.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontFamily: 'SpaceMono',
-            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             fontSize: 8,
             fontWeight: FontWeight.bold,
           ),
@@ -965,13 +965,13 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
       ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant.withOpacity(0.3), fontSize: 12),
+        hintStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3), fontSize: 12),
         prefixIcon: Icon(icon, color: theme.colorScheme.primary, size: 18),
         filled: true,
-        fillColor: theme.colorScheme.surface.withOpacity(0.05),
+        fillColor: theme.colorScheme.surface.withValues(alpha: 0.05),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
+          borderSide: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -989,7 +989,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
         label,
         style: TextStyle(
           fontFamily: 'Orbitron',
-          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
           fontSize: 9,
           letterSpacing: 2,
           fontWeight: FontWeight.bold,
@@ -1003,7 +1003,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
     height: 4,
     margin: const EdgeInsets.only(bottom: 20),
     decoration: BoxDecoration(
-      color: theme.colorScheme.outline.withOpacity(0.3),
+      color: theme.colorScheme.outline.withValues(alpha: 0.3),
       borderRadius: BorderRadius.circular(10),
     ),
   );
@@ -1016,7 +1016,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: theme.colorScheme.primary.withOpacity(0.25),
+              color: theme.colorScheme.primary.withValues(alpha: 0.25),
               blurRadius: 20,
               spreadRadius: -5,
             ),

@@ -40,7 +40,7 @@ class WaterWavePainter extends CustomPainter {
     // Draw a second wave with different phase and opacity for more depth
     final secondPath = Path();
     final secondPaint = Paint()
-      ..color = color.withOpacity(0.5)
+      ..color = color.withValues(alpha: 0.5)
       ..style = PaintingStyle.fill;
       
     secondPath.moveTo(0, waterLevel);

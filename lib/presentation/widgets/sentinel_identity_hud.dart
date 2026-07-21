@@ -75,7 +75,7 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: widget.themeColor.withOpacity(0.1 + (_pulseController.value * 0.1)),
+                      color: widget.themeColor.withValues(alpha: 0.1 + (_pulseController.value * 0.1)),
                       blurRadius: 40,
                       spreadRadius: 10,
                     ),
@@ -114,7 +114,7 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
               child: CustomPaint(
                 size: Size(widget.size, widget.size),
                 painter: _HUDRingPainter(
-                  color: widget.themeColor.withOpacity(0.3),
+                  color: widget.themeColor.withValues(alpha: 0.3),
                   thickness: 1,
                   dashes: 30,
                   gap: 4,
@@ -136,7 +136,7 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
               child: CustomPaint(
                 size: Size(widget.size * 0.75, widget.size * 0.75),
                 painter: _HUDRingPainter(
-                  color: widget.themeColor.withOpacity(0.5),
+                  color: widget.themeColor.withValues(alpha: 0.5),
                   thickness: 2,
                   dashes: 8,
                   gap: 40,
@@ -157,7 +157,7 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
         CustomPaint(
           size: Size(widget.size * 0.65, widget.size * 0.65),
           painter: _HexagonPainter(
-            color: widget.themeColor.withOpacity(0.1),
+            color: widget.themeColor.withValues(alpha: 0.1),
             filled: true,
           ),
         ),
@@ -169,7 +169,7 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
             width: widget.size * 0.55,
             height: widget.size * 0.55,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
             ),
             child: widget.imagePath != null && widget.imagePath!.isNotEmpty
                 ? Image.asset(
@@ -205,9 +205,9 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.black.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: widget.themeColor.withOpacity(0.3)),
+                  border: Border.all(color: widget.themeColor.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   widget.label,
@@ -225,7 +225,7 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
                 widget.subLabel,
                 style: TextStyle(
                   fontFamily: 'SpaceMono',
-                  color: widget.themeColor.withOpacity(0.7),
+                  color: widget.themeColor.withValues(alpha: 0.7),
                   fontSize: widget.size * 0.03,
                   fontWeight: FontWeight.bold,
                 ),
@@ -254,13 +254,13 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        widget.themeColor.withOpacity(0.5),
+                        widget.themeColor.withValues(alpha: 0.5),
                         Colors.transparent,
                       ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: widget.themeColor.withOpacity(0.3),
+                        color: widget.themeColor.withValues(alpha: 0.3),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),
@@ -294,7 +294,7 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
           text,
           style: TextStyle(
             fontFamily: 'SpaceMono',
-            color: widget.themeColor.withOpacity(0.2),
+            color: widget.themeColor.withValues(alpha: 0.2),
             fontSize: 6,
             fontWeight: FontWeight.bold,
           ),
@@ -360,7 +360,7 @@ class _ProgressRingPainter extends CustomPainter {
     final radius = size.width / 2;
 
     final bgPaint = Paint()
-      ..color = color.withOpacity(0.05)
+      ..color = color.withValues(alpha: 0.05)
       ..style = PaintingStyle.stroke
       ..strokeWidth = thickness;
 

@@ -18,9 +18,9 @@ class NeuralPerformanceChart extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
+        color: Colors.white.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(35),
-        border: Border.all(color: Colors.cyanAccent.withOpacity(0.1)),
+        border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -99,14 +99,14 @@ class NeuralPerformanceChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isCritical
-              ? Colors.redAccent.withOpacity(0.5)
-              : Colors.cyanAccent.withOpacity(0.5),
+              ? Colors.redAccent.withValues(alpha: 0.5)
+              : Colors.cyanAccent.withValues(alpha: 0.5),
         ),
         boxShadow: [
           BoxShadow(
             color: isCritical
-                ? Colors.redAccent.withOpacity(0.2)
-                : Colors.cyanAccent.withOpacity(0.2),
+                ? Colors.redAccent.withValues(alpha: 0.2)
+                : Colors.cyanAccent.withValues(alpha: 0.2),
             blurRadius: 10,
           ),
         ],
@@ -138,16 +138,16 @@ class RadarPainter extends CustomPainter {
     final angleStep = (2 * math.pi) / data.length;
 
     final linePaint = Paint()
-      ..color = Colors.white.withOpacity(0.05)
+      ..color = Colors.white.withValues(alpha: 0.05)
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 
     final fillPaint = Paint()
-      ..color = Colors.cyanAccent.withOpacity(0.15)
+      ..color = Colors.cyanAccent.withValues(alpha: 0.15)
       ..style = PaintingStyle.fill;
 
     final borderPaint = Paint()
-      ..color = Colors.cyanAccent.withOpacity(0.6)
+      ..color = Colors.cyanAccent.withValues(alpha: 0.6)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -171,10 +171,11 @@ class RadarPainter extends CustomPainter {
           center.dx + radius * val * math.cos(i * angleStep - math.pi / 2);
       final y =
           center.dy + radius * val * math.sin(i * angleStep - math.pi / 2);
-      if (i == 0)
+      if (i == 0) {
         path.moveTo(x, y);
-      else
+      } else {
         path.lineTo(x, y);
+      }
     }
     path.close();
 

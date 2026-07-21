@@ -165,7 +165,7 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> with TickerProv
         double progress = _progressController.value;
         Color themeColor = _isRunning 
             ? (_isPaused ? Colors.amberAccent : theme.colorScheme.primary) 
-            : theme.colorScheme.onSurface.withOpacity(0.3);
+            : theme.colorScheme.onSurface.withValues(alpha: 0.3);
 
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
@@ -174,7 +174,7 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> with TickerProv
             borderRadius: BorderRadius.circular(35),
             gradient: _isRunning && !_isPaused
                 ? LinearGradient(
-                    colors: [theme.colorScheme.primary, theme.colorScheme.primary.withOpacity(0.1)],
+                    colors: [theme.colorScheme.primary, theme.colorScheme.primary.withValues(alpha: 0.1)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   )
@@ -182,7 +182,7 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> with TickerProv
             boxShadow: _isRunning && !_isPaused
                 ? [
                     BoxShadow(
-                      color: theme.colorScheme.primary.withOpacity(0.15 * _glowController.value),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.15 * _glowController.value),
                       blurRadius: 20,
                       spreadRadius: 2,
                     )
@@ -195,7 +195,7 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> with TickerProv
               color: theme.scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(33),
               border: Border.all(
-                color: _isRunning ? themeColor.withOpacity(0.4) : theme.colorScheme.onSurface.withOpacity(0.05),
+                color: _isRunning ? themeColor.withValues(alpha: 0.4) : theme.colorScheme.onSurface.withValues(alpha: 0.05),
               ),
             ),
             child: Column(
@@ -255,7 +255,7 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> with TickerProv
       width: 70,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: color.withOpacity(0.2), width: 2),
+        border: Border.all(color: color.withValues(alpha: 0.2), width: 2),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(35),
@@ -270,7 +270,7 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> with TickerProv
                   painter: WaterWavePainter(
                     progress: progress,
                     animationValue: _waveController.value,
-                    color: color.withOpacity(0.3),
+                    color: color.withValues(alpha: 0.3),
                   ),
                   size: const Size(70, 70),
                 );
@@ -322,7 +322,7 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> with TickerProv
             widget.habit.name.toUpperCase(),
             style: TextStyle(
               fontFamily: 'SpaceMono',
-              color: color.withOpacity(0.7),
+              color: color.withValues(alpha: 0.7),
               fontSize: 9,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
@@ -343,8 +343,8 @@ class _SessionTimerWidgetState extends State<SessionTimerWidget> with TickerProv
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: _isRunning && !_isPaused 
-              ? theme.colorScheme.primary.withOpacity(0.1) 
-              : themeColor.withOpacity(0.1),
+              ? theme.colorScheme.primary.withValues(alpha: 0.1) 
+              : themeColor.withValues(alpha: 0.1),
           border: Border.all(color: themeColor, width: 2),
         ),
         child: Icon(

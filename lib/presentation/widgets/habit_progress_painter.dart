@@ -18,13 +18,13 @@ class HabitProgressPainter extends CustomPainter {
 
     // 1. NEURAL TRACK (The Background)
     Paint trackPaint = Paint()
-      ..color = Colors.white.withOpacity(0.05)
+      ..color = Colors.white.withValues(alpha: 0.05)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6;
 
     // 2. OUTER GLOW LAYER (Deep Bloom)
     Paint glowPaint = Paint()
-      ..color = themeColor.withOpacity(0.3)
+      ..color = themeColor.withValues(alpha: 0.3)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 10

@@ -25,7 +25,7 @@ class EmptyHabitsView extends StatelessWidget {
                       child: Icon(
                         Icons.sensors_off_rounded,
                         size: 80,
-                        color: Colors.cyanAccent.withOpacity(0.15),
+                        color: Colors.cyanAccent.withValues(alpha: 0.15),
                       ),
                     ),
                   ),

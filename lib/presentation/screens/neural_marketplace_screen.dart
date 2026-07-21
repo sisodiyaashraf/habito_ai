@@ -85,11 +85,11 @@ class NeuralMarketplaceScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
+        color: Colors.white.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: canAfford
-              ? Colors.cyanAccent.withOpacity(0.2)
+              ? Colors.cyanAccent.withValues(alpha: 0.2)
               : Colors.white10,
         ),
       ),

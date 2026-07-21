@@ -43,9 +43,9 @@ class FuturisticNavBar extends StatelessWidget {
               child: Container(
                 height: 70,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surface.withOpacity(0.7),
+                  color: theme.colorScheme.surface.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(35),
-                  border: Border.all(color: theme.colorScheme.outline.withOpacity(0.5)),
+                  border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.5)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -116,7 +116,7 @@ class FuturisticNavBar extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: isActive
-                ? accent.withOpacity(0.4)
+                ? accent.withValues(alpha: 0.4)
                 : (theme.brightness == Brightness.dark ? Colors.black : Colors.black12),
             blurRadius: 25,
             spreadRadius: 2,
@@ -144,17 +144,17 @@ class FuturisticNavBar extends StatelessWidget {
             child: CircularProgressIndicator(
               value: progress,
               strokeWidth: 4,
-              backgroundColor: theme.colorScheme.onSurface.withOpacity(0.05),
+              backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
               valueColor: AlwaysStoppedAnimation<Color>(
                 isActive
                     ? accent
-                    : accent.withOpacity(0.4),
+                    : accent.withValues(alpha: 0.4),
               ),
             ),
           ),
           Icon(
             Icons.auto_awesome_motion_rounded,
-            color: isActive ? accent : theme.colorScheme.onSurface.withOpacity(0.38),
+            color: isActive ? accent : theme.colorScheme.onSurface.withValues(alpha: 0.38),
             size: 28,
           ),
         ],
@@ -187,7 +187,7 @@ class FuturisticNavBar extends StatelessWidget {
               icon,
               color: isSelected
                   ? accent
-                  : theme.colorScheme.onSurface.withOpacity(0.4),
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.4),
               size: 22,
             ),
             const SizedBox(height: 5),
@@ -196,7 +196,7 @@ class FuturisticNavBar extends StatelessWidget {
               style: TextStyle(
                 color: isSelected
                     ? accent
-                    : theme.colorScheme.onSurface.withOpacity(0.4),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.4),
                 fontSize: 8,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.5,

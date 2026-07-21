@@ -9,7 +9,7 @@ class MissionLaunchOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.black.withOpacity(0.9),
+      color: Colors.black.withValues(alpha: 0.9),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -37,7 +37,7 @@ class MissionLaunchOverlay extends StatelessWidget {
                   letterSpacing: 4,
                   shadows: [
                     Shadow(
-                      color: Colors.cyanAccent.withOpacity(0.5),
+                      color: Colors.cyanAccent.withValues(alpha: 0.5),
                       blurRadius: 20,
                     ),
                   ],
@@ -53,7 +53,7 @@ class MissionLaunchOverlay extends StatelessWidget {
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.white10),
-                  color: Colors.white.withOpacity(0.02),
+                  color: Colors.white.withValues(alpha: 0.02),
                 ),
                 child: Text(
                   "> OBJECTIVE: ${goal.toUpperCase()}",
@@ -69,7 +69,7 @@ class MissionLaunchOverlay extends StatelessWidget {
             const SizedBox(height: 50),
 
             // 4. Initialization Bar
-            Container(
+            const SizedBox(
               width: 200,
               height: 2,
               child: LinearProgressIndicator(

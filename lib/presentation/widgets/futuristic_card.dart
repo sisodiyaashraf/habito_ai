@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class FuturisticCard extends StatelessWidget {
   final Widget child;
-  const FuturisticCard({required this.child});
+  const FuturisticCard({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -12,14 +12,14 @@ class FuturisticCard extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
-              colors: [Colors.cyanAccent.withOpacity(0.1), Colors.transparent],
+              colors: [Colors.cyanAccent.withValues(alpha: 0.1), Colors.transparent],
             ),
           ),
           child: child,

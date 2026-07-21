@@ -145,8 +145,8 @@ class _NeuralTimerState extends State<NeuralTimer>
 
     // Dynamic realistic water color
     final Color waterColor = Color.lerp(
-      Colors.cyanAccent.withOpacity(0.5),
-      theme.colorScheme.primary.withOpacity(0.8),
+      Colors.cyanAccent.withValues(alpha: 0.5),
+      theme.colorScheme.primary.withValues(alpha: 0.8),
       _progressController.value,
     )!;
 
@@ -157,7 +157,7 @@ class _NeuralTimerState extends State<NeuralTimer>
         borderRadius: BorderRadius.circular(40),
         gradient: _isActive && !_isPaused
             ? LinearGradient(
-                colors: [Colors.cyanAccent, theme.colorScheme.primary.withOpacity(0.1)],
+                colors: [Colors.cyanAccent, theme.colorScheme.primary.withValues(alpha: 0.1)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
@@ -170,14 +170,14 @@ class _NeuralTimerState extends State<NeuralTimer>
           borderRadius: BorderRadius.circular(38),
           border: Border.all(
             color: _isActive
-                ? Colors.cyanAccent.withOpacity(0.5)
-                : theme.colorScheme.onSurface.withOpacity(0.08),
+                ? Colors.cyanAccent.withValues(alpha: 0.5)
+                : theme.colorScheme.onSurface.withValues(alpha: 0.08),
             width: 1.5,
           ),
           boxShadow: [
             if (_isActive && !_isPaused)
               BoxShadow(
-                color: Colors.cyanAccent.withOpacity(0.1),
+                color: Colors.cyanAccent.withValues(alpha: 0.1),
                 blurRadius: 30,
                 spreadRadius: 2,
               ),
@@ -202,7 +202,7 @@ class _NeuralTimerState extends State<NeuralTimer>
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: theme.colorScheme.primary.withOpacity(0.05),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.05),
                         width: 1,
                       ),
                     ),
@@ -214,14 +214,14 @@ class _NeuralTimerState extends State<NeuralTimer>
                     height: 250,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                       border: Border.all(
-                        color: _isActive ? Colors.cyanAccent.withOpacity(0.2) : Colors.white10,
+                        color: _isActive ? Colors.cyanAccent.withValues(alpha: 0.2) : Colors.white10,
                         width: 4,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black.withValues(alpha: 0.4),
                           blurRadius: 15,
                         ),
                       ],
@@ -265,7 +265,7 @@ class _NeuralTimerState extends State<NeuralTimer>
                           letterSpacing: 2,
                           shadows: [
                             Shadow(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               blurRadius: 10,
                             ),
                             if (_isActive && !_isPaused)
@@ -281,7 +281,7 @@ class _NeuralTimerState extends State<NeuralTimer>
                         _isPaused ? "SYNC_INTERRUPTED" : "DATA_STREAM_v.4",
                         style: TextStyle(
                           fontFamily: 'SpaceMono',
-                          color: _isPaused ? Colors.amberAccent.withOpacity(0.5) : Colors.cyanAccent.withOpacity(0.5),
+                          color: _isPaused ? Colors.amberAccent.withValues(alpha: 0.5) : Colors.cyanAccent.withValues(alpha: 0.5),
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 3,
@@ -320,10 +320,10 @@ class _NeuralTimerState extends State<NeuralTimer>
                   child: Container(
                     height: 2,
                     decoration: BoxDecoration(
-                      color: Colors.cyanAccent.withOpacity(0.3),
+                      color: Colors.cyanAccent.withValues(alpha: 0.3),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.cyanAccent.withOpacity(0.5),
+                          color: Colors.cyanAccent.withValues(alpha: 0.5),
                           blurRadius: 10,
                           spreadRadius: 1,
                         ),
@@ -355,7 +355,7 @@ class _NeuralTimerState extends State<NeuralTimer>
                   _isActive
                       ? (_isPaused ? "LINK_PAUSED" : "LINK_ACTIVE")
                       : "STANDBY_MODE",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'SpaceMono',
                     color: Colors.cyanAccent,
                     fontSize: 9,
@@ -384,15 +384,16 @@ class _NeuralTimerState extends State<NeuralTimer>
   }
 
   Widget _buildBlinkingDot() {
-    if (!_isActive || _isPaused)
+    if (!_isActive || _isPaused) {
       return Container(
         width: 8,
         height: 8,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.cyanAccent.withOpacity(0.3),
+          color: Colors.cyanAccent.withValues(alpha: 0.3),
         ),
       );
+    }
 
     return TweenAnimationBuilder(
       duration: const Duration(milliseconds: 500),
@@ -403,10 +404,10 @@ class _NeuralTimerState extends State<NeuralTimer>
           height: 8,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.cyanAccent.withOpacity(val),
+            color: Colors.cyanAccent.withValues(alpha: val),
             boxShadow: [
               BoxShadow(
-                color: Colors.cyanAccent.withOpacity(val),
+                color: Colors.cyanAccent.withValues(alpha: val),
                 blurRadius: 6,
               ),
             ],
@@ -428,13 +429,13 @@ class _NeuralTimerState extends State<NeuralTimer>
           child: CircularProgressIndicator(
             value: progress,
             strokeWidth: 4,
-            backgroundColor: theme.colorScheme.onSurface.withOpacity(0.05),
+            backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
             valueColor: const AlwaysStoppedAnimation<Color>(Colors.cyanAccent),
           ),
         ),
         Text(
           "${(progress * 100).toInt()}%",
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'SpaceMono',
             color: Colors.cyanAccent,
             fontSize: 12,
@@ -456,10 +457,10 @@ class _NeuralTimerState extends State<NeuralTimer>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           color: _isPaused
-              ? Colors.amberAccent.withOpacity(0.1)
+              ? Colors.amberAccent.withValues(alpha: 0.1)
               : (_isActive
-                    ? Colors.cyanAccent.withOpacity(0.15)
-                    : Colors.cyanAccent.withOpacity(0.2)),
+                    ? Colors.cyanAccent.withValues(alpha: 0.15)
+                    : Colors.cyanAccent.withValues(alpha: 0.2)),
           border: Border.all(
             color: _isPaused ? Colors.amberAccent : Colors.cyanAccent,
             width: 2,
@@ -467,7 +468,7 @@ class _NeuralTimerState extends State<NeuralTimer>
           boxShadow: [
             if (_isActive && !_isPaused)
               BoxShadow(
-                color: Colors.cyanAccent.withOpacity(0.2),
+                color: Colors.cyanAccent.withValues(alpha: 0.2),
                 blurRadius: 25,
               ),
           ],
@@ -525,7 +526,7 @@ class _NeuralTimerState extends State<NeuralTimer>
           style: TextStyle(
             fontFamily: 'SpaceMono',
             color: theme.brightness == Brightness.dark
-                ? Colors.redAccent.withOpacity(0.6)
+                ? Colors.redAccent.withValues(alpha: 0.6)
                 : Colors.red,
             fontSize: 11,
             fontWeight: FontWeight.bold,
@@ -555,7 +556,7 @@ class WaterPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [color.withOpacity(0.3), color.withOpacity(0.7), color],
+        colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.7), color],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
 
@@ -563,7 +564,7 @@ class WaterPainter extends CustomPainter {
     // progress 1.0 = EMPTY (y=height)
     final double yOffset = size.height * progress;
 
-    final double waveHeight = 12.0;
+    const double waveHeight = 12.0;
     final double waveWidth = size.width;
 
     // First Wave
@@ -588,7 +589,7 @@ class WaterPainter extends CustomPainter {
 
     // Depth layer (Realistic Reflection)
     final paint2 = Paint()
-      ..color = Colors.white.withOpacity(0.1)
+      ..color = Colors.white.withValues(alpha: 0.1)
       ..style = PaintingStyle.fill;
 
     final path2 = Path();

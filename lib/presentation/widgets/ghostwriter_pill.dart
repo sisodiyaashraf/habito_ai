@@ -31,19 +31,19 @@ class _GhostwriterPillState extends State<GhostwriterPill> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: _isGenerating
-                  ? Colors.white.withOpacity(0.03)
-                  : themeColor.withOpacity(0.08),
+                  ? Colors.white.withValues(alpha: 0.03)
+                  : themeColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
                 color: _isGenerating
                     ? Colors.white10
-                    : themeColor.withOpacity(0.3),
+                    : themeColor.withValues(alpha: 0.3),
                 width: 1,
               ),
               boxShadow: [
                 if (!_isGenerating)
                   BoxShadow(
-                    color: themeColor.withOpacity(0.1),
+                    color: themeColor.withValues(alpha: 0.1),
                     blurRadius: 12,
                     spreadRadius: 1,
                   ),
@@ -91,6 +91,8 @@ class _GhostwriterPillState extends State<GhostwriterPill> {
     setState(() => _isGenerating = true);
     HapticFeedback.lightImpact();
 
+    final messenger = ScaffoldMessenger.of(context);
+
     try {
       final suggestion = await ai.aiService.generateGhostwriterMessage(
         stability: hive.hiveStability,
@@ -104,14 +106,14 @@ class _GhostwriterPillState extends State<GhostwriterPill> {
     } catch (e) {
       HapticFeedback.vibrate();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             backgroundColor: const Color(0xFF03050B),
             content: Text(
               "UPLINK ERROR: AI RE-CALIBRATING",
               style: TextStyle(
                 fontFamily: 'SpaceMono',
-                color: Colors.redAccent.withOpacity(0.8),
+                color: Colors.redAccent.withValues(alpha: 0.8),
                 fontSize: 10,
               ),
             ),

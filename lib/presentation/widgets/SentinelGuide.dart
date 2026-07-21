@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -40,7 +41,7 @@ class SentinelGuide extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.cyanAccent.withOpacity(0.2),
+                    color: Colors.cyanAccent.withValues(alpha: 0.2),
                     blurRadius: 20,
                   ),
                 ],
