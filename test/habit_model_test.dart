@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:habito_ai/data/models/habit_model.dart';
-import 'package:habito_ai/domain/entities/habit.dart';
 
 void main() {
   group('HabitModel Serialization Tests', () {

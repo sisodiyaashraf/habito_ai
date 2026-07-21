@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +17,6 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final hiveProvider = context.watch<HiveProvider>();
     final notificationProvider = context.watch<NotificationProvider>();
-    final aiProvider = context.watch<AIProvider>();
     final habitProvider = context.read<HabitProvider>();
 
     final Color themeColor = hiveProvider.hiveStability < 0.3
@@ -34,7 +32,7 @@ class SettingsScreen extends StatelessWidget {
           Positioned(
             top: -100,
             right: -100,
-            child: _buildGlow(themeColor.withOpacity(0.1)),
+            child: _buildGlow(themeColor.withValues(alpha: 0.1)),
           ),
 
           CustomScrollView(
@@ -107,13 +105,13 @@ class SettingsScreen extends StatelessWidget {
           fontFamily: 'Orbitron',
           letterSpacing: 4,
           fontSize: 14,
-          color: themeData.colorScheme.onSurface.withOpacity(0.9),
+          color: themeData.colorScheme.onSurface.withValues(alpha: 0.9),
         ),
       ),
       leading: IconButton(
         icon: Icon(
           Icons.arrow_back_ios_new_rounded,
-          color: themeData.colorScheme.onSurface.withOpacity(0.54),
+          color: themeData.colorScheme.onSurface.withValues(alpha: 0.54),
           size: 18,
         ),
         onPressed: () {
@@ -129,7 +127,7 @@ class SettingsScreen extends StatelessWidget {
       title,
       style: TextStyle(
         fontFamily: 'SpaceMono',
-        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.24),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.24),
         fontSize: 10,
         letterSpacing: 2,
         fontWeight: FontWeight.bold,
@@ -158,14 +156,14 @@ class SettingsScreen extends StatelessWidget {
             },
             leading: Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: isSelected ? themeColor : theme.colorScheme.onSurface.withOpacity(0.1),
+              color: isSelected ? themeColor : theme.colorScheme.onSurface.withValues(alpha: 0.1),
               size: 18,
             ),
             title: Text(
               persona.name.toUpperCase(),
               style: TextStyle(
                 fontFamily: 'Orbitron',
-                color: isSelected ? theme.colorScheme.onSurface : theme.colorScheme.onSurface.withOpacity(0.38),
+                color: isSelected ? theme.colorScheme.onSurface : theme.colorScheme.onSurface.withValues(alpha: 0.38),
                 fontSize: 12,
                 letterSpacing: 1,
               ),
@@ -192,7 +190,7 @@ class SettingsScreen extends StatelessWidget {
             (val) => notify.toggleGhostMode(val),
             themeColor,
           ),
-          Divider(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05), height: 1),
+          Divider(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05), height: 1),
           _buildToggle(
             context,
             "STEALTH MODE",
@@ -201,7 +199,7 @@ class SettingsScreen extends StatelessWidget {
             (val) => notify.toggleStealthMode(val),
             themeColor,
           ),
-          Divider(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05), height: 1),
+          Divider(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05), height: 1),
           _buildToggle(
             context,
             "STEALTH AUDIO",
@@ -230,7 +228,7 @@ class SettingsScreen extends StatelessWidget {
         HapticFeedback.selectionClick();
         onChanged(v);
       },
-      activeColor: themeColor,
+      activeThumbColor: themeColor,
       title: Text(
         title,
         style: TextStyle(
@@ -241,7 +239,7 @@ class SettingsScreen extends StatelessWidget {
       ),
       subtitle: Text(
         sub,
-        style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.24), fontSize: 10),
+        style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.24), fontSize: 10),
       ),
     );
   }
@@ -256,7 +254,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundColor: themeColor.withOpacity(0.1),
+            backgroundColor: themeColor.withValues(alpha: 0.1),
             backgroundImage: ai.userImagePath.isNotEmpty ? AssetImage(ai.userImagePath) : null,
             child: ai.userImagePath.isEmpty
                 ? Icon(Icons.person, color: themeColor)
@@ -277,7 +275,7 @@ class SettingsScreen extends StatelessWidget {
               Text(
                 "RANK: SENTINEL",
                 style: TextStyle(
-                  color: theme.colorScheme.onSurface.withOpacity(0.24),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.24),
                   fontSize: 10,
                   fontFamily: 'SpaceMono',
                 ),
@@ -285,7 +283,7 @@ class SettingsScreen extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          Icon(Icons.qr_code_2, color: theme.colorScheme.onSurface.withOpacity(0.24)),
+          Icon(Icons.qr_code_2, color: theme.colorScheme.onSurface.withValues(alpha: 0.24)),
         ],
       ),
     );
@@ -314,7 +312,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 hive.isDarkMode ? "OPTIMIZED FOR LOW-LIGHT SYNC" : "MAX VISIBILITY PROTOCOL",
-                style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.24), fontSize: 8),
+                style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.24), fontSize: 8),
               ),
             ],
           ),
@@ -328,9 +326,9 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: hive.isDarkMode ? Colors.black26 : Colors.blueAccent.withOpacity(0.1),
+                color: hive.isDarkMode ? Colors.black26 : Colors.blueAccent.withValues(alpha: 0.1),
                 border: Border.all(
-                  color: hive.isDarkMode ? Colors.white10 : Colors.blueAccent.withOpacity(0.5),
+                  color: hive.isDarkMode ? Colors.white10 : Colors.blueAccent.withValues(alpha: 0.5),
                   width: 1.5,
                 ),
               ),
@@ -347,7 +345,7 @@ class SettingsScreen extends StatelessWidget {
                         color: hive.isDarkMode ? Colors.cyanAccent : Colors.amberAccent,
                         boxShadow: [
                           BoxShadow(
-                            color: (hive.isDarkMode ? Colors.cyanAccent : Colors.amberAccent).withOpacity(0.4),
+                            color: (hive.isDarkMode ? Colors.cyanAccent : Colors.amberAccent).withValues(alpha: 0.4),
                             blurRadius: 10,
                           )
                         ],
@@ -370,9 +368,9 @@ class SettingsScreen extends StatelessWidget {
 
   BoxDecoration _glassDecoration(BuildContext context) {
     return BoxDecoration(
-      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.03),
+      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.03),
       borderRadius: BorderRadius.circular(25),
-      border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05)),
+      border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05)),
     );
   }
 

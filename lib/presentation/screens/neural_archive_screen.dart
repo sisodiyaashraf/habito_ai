@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../providers/habit_provider.dart';
 import '../providers/ai_provider.dart';
 import '../../data/models/achievement_model.dart';
-import '../widgets/rewardcontent.dart';
 
 class NeuralArchiveScreen extends StatefulWidget {
   const NeuralArchiveScreen({super.key});
@@ -81,7 +80,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
           indicatorWeight: 2,
           dividerColor: Colors.transparent,
           labelColor: theme.colorScheme.primary,
-          unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(0.4),
+          unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.4),
           labelStyle: const TextStyle(
             fontFamily: 'Orbitron',
             fontSize: 10,
@@ -101,7 +100,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
             end: Alignment.bottomCenter,
             colors: [
               theme.scaffoldBackgroundColor,
-              theme.colorScheme.primary.withOpacity(0.02),
+              theme.colorScheme.primary.withValues(alpha: 0.02),
               theme.scaffoldBackgroundColor,
             ],
           ),
@@ -138,9 +137,9 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withOpacity(0.05),
+          color: theme.colorScheme.primary.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: theme.colorScheme.primary.withOpacity(0.1)),
+          border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.1)),
         ),
         child: Column(
           children: [
@@ -191,9 +190,9 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
         margin: const EdgeInsets.fromLTRB(20, 10, 20, 10),
         padding: const EdgeInsets.symmetric(horizontal: 15),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface.withOpacity(0.3),
+          color: theme.colorScheme.surface.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.1)),
         ),
         child: TextField(
           controller: _searchController,
@@ -207,14 +206,14 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
             hintText: "SEARCH_ARCHIVES...",
             hintStyle: TextStyle(
               fontFamily: 'SpaceMono',
-              color: theme.colorScheme.onSurface.withOpacity(0.2),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
               fontSize: 10,
               letterSpacing: 1,
             ),
             border: InputBorder.none,
             icon: Icon(
               Icons.search_rounded,
-              color: theme.colorScheme.primary.withOpacity(0.5),
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
               size: 18,
             ),
           ),
@@ -227,12 +226,13 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
     BuildContext context,
     List<Map<String, dynamic>> botArchives,
   ) {
-    if (botArchives.isEmpty)
+    if (botArchives.isEmpty) {
       return _buildEmptyState(
         context,
         "NO_DATA_PACKS",
         "COMPLETE HABITS TO DECRYPT UNITS",
       );
+    }
 
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(15, 20, 15, 100),
@@ -246,7 +246,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
       itemBuilder: (context, index) {
         final log = botArchives[index];
         final themeColor = Color(
-          log['reward_color'] ?? Colors.cyanAccent.value,
+          log['reward_color'] ?? Colors.cyanAccent.toARGB32(),
         );
         final timestamp = log['timestamp'] is DateTime ? log['timestamp'] as DateTime : DateTime.parse(log['timestamp'].toString());
 
@@ -276,12 +276,13 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
         )
         .toList();
 
-    if (filteredAchievements.isEmpty)
+    if (filteredAchievements.isEmpty) {
       return _buildEmptyState(
         context,
         "NO_ACHIEVEMENTS",
         "COMPLETE MISSIONS TO UNLOCK",
       );
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
@@ -301,19 +302,19 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
     final isUnlocked = achievement.isUnlocked;
     final color = isUnlocked
         ? theme.colorScheme.primary
-        : theme.colorScheme.onSurface.withOpacity(0.1);
+        : theme.colorScheme.onSurface.withValues(alpha: 0.1);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(0.2),
+        color: theme.colorScheme.surface.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.2), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
         boxShadow: [
           if (isUnlocked)
             BoxShadow(
-              color: color.withOpacity(0.05),
+              color: color.withValues(alpha: 0.05),
               blurRadius: 10,
               spreadRadius: 1,
             ),
@@ -325,8 +326,8 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: color.withOpacity(0.1),
-              border: Border.all(color: color.withOpacity(0.3), width: 1),
+              color: color.withValues(alpha: 0.1),
+              border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
             ),
             child: Icon(achievement.icon, color: color, size: 22),
           ),
@@ -341,7 +342,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                     fontFamily: 'Orbitron',
                     color: isUnlocked
                         ? theme.colorScheme.onSurface
-                        : theme.colorScheme.onSurface.withOpacity(0.2),
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.2),
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1,
@@ -352,7 +353,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                   achievement.description,
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
-                    color: theme.colorScheme.onSurface.withOpacity(0.4),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                     fontSize: 8,
                   ),
                 ),
@@ -365,14 +366,14 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.1),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         "SYNC_DATE: ${achievement.unlockedAt!.day}/${achievement.unlockedAt!.month}/${achievement.unlockedAt!.year}",
                         style: TextStyle(
                           fontFamily: 'SpaceMono',
-                          color: theme.colorScheme.primary.withOpacity(0.8),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.8),
                           fontSize: 7,
                           fontWeight: FontWeight.bold,
                         ),
@@ -391,7 +392,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
           else
             Icon(
               Icons.lock_outline_rounded,
-              color: theme.colorScheme.onSurface.withOpacity(0.05),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
               size: 16,
             ),
         ],
@@ -415,10 +416,10 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: themeColor.withOpacity(0.3), width: 1.5),
+          border: Border.all(color: themeColor.withValues(alpha: 0.3), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: themeColor.withOpacity(0.15),
+              color: themeColor.withValues(alpha: 0.15),
               blurRadius: 15,
               spreadRadius: 2,
             ),
@@ -438,8 +439,8 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        themeColor.withOpacity(0.05),
-                        themeColor.withOpacity(0.3),
+                        themeColor.withValues(alpha: 0.05),
+                        themeColor.withValues(alpha: 0.3),
                       ],
                     ),
                   ),
@@ -455,10 +456,10 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.6),
+                        color: Colors.black.withValues(alpha: 0.6),
                         border: Border(
                           top: Border.all(
-                            color: themeColor.withOpacity(0.2),
+                            color: themeColor.withValues(alpha: 0.2),
                           ).top,
                         ),
                       ),
@@ -505,7 +506,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: color.withOpacity(0.5), width: 2),
+                  border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -530,7 +531,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                       "TACTICAL_UNIT_ID",
                       style: TextStyle(
                         fontFamily: 'SpaceMono',
-                        color: color.withOpacity(0.6),
+                        color: color.withValues(alpha: 0.6),
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
@@ -543,7 +544,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                         fontFamily: 'SpaceMono',
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.7),
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
                         fontSize: 10,
                         height: 1.5,
                       ),
@@ -560,7 +561,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                               fontFamily: 'Orbitron',
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.5),
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
                               fontSize: 10,
                               letterSpacing: 2,
                             ),
@@ -577,7 +578,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
                                   "IDENTITY_SHELL_UPDATED: $name",
                                   style: const TextStyle(fontFamily: 'SpaceMono'),
                                 ),
-                                backgroundColor: color.withOpacity(0.8),
+                                backgroundColor: color.withValues(alpha: 0.8),
                               ),
                             );
                           },
@@ -619,7 +620,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
           child: Center(
             child: Icon(
               Icons.broken_image_rounded,
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
               size: 40,
             ),
           ),
@@ -637,7 +638,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
             duration: const Duration(seconds: 2),
             child: Icon(
               Icons.lock_outline_rounded,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
               size: 80,
             ),
           ),
@@ -646,7 +647,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
             title,
             style: TextStyle(
               fontFamily: 'Orbitron',
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
               letterSpacing: 5,
               fontSize: 12,
             ),
@@ -656,7 +657,7 @@ class _NeuralArchiveScreenState extends State<NeuralArchiveScreen>
             subtitle,
             style: TextStyle(
               fontFamily: 'SpaceMono',
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
               fontSize: 8,
               letterSpacing: 1,
             ),

@@ -20,7 +20,7 @@ class AIInsightCard extends StatelessWidget {
     final bool hasStreakBonus = habitProvider.streakMultiplier > 1.0;
 
     Color themeColor;
-    switch (aiProvider.currentPersona) {
+    switch (aiProvider.activePersonaEnum) {
       case AIPersonality.gentle:
         themeColor = Colors.greenAccent;
         break;
@@ -28,7 +28,6 @@ class AIInsightCard extends StatelessWidget {
         themeColor = Colors.redAccent;
         break;
       case AIPersonality.neutral:
-      default:
         // Switch to Cyan if bonus is active, else stay default
         themeColor = hasStreakBonus
             ? Colors.cyanAccent

@@ -1,9 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:animate_do/animate_do.dart';
 import '../providers/habit_provider.dart';
 import '../widgets/history_analytics_header.dart';
 import '../widgets/mood_trend_chart.dart';
@@ -132,7 +130,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Divider(color: theme.colorScheme.onSurface.withOpacity(0.1), height: 1),
+                child: Divider(color: theme.colorScheme.onSurface.withValues(alpha: 0.1), height: 1),
               ),
 
               Expanded(
@@ -198,14 +196,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
           color: isActive
-              ? theme.colorScheme.primary.withOpacity(0.8)
+              ? theme.colorScheme.primary.withValues(alpha: 0.8)
               : Colors.transparent,
           width: 2,
         ),
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: theme.colorScheme.primary.withOpacity(0.15),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.15),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -227,11 +225,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
             height: 6,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.1),
+              color: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurface.withValues(alpha: 0.1),
               boxShadow: isActive
                   ? [
                       BoxShadow(
-                        color: theme.colorScheme.primary.withOpacity(0.5),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.5),
                         blurRadius: 4,
                       ),
                     ]
@@ -245,8 +243,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               fontFamily: 'SpaceMono',
               fontSize: Responsive.scaleText(context, 8),
               color: isActive
-                  ? theme.colorScheme.primary.withOpacity(0.6)
-                  : theme.colorScheme.onSurface.withOpacity(0.1),
+                  ? theme.colorScheme.primary.withValues(alpha: 0.6)
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.1),
               letterSpacing: 1,
             ),
           ),
@@ -262,12 +260,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.onSurface.withOpacity(0.03),
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isXPUpload
-              ? theme.colorScheme.primary.withOpacity(0.1)
-              : theme.colorScheme.onSurface.withOpacity(0.08),
+              ? theme.colorScheme.primary.withValues(alpha: 0.1)
+              : theme.colorScheme.onSurface.withValues(alpha: 0.08),
         ),
       ),
       child: Row(
@@ -276,13 +274,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isXPUpload
-                  ? theme.colorScheme.primary.withOpacity(0.1)
-                  : theme.colorScheme.onSurface.withOpacity(0.05),
+                  ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.05),
               shape: BoxShape.circle,
             ),
             child: Icon(
               log['icon'] ?? Icons.history,
-              color: isXPUpload ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.24),
+              color: isXPUpload ? theme.colorScheme.primary : theme.colorScheme.onSurface.withValues(alpha: 0.24),
               size: Responsive.scaleText(context, 18),
             ),
           ),
@@ -311,7 +309,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.2),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
@@ -330,7 +328,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   log['description'],
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     fontSize: Responsive.scaleText(context, 10),
                   ),
                 ),
@@ -338,7 +336,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 Text(
                   DateFormat('HH:mm | dd MMM').format(log['timestamp']),
                   style: TextStyle(
-                    color: theme.colorScheme.onSurface.withOpacity(0.1),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                     fontSize: Responsive.scaleText(context, 8),
                     fontFamily: 'SpaceMono',
                   ),
@@ -358,7 +356,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         children: [
           Icon(
             Icons.history_toggle_off_rounded,
-            color: theme.colorScheme.onSurface.withOpacity(0.1),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
             size: 60,
           ),
           const SizedBox(height: 16),
@@ -366,7 +364,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             "VAULT EMPTY: NO LOGS DETECTED",
             style: TextStyle(
               fontFamily: 'Orbitron',
-              color: theme.colorScheme.onSurface.withOpacity(0.24),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.24),
               letterSpacing: 2,
               fontSize: Responsive.scaleText(context, 10),
               fontWeight: FontWeight.bold,

@@ -385,12 +385,17 @@ class HabitProvider extends ChangeNotifier {
       await habitRepository.saveHabit(_habits[index]);
       notifyListeners();
     }
-    _checkSystemIntegrity(context);
+    if (context.mounted) {
+      _checkSystemIntegrity(context);
+    }
   }
 
   Future<void> toggleHabit(String id, BuildContext context) async {
     final index = _habits.indexWhere((h) => h.id == id);
     if (index == -1) return;
+
+    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+    final hiveProvider = Provider.of<HiveProvider>(context, listen: false);
 
     final habit = _habits[index];
     final today = _normalizeDate(DateTime.now());
@@ -431,8 +436,6 @@ class HabitProvider extends ChangeNotifier {
 
       _showRewardDialog(reward, rewardTimestamp);
 
-      final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
-      final hiveProvider = Provider.of<HiveProvider>(context, listen: false);
       PersonaScheduler.showInstantPersonaNudge(
         persona: hiveProvider.activePersona,
         title: "SYNC COMPLETE",
@@ -441,8 +444,10 @@ class HabitProvider extends ChangeNotifier {
 
       await addXP(reward.points);
       _checkAchievements();
+      _syncWithHiveProvider(context);
+      notifyListeners();
     } else {
-      // Toggle off / Uncheck for today
+      // Toggle OFF: Remove today's completion
       updatedDates.removeWhere((d) => _isSameDay(d, today));
       _habits[index] = habit.copyWith(
         completionDates: updatedDates,
@@ -451,33 +456,21 @@ class HabitProvider extends ChangeNotifier {
       await habitRepository.saveHabit(_habits[index]);
 
       _addLog(
-        "PROTOCOL UNCHECKED",
-        "${habit.name} reset for today.",
-        Icons.remove_circle_outline_rounded,
+        "SYNC_REVERSED",
+        "${habit.name} unverified.",
+        Icons.undo_rounded,
       );
-
-      final navContext = navigatorKey.currentContext;
-      if (navContext != null && navContext.mounted) {
-        ScaffoldMessenger.of(navContext).showSnackBar(
-          SnackBar(
-            content: Text("${habit.name.toUpperCase()} // PROTOCOL_RESET_FOR_TODAY", 
-              style: const TextStyle(fontFamily: 'SpaceMono', fontSize: 10),
-            ),
-            backgroundColor: Colors.white12,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+      _syncWithHiveProvider(context);
+      notifyListeners();
     }
-    _syncWithHiveProvider(context);
-    notifyListeners();
   }
 
   /// Mark habit as ignored/terminated by user for today
   Future<void> ignoreOrTerminateHabit(String id, BuildContext context) async {
     final index = _habits.indexWhere((h) => h.id == id);
     if (index == -1) return;
+
+    final hiveProvider = Provider.of<HiveProvider>(context, listen: false);
 
     final habit = _habits[index];
     final today = _normalizeDate(DateTime.now());
@@ -502,15 +495,16 @@ class HabitProvider extends ChangeNotifier {
       Icons.cancel_outlined,
     );
 
-    final hiveProvider = Provider.of<HiveProvider>(context, listen: false);
     PersonaScheduler.showInstantPersonaNudge(
       persona: hiveProvider.activePersona,
       title: "PROTOCOL TERMINATED",
       body: "WARNING: '${habit.name}' was terminated. System strain elevated.",
     );
 
-    _syncWithHiveProvider(context);
-    _checkSystemIntegrity(context);
+    if (context.mounted) {
+      _syncWithHiveProvider(context);
+      _checkSystemIntegrity(context);
+    }
     notifyListeners();
   }
 
@@ -578,7 +572,7 @@ class HabitProvider extends ChangeNotifier {
       'reward_bot_id': reward?.botName,
       'reward_image_path': reward?.frontImagePath,
       'reward_back_path': reward?.backImagePath,
-      'reward_color': reward?.themeColor.value,
+      'reward_color': reward?.themeColor.toARGB32(),
       'reward_points': reward?.points,
       'is_rare': reward?.isRare ?? false,
       'is_collected': reward != null ? true : false, // Automatically collected if it's a reward
@@ -598,14 +592,16 @@ class HabitProvider extends ChangeNotifier {
     int streak = 0;
     var current = _normalizeDate(DateTime.now());
     if (!_isSameDay(sorted.first, current) &&
-        !_isSameDay(sorted.first, current.subtract(const Duration(days: 1))))
+        !_isSameDay(sorted.first, current.subtract(const Duration(days: 1)))) {
       return 0;
+    }
     for (var date in sorted) {
       if (_isSameDay(date, current)) {
         streak++;
         current = current.subtract(const Duration(days: 1));
-      } else if (date.isBefore(current))
+      } else if (date.isBefore(current)) {
         break;
+      }
     }
     return streak;
   }

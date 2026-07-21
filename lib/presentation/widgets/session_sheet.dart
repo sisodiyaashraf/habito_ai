@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import '../../domain/entities/habit.dart';
-import '../../main.dart';
 import '../providers/habit_provider.dart';
 import 'timer_completion_widget.dart';
 import 'neural_timer.dart';
@@ -541,6 +540,7 @@ class _SessionSheetState extends State<SessionSheet> {
       _selectedMood,
     );
 
+    if (!mounted) return;
     await habitProvider.toggleHabit(habitId, context);
 
     if (mounted) {
@@ -554,6 +554,7 @@ class _SessionSheetState extends State<SessionSheet> {
     final String habitId = widget.habit.id;
 
     HapticFeedback.vibrate();
+    if (!mounted) return;
     await habitProvider.ignoreOrTerminateHabit(habitId, context);
 
     if (mounted) {

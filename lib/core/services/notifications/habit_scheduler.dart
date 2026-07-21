@@ -33,7 +33,7 @@ class HabitScheduler {
         ? "$body\nMission: $description" 
         : body;
 
-    final androidDetails = const AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       channelId,
       channelName,
       channelDescription: channelDesc,

@@ -72,7 +72,6 @@ class NotificationProvider extends ChangeNotifier {
     if (habits.isEmpty) return;
 
     // 5. Schedule specific Habit Reminders via the HabitScheduler
-    final now = DateTime.now();
 
     final enabledHabits = habits.where((h) => h.isNotificationsEnabled).toList();
 
@@ -161,11 +160,6 @@ class NotificationProvider extends ChangeNotifier {
       default:
         return "SYNC_SUCCESS: Protocol '$habitName' verified. Neural integrity optimized.";
     }
-  }
-
-  /// Returns a quick fallback message matching the Persona vibe
-  String _getStaticFallback(HandlerPersona persona, String habitName) {
-    return _getReminderMessage(persona, habitName);
   }
 
   /// Triggers an instant notification confirming a new habit task protocol was created

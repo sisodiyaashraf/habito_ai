@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -119,10 +118,10 @@ class _GameHubScreenState extends State<GameHubScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.onSurface.withOpacity(0.03),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: theme.colorScheme.onSurface.withOpacity(0.08),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.08),
                         ),
                       ),
                       child: Row(
@@ -183,7 +182,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isActive
-                ? theme.colorScheme.primary.withOpacity(0.1)
+                ? theme.colorScheme.primary.withValues(alpha: 0.1)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(15),
           ),
@@ -192,7 +191,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
               title,
               style: TextStyle(
                 fontFamily: 'Orbitron',
-                color: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.24),
+                color: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurface.withValues(alpha: 0.24),
                 fontSize: Responsive.scaleText(context, 10),
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1,
@@ -242,13 +241,13 @@ class _GameHubScreenState extends State<GameHubScreen> {
         child: Container(
           decoration: BoxDecoration(
             color: isVault
-                ? theme.colorScheme.onSurface.withOpacity(0.02)
-                : theme.colorScheme.primary.withOpacity(0.05),
+                ? theme.colorScheme.onSurface.withValues(alpha: 0.02)
+                : theme.colorScheme.primary.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(25),
             border: Border.all(
               color: isVault
-                  ? theme.colorScheme.onSurface.withOpacity(0.1)
-                  : theme.colorScheme.primary.withOpacity(0.3),
+                  ? theme.colorScheme.onSurface.withValues(alpha: 0.1)
+                  : theme.colorScheme.primary.withValues(alpha: 0.3),
             ),
           ),
           child: Column(
@@ -267,7 +266,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     ),
                     child: Icon(
                       Icons.qr_code_scanner_rounded,
@@ -293,8 +292,8 @@ class _GameHubScreenState extends State<GameHubScreen> {
                 style: TextStyle(
                   fontFamily: 'SpaceMono',
                   color: isVault
-                      ? theme.colorScheme.onSurface.withOpacity(0.24)
-                      : theme.colorScheme.primary.withOpacity(0.5),
+                      ? theme.colorScheme.onSurface.withValues(alpha: 0.24)
+                      : theme.colorScheme.primary.withValues(alpha: 0.5),
                   fontSize: Responsive.scaleText(context, 7),
                   letterSpacing: 1,
                 ),
@@ -342,10 +341,10 @@ class _GameHubScreenState extends State<GameHubScreen> {
       margin: EdgeInsets.symmetric(horizontal: Responsive.scalePadding(context, 20), vertical: 10),
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: color.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -357,7 +356,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
               Text(
                 "HIVE STABILITY",
                 style: TextStyle(
-                  color: theme.colorScheme.onSurface.withOpacity(0.38),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.38),
                   fontSize: Responsive.scaleText(context, 9),
                   letterSpacing: 3,
                   fontFamily: 'SpaceMono',
@@ -386,7 +385,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
             child: LinearProgressIndicator(
               value: hive.hiveStability,
               minHeight: 6,
-              backgroundColor: theme.colorScheme.onSurface.withOpacity(0.1),
+              backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),
@@ -400,9 +399,9 @@ class _GameHubScreenState extends State<GameHubScreen> {
       margin: EdgeInsets.symmetric(horizontal: Responsive.scalePadding(context, 20), vertical: 10),
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: theme.colorScheme.onSurface.withOpacity(0.03),
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(35),
-        border: Border.all(color: theme.colorScheme.onSurface.withOpacity(0.08)),
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.08)),
       ),
       child: Column(
         children: [
@@ -415,7 +414,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
                   Text(
                     "SYSTEM RANK",
                     style: TextStyle(
-                      color: theme.colorScheme.onSurface.withOpacity(0.38),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.38),
                       fontSize: Responsive.scaleText(context, 10),
                       letterSpacing: 2,
                       fontFamily: 'SpaceMono',
@@ -438,7 +437,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
@@ -458,7 +457,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
             child: LinearProgressIndicator(
               value: provider.levelProgress,
               minHeight: 12,
-              backgroundColor: theme.colorScheme.onSurface.withOpacity(0.1),
+              backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(
                 theme.colorScheme.primary,
               ),
@@ -477,7 +476,7 @@ class _GameHubScreenState extends State<GameHubScreen> {
           msg,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: theme.colorScheme.onSurface.withOpacity(0.12),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.12),
             fontSize: Responsive.scaleText(context, 11),
             height: 1.6,
             fontFamily: 'SpaceMono',
@@ -493,12 +492,12 @@ class _GameHubScreenState extends State<GameHubScreen> {
         Positioned(
           top: -100,
           left: -100,
-          child: _buildGlow(theme.colorScheme.secondary.withOpacity(0.05)),
+          child: _buildGlow(theme.colorScheme.secondary.withValues(alpha: 0.05)),
         ),
         Positioned(
           bottom: -100,
           right: -100,
-          child: _buildGlow(theme.colorScheme.primary.withOpacity(0.05)),
+          child: _buildGlow(theme.colorScheme.primary.withValues(alpha: 0.05)),
         ),
       ],
     );
@@ -526,14 +525,14 @@ class _GameHubScreenState extends State<GameHubScreen> {
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
           color: isActive
-              ? theme.colorScheme.primary.withOpacity(0.8)
+              ? theme.colorScheme.primary.withValues(alpha: 0.8)
               : Colors.transparent,
           width: 2,
         ),
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: theme.colorScheme.primary.withOpacity(0.15),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.15),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),

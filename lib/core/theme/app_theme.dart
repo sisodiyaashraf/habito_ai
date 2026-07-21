@@ -67,7 +67,7 @@ class HabitoTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primary.withOpacity(0.1),
+          backgroundColor: primary.withValues(alpha: 0.1),
           foregroundColor: primary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           side: const BorderSide(color: primary, width: 1),
@@ -101,7 +101,7 @@ class HabitoTheme {
       scaffoldBackgroundColor: background,
       primaryColor: primary,
       cardColor: surface,
-      hintColor: onSurface.withOpacity(0.38),
+      hintColor: onSurface.withValues(alpha: 0.38),
       colorScheme: const ColorScheme.light(
         primary: primary,
         secondary: secondary,
@@ -180,7 +180,7 @@ class HabitoTheme {
         elevation: 8,
       ),
       iconTheme: const IconThemeData(color: onSurface),
-      dividerTheme: DividerThemeData(color: Color(0xFFE2E8F0)),
+      dividerTheme: const DividerThemeData(color: Color(0xFFE2E8F0)),
     );
   }
 }

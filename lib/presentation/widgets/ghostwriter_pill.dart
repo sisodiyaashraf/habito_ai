@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '../../core/services/ai_service.dart';
 import '../providers/hive_provider.dart';
 import '../providers/ai_provider.dart';
 

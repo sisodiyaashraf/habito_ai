@@ -235,8 +235,9 @@ class AIProvider extends ChangeNotifier {
 
   /// Generates a recommended protocol based on user level and current system needs
   Future<String> generateHabitSuggestion(int level) async {
-    if (!_isOnline)
+    if (!_isOnline) {
       return '{"name": "Local Drill", "category": "STUDY", "priority": "LOW", "target": 1, "justification": "Connectivity lost. Perform a basic local synchronization."}';
+    }
 
     _isLoading = true;
     notifyListeners();

@@ -85,7 +85,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
               context.read<HiveProvider>().sendMessage("NEURAL_SCAN: REFRESHING GLOBAL GRID DATA...", sender: "SYSTEM");
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  backgroundColor: theme.colorScheme.primary.withOpacity(0.9),
+                  backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.9),
                   content: const Text("NEURAL_SCAN_COMPLETE // GRID_SYNCED", style: TextStyle(fontFamily: 'SpaceMono', fontSize: 10, color: Colors.black)),
                   duration: const Duration(seconds: 1),
                 ),
@@ -105,7 +105,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
             fontWeight: FontWeight.w900,
             letterSpacing: 1.5,
           ),
-          unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(0.3),
+          unselectedLabelColor: theme.colorScheme.onSurface.withValues(alpha: 0.3),
           tabs: const [
             Tab(text: "SQUAD_SYNC"),
             Tab(text: "GLOBAL_GRID"),
@@ -119,7 +119,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
             end: Alignment.bottomCenter,
             colors: [
               theme.scaffoldBackgroundColor,
-              theme.colorScheme.primary.withOpacity(0.02),
+              theme.colorScheme.primary.withValues(alpha: 0.02),
               theme.scaffoldBackgroundColor,
             ],
           ),
@@ -155,8 +155,8 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
           decoration: BoxDecoration(
-            color: theme.scaffoldBackgroundColor.withOpacity(0.8),
-            border: Border(top: BorderSide(color: theme.colorScheme.primary.withOpacity(0.2))),
+            color: theme.scaffoldBackgroundColor.withValues(alpha: 0.8),
+            border: Border(top: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.2))),
           ),
           child: Row(
             children: [
@@ -171,7 +171,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
                   "NEURAL_UPLINK: ACTIVE // ENCRYPTED_SYNC_STABLE // NO_LATENCY_DETECTED",
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
-                    color: theme.colorScheme.primary.withOpacity(0.5),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
                     fontSize: 8,
                     letterSpacing: 1,
                   ),
@@ -179,7 +179,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
               ),
               Text(
                 "v2.0.99",
-                style: TextStyle(fontFamily: 'SpaceMono', color: theme.colorScheme.onSurface.withOpacity(0.2), fontSize: 8),
+                style: TextStyle(fontFamily: 'SpaceMono', color: theme.colorScheme.onSurface.withValues(alpha: 0.2), fontSize: 8),
               ),
             ],
           ),
@@ -247,9 +247,9 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
           child: Row(
             children: [
-              Text("TOP_SENTINELS", style: TextStyle(fontFamily: 'Orbitron', color: theme.colorScheme.primary.withOpacity(0.5), fontSize: 8, letterSpacing: 2)),
+              Text("TOP_SENTINELS", style: TextStyle(fontFamily: 'Orbitron', color: theme.colorScheme.primary.withValues(alpha: 0.5), fontSize: 8, letterSpacing: 2)),
               const Spacer(),
-              Text("SYSTEM_ACTIVE", style: TextStyle(fontFamily: 'SpaceMono', color: Colors.greenAccent.withOpacity(0.5), fontSize: 8)),
+              Text("SYSTEM_ACTIVE", style: TextStyle(fontFamily: 'SpaceMono', color: Colors.greenAccent.withValues(alpha: 0.5), fontSize: 8)),
             ],
           ),
         ),
@@ -273,10 +273,10 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isUser ? color.withOpacity(0.08) : theme.colorScheme.surface.withOpacity(0.3),
+        color: isUser ? color.withValues(alpha: 0.08) : theme.colorScheme.surface.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: isUser ? color.withOpacity(0.5) : theme.colorScheme.outline.withOpacity(0.1),
+          color: isUser ? color.withValues(alpha: 0.5) : theme.colorScheme.outline.withValues(alpha: 0.1),
           width: isUser ? 1.5 : 1,
         ),
       ),
@@ -287,8 +287,8 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
           height: 35,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: color.withOpacity(0.1),
-            border: Border.all(color: color.withOpacity(0.2)),
+            color: color.withValues(alpha: 0.1),
+            border: Border.all(color: color.withValues(alpha: 0.2)),
           ),
           child: Center(
             child: Text(
@@ -316,7 +316,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
           "LVL $lvl SENTINEL",
           style: TextStyle(
             fontFamily: 'SpaceMono',
-            color: theme.colorScheme.onSurface.withOpacity(0.4),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
             fontSize: 8,
           ),
         ),
@@ -324,7 +324,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
           "$xp XP",
           style: TextStyle(
             fontFamily: 'SpaceMono',
-            color: color.withOpacity(0.8),
+            color: color.withValues(alpha: 0.8),
             fontSize: 10,
             fontWeight: FontWeight.bold,
           ),
@@ -340,7 +340,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
         gradient: LinearGradient(
-          colors: [theme.colorScheme.primary.withOpacity(0.5), Colors.transparent, theme.colorScheme.primary.withOpacity(0.2)],
+          colors: [theme.colorScheme.primary.withValues(alpha: 0.5), Colors.transparent, theme.colorScheme.primary.withValues(alpha: 0.2)],
         ),
       ),
       child: ClipRRect(
@@ -349,7 +349,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             padding: const EdgeInsets.all(20),
-            color: theme.colorScheme.surface.withOpacity(0.7),
+            color: theme.colorScheme.surface.withValues(alpha: 0.7),
             child: Row(
               children: [
                 Column(
@@ -380,9 +380,9 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
+                    border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
                   ),
                   child: Column(
                     children: [
@@ -415,19 +415,19 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface.withOpacity(0.3),
+          color: theme.colorScheme.surface.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.1)),
         ),
         child: Row(
           children: [
-            Container(
+            SizedBox(
               width: 30,
               child: Text(
                 "${rank.position}",
                 style: TextStyle(
                   fontFamily: 'SpaceMono',
-                  color: rank.position <= 3 ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.2),
+                  color: rank.position <= 3 ? theme.colorScheme.primary : theme.colorScheme.onSurface.withValues(alpha: 0.2),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -440,7 +440,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
                   rank.username,
                   style: TextStyle(
                     fontFamily: 'Orbitron',
-                    color: theme.colorScheme.onSurface.withOpacity(0.8),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
                   ),
@@ -449,7 +449,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
                   rank.callsign,
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
-                    color: theme.colorScheme.primary.withOpacity(0.5),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
                     fontSize: 7,
                     letterSpacing: 1,
                   ),
@@ -473,14 +473,14 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
                   "${rank.xp} XP",
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
-                    color: theme.colorScheme.onSurface.withOpacity(0.3),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                     fontSize: 8,
                   ),
                 ),
               ],
             ),
             const SizedBox(width: 10),
-            Icon(Icons.arrow_forward_ios_rounded, color: theme.colorScheme.onSurface.withOpacity(0.1), size: 12),
+            Icon(Icons.arrow_forward_ios_rounded, color: theme.colorScheme.onSurface.withValues(alpha: 0.1), size: 12),
           ],
         ),
       ),
@@ -504,7 +504,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: color.withOpacity(0.5), width: 2),
+                  border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -513,7 +513,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: color.withOpacity(0.1),
+                        color: color.withValues(alpha: 0.1),
                       ),
                       child: Icon(Icons.security_rounded, color: color, size: 40),
                     ),
@@ -524,7 +524,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
                     ),
                     Text(
                       rank.callsign,
-                      style: TextStyle(fontFamily: 'SpaceMono', color: color.withOpacity(0.5), fontSize: 10),
+                      style: TextStyle(fontFamily: 'SpaceMono', color: color.withValues(alpha: 0.5), fontSize: 10),
                     ),
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
@@ -537,7 +537,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
                     const SizedBox(height: 30),
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text("CLOSE_DOSSIER", style: TextStyle(fontFamily: 'Orbitron', color: Colors.white38, fontSize: 10, letterSpacing: 2)),
+                      child: const Text("CLOSE_DOSSIER", style: TextStyle(fontFamily: 'Orbitron', color: Colors.white38, fontSize: 10, letterSpacing: 2)),
                     ),
                   ],
                 ),
@@ -555,7 +555,7 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontFamily: 'SpaceMono', color: Colors.white24, fontSize: 10)),
+          Text(label, style: const TextStyle(fontFamily: 'SpaceMono', color: Colors.white24, fontSize: 10)),
           Text(value, style: TextStyle(fontFamily: 'SpaceMono', color: color, fontSize: 10, fontWeight: FontWeight.bold)),
         ],
       ),

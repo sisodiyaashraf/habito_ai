@@ -20,7 +20,6 @@ import '../widgets/empty_habits_view.dart';
 import '../widgets/sentient_core.dart';
 import '../widgets/achievement_overlay.dart';
 import '../widgets/level_up_overlay.dart';
-import '../widgets/session_timer_widget.dart';
 import '../widgets/robot_guide_overlay.dart';
 import '../../core/utils/responsive.dart';
 import 'game_hub_screen.dart';
@@ -176,11 +175,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [systemColor, systemColor.withOpacity(0.4)],
+                          colors: [systemColor, systemColor.withValues(alpha: 0.4)],
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: systemColor.withOpacity(0.3),
+                            color: systemColor.withValues(alpha: 0.3),
                             blurRadius: 20,
                             spreadRadius: 2,
                           ),
@@ -213,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
           Positioned(
             top: -150,
             right: -100,
-            child: _buildGlowSphere(systemColor.withOpacity(0.08), 400),
+            child: _buildGlowSphere(systemColor.withValues(alpha: 0.08), 400),
           ),
           IndexedStack(
             index: _currentNavIndex,
@@ -265,14 +264,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
         borderRadius: isCircular ? null : BorderRadius.circular(30),
         border: Border.all(
           color: isActive
-              ? Colors.cyanAccent.withOpacity(0.8)
+              ? Colors.cyanAccent.withValues(alpha: 0.8)
               : Colors.transparent,
           width: 2,
         ),
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: Colors.cyanAccent.withOpacity(0.2),
+                  color: Colors.cyanAccent.withValues(alpha: 0.2),
                   blurRadius: 15,
                   spreadRadius: 2,
                 ),
@@ -528,14 +527,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                 builder: (context) => SessionSheet(habit: habit),
               );
             },
-            onLongPress: () {
+            onLongPress: () async {
               if (_isGuideVisible) return;
               HapticFeedback.heavyImpact();
-              _showDeleteConfirmationDialog(context, habit.name, habit.id).then((confirmed) {
-                if (confirmed == true) {
-                  context.read<HabitProvider>().deleteHabit(habit.id);
-                }
-              });
+              final habitProvider = context.read<HabitProvider>();
+              final confirmed = await _showDeleteConfirmationDialog(context, habit.name, habit.id);
+              if (confirmed == true) {
+                habitProvider.deleteHabit(habit.id);
+              }
             },
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -806,9 +805,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Text(
         label,
@@ -832,13 +831,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
           child: CircularProgressIndicator(
             value: progress,
             strokeWidth: 3,
-            backgroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
-            valueColor: AlwaysStoppedAnimation<Color>(isCompleted ? systemColor : systemColor.withOpacity(0.3)),
+            backgroundColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+            valueColor: AlwaysStoppedAnimation<Color>(isCompleted ? systemColor : systemColor.withValues(alpha: 0.3)),
           ),
         ),
         Icon(
           isCompleted ? Icons.check_circle_rounded : icon,
-          color: isCompleted ? systemColor : Theme.of(context).colorScheme.onSurface.withOpacity(0.24),
+          color: isCompleted ? systemColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.24),
           size: 20,
         ),
       ],
@@ -852,7 +851,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
         decoration: BoxDecoration(
           image: DecorationImage(
             image: const NetworkImage('https://www.transparenttextures.com/patterns/carbon-fibre.png'),
-            colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurface.withOpacity(0.1), BlendMode.srcATop),
+            colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1), BlendMode.srcATop),
             repeat: ImageRepeat.repeat,
           ),
         ),
@@ -868,9 +867,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: theme.colorScheme.onSurface.withOpacity(opacity),
+            color: theme.colorScheme.onSurface.withValues(alpha: opacity),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: borderColor ?? theme.colorScheme.onSurface.withOpacity(0.1)),
+            border: Border.all(color: borderColor ?? theme.colorScheme.onSurface.withValues(alpha: 0.1)),
           ),
           child: child,
         ),
