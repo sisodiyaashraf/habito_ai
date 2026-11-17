@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 import '../../domain/entities/habit.dart';
 import '../../domain/repositories/habit_repository.dart';
 import '../../data/models/achievement_model.dart';
+import '../../domain/entities/rpg_stats.dart';
+import '../../domain/entities/bounty_quest.dart';
+import '../../domain/entities/shop_item.dart';
+import '../../core/services/game_audio_service.dart';
 import '../widgets/reward_animation_widget.dart';
 import '../widgets/rewardcontent.dart';
 import 'hive_provider.dart';
@@ -40,11 +44,24 @@ class HabitProvider extends ChangeNotifier {
   bool get shouldCelebrate => _shouldCelebrate;
   bool get hasLeveledUp => _hasLeveledUp;
 
-  // --- XP & Evolution ---
+  // --- XP, Credits & Evolution ---
   int _totalXP = 0;
+  int _neuralCredits = 150; // Starter currency
+  int _streakShields = 1; // Starter streak shield
+  DateTime? _overdriveExpiry;
+  List<BountyQuest> _dailyQuests = [];
+
   int get totalXP => _totalXP;
+  int get neuralCredits => _neuralCredits;
+  int get streakShields => _streakShields;
   int get currentLevel => (_totalXP / 500).floor() + 1;
   double get levelProgress => (_totalXP % 500) / 500;
+  bool get isOverdriveActive =>
+      _overdriveExpiry != null && _overdriveExpiry!.isAfter(DateTime.now());
+  Duration get overdriveRemaining => isOverdriveActive
+      ? _overdriveExpiry!.difference(DateTime.now())
+      : Duration.zero;
+  List<BountyQuest> get dailyQuests => _dailyQuests;
 
   // --- PUBLIC ACCESSORS ---
 
@@ -62,12 +79,16 @@ class HabitProvider extends ChangeNotifier {
     });
   }
 
-  /// Determines XP multiplier based on current highest streak
+  /// Determines XP multiplier based on current highest streak and overdrive boost
   double get streakMultiplier {
     int streak = highestStreak;
-    if (streak >= 7) return 2.0; // Legendary Consistency
-    if (streak >= 3) return 1.5; // Optimized Sync
-    return 1.0; // Baseline
+    double base = 1.0;
+    if (streak >= 7) {
+      base = 2.0; // Legendary Consistency
+    } else if (streak >= 3) {
+      base = 1.5; // Optimized Sync
+    }
+    return isOverdriveActive ? base * 2.0 : base;
   }
 
   // --- Stability Metrics ---
@@ -133,6 +154,72 @@ class HabitProvider extends ChangeNotifier {
     return {'day': days[peakDate.weekday - 1], 'score': maxScore};
   }
 
+  /// Dynamic RPG Character Attribute Matrix (Discipline, Focus, Vitality, Willpower, Neural Sync)
+  RPGStats get rpgStats {
+    final now = DateTime.now();
+
+    // 1. Discipline: Highest streak + high priority completion rate
+    final double streakFactor = ((highestStreak / 10.0) * 50.0).clamp(0.0, 50.0);
+    final highPrioHabits = _habits.where((h) => h.priority == 'HIGH').toList();
+    final highPrioDone = highPrioHabits.where((h) => h.isGoalMet(now)).length;
+    final double prioFactor = highPrioHabits.isNotEmpty
+        ? (highPrioDone / highPrioHabits.length) * 50.0
+        : 40.0;
+    final double discipline = (streakFactor + prioFactor).clamp(15.0, 100.0);
+
+    // 2. Focus: Timer-enabled habits + Coding/Study category completion
+    final focusHabits = _habits
+        .where((h) => h.isTimerEnabled || h.category == 'CODING' || h.category == 'STUDY')
+        .toList();
+    final focusDone = focusHabits.where((h) => h.isGoalMet(now)).length;
+    final double focusBase = focusHabits.isNotEmpty
+        ? (focusDone / focusHabits.length) * 75.0
+        : 50.0;
+    final double focus = (focusBase + (highestStreak >= 3 ? 25.0 : 10.0)).clamp(20.0, 100.0);
+
+    // 3. Vitality: Fitness, Sports, Meditation habits
+    final vitHabits = _habits
+        .where((h) =>
+            h.category == 'FITNESS' ||
+            h.category == 'SPORTS' ||
+            h.category == 'MEDITATION')
+        .toList();
+    final vitDone = vitHabits.where((h) => h.isGoalMet(now)).length;
+    final double vitality = vitHabits.isNotEmpty
+        ? ((vitDone / vitHabits.length) * 70.0 + 30.0).clamp(25.0, 100.0)
+        : 65.0;
+
+    // 4. Willpower: Day stability minus bypassed/terminated protocols
+    final int terminatedToday = _habits.where((h) => h.isTerminatedOn(now)).length;
+    final double willBase = (dayStability * 80.0).clamp(20.0, 80.0);
+    final double willpower =
+        (willBase + 20.0 - (terminatedToday * 15.0)).clamp(10.0, 100.0);
+
+    // 5. Neural Sync: Overall weekly sync rate
+    final double neuralSync = (averageCompletionRate * 100.0).clamp(15.0, 100.0);
+
+    // Composite Combat Power (CP) calculation
+    final int cp = ((currentLevel * 180) +
+            (discipline * 2.5) +
+            (focus * 2.5) +
+            (vitality * 2.5) +
+            (willpower * 2.5) +
+            (neuralSync * 3.0) +
+            (highestStreak * 30))
+        .round();
+
+    return RPGStats(
+      discipline: discipline,
+      focus: focus,
+      vitality: vitality,
+      willpower: willpower,
+      neuralSync: neuralSync,
+      combatPower: cp,
+      level: currentLevel,
+      streak: highestStreak,
+    );
+  }
+
   // --- Neural Interaction Methods ---
 
   Future<void> addHabit(
@@ -170,6 +257,7 @@ class HabitProvider extends ChangeNotifier {
     await habitRepository.saveHabit(newHabit);
     await loadHabits();
 
+    GameAudioService().playBlip();
     _addLog(
       "NEW PROTOCOL",
       "Initiated: ${name.toUpperCase()}",
@@ -206,6 +294,9 @@ class HabitProvider extends ChangeNotifier {
       dailyMood: updatedMoods,
     );
     await habitRepository.saveHabit(_habits[index]);
+
+    GameAudioService().playSoftChime();
+    _updateBountyProgress(category: 'reflection');
 
     _addLog(
       "REFLECTION_ARCHIVED",
@@ -249,6 +340,16 @@ class HabitProvider extends ChangeNotifier {
       _habits = await habitRepository.getAllHabits();
       final box = await Hive.openBox('settings');
       _totalXP = box.get('total_xp', defaultValue: 0);
+      _neuralCredits = box.get('neural_credits', defaultValue: 150);
+      _streakShields = box.get('streak_shields', defaultValue: 1);
+
+      final String? overdriveStr = box.get('overdrive_expiry');
+      if (overdriveStr != null) {
+        _overdriveExpiry = DateTime.tryParse(overdriveStr);
+      }
+
+      // Initialize audio service
+      await GameAudioService().init();
 
       // Load Achievements
       final List? savedAchievements = box.get('achievements');
@@ -267,6 +368,9 @@ class HabitProvider extends ChangeNotifier {
             .map((log) => Map<String, dynamic>.from(log))
             .toList();
       }
+
+      // Load Daily Quests
+      _loadDailyQuests(box);
 
       _addLog("NEURAL LINK", "Protocols synchronized.", Icons.sensors);
       notifyListeners();
@@ -322,6 +426,22 @@ class HabitProvider extends ChangeNotifier {
     );
   }
 
+  Future<void> addCredits(int amount) async {
+    _neuralCredits += amount;
+    final box = await Hive.openBox('settings');
+    await box.put('neural_credits', _neuralCredits);
+    notifyListeners();
+  }
+
+  Future<bool> spendCredits(int amount) async {
+    if (_neuralCredits < amount) return false;
+    _neuralCredits -= amount;
+    final box = await Hive.openBox('settings');
+    await box.put('neural_credits', _neuralCredits);
+    notifyListeners();
+    return true;
+  }
+
   Future<void> addXP(int amount) async {
     int boostedAmount = (amount * streakMultiplier).round();
     int oldLevel = currentLevel;
@@ -332,10 +452,23 @@ class HabitProvider extends ChangeNotifier {
 
     if (currentLevel > oldLevel) {
       _hasLeveledUp = true;
+      GameAudioService().playChime();
       HapticFeedback.vibrate();
+
+      // Bonus credits on level up
+      final int levelReward = 50 * currentLevel;
+      _neuralCredits += levelReward;
+      await box.put('neural_credits', _neuralCredits);
+
+      // Reward streak shield every 5 levels
+      if (currentLevel % 5 == 0) {
+        _streakShields++;
+        await box.put('streak_shields', _streakShields);
+      }
+
       _addLog(
         "SYSTEM UPGRADE",
-        "Neural Level $currentLevel reached.",
+        "Neural Level $currentLevel reached. Granted +$levelReward Bits!",
         Icons.bolt_rounded,
       );
       _checkAchievements();
@@ -382,6 +515,7 @@ class HabitProvider extends ChangeNotifier {
         isUnlocked: true,
         unlockedAt: DateTime.now(),
       );
+      GameAudioService().playChime();
       _addLog(
         "ACHIEVEMENT UNLOCKED",
         _achievements[index].title,
@@ -469,6 +603,8 @@ class HabitProvider extends ChangeNotifier {
       );
       await habitRepository.saveHabit(_habits[index]);
 
+      GameAudioService().playChime();
+
       _addLog(
         "SYNC_SUCCESS",
         "${habit.name} verified.",
@@ -489,7 +625,19 @@ class HabitProvider extends ChangeNotifier {
         ),
       );
 
+      // Award XP & Credits
       await addXP(reward.points);
+      await addCredits(15);
+
+      // Update Daily Quests
+      _updateBountyProgress(category: 'completion');
+      if (habit.priority == 'HIGH') {
+        _updateBountyProgress(category: 'priority');
+      }
+      if (habit.isTimerEnabled) {
+        _updateBountyProgress(category: 'timer');
+      }
+
       _checkAchievements();
       if (context.mounted) {
         _syncWithHiveProvider(context);
@@ -504,6 +652,7 @@ class HabitProvider extends ChangeNotifier {
       );
       await habitRepository.saveHabit(_habits[index]);
 
+      GameAudioService().playBlip();
       _addLog("SYNC_REVERSED", "${habit.name} unverified.", Icons.undo_rounded);
       if (context.mounted) {
         _syncWithHiveProvider(context);
@@ -538,6 +687,8 @@ class HabitProvider extends ChangeNotifier {
     );
     await habitRepository.saveHabit(_habits[index]);
 
+    GameAudioService().playGlitch();
+
     _addLog(
       "PROTOCOL TERMINATED",
       "${habit.name} bypassed by operator.",
@@ -565,14 +716,12 @@ class HabitProvider extends ChangeNotifier {
   }
 
   void _showRewardDialog(RewardContent reward, DateTime timestamp) {
-    // Attempt to show dialog immediately if context is available
     final context = navigatorKey.currentContext;
     if (context != null && context.mounted) {
       RewardAnimationWidget.show(context, reward);
       return;
     }
 
-    // Fallback with retries if context is temporarily unavailable
     int retries = 0;
     void tryShow() {
       final retryContext = navigatorKey.currentContext;
@@ -593,9 +742,234 @@ class HabitProvider extends ChangeNotifier {
     if (index != -1) {
       _systemLogs[index]['is_collected'] = true;
       await _saveLogs();
-      notifyListeners();
+      GameAudioService().playSoftChime();
       HapticFeedback.lightImpact();
+      notifyListeners();
     }
+  }
+
+  /// Decrypt a pending data pack directly from Game Hub
+  Future<void> decryptDataPack(DateTime timestamp) async {
+    final String tsString = timestamp.toIso8601String();
+    final index = _systemLogs.indexWhere((log) => log['timestamp'] == tsString);
+    if (index != -1) {
+      _systemLogs[index]['is_collected'] = true;
+      await _saveLogs();
+
+      GameAudioService().playSoftChime();
+      HapticFeedback.heavyImpact();
+
+      // Bonus reward for manual decryption
+      await addXP(75);
+      await addCredits(25);
+
+      final String? botId = _systemLogs[index]['reward_bot_id'];
+      if (botId != null) {
+        final reward = RewardGenerator.getByName(botId);
+        final context = navigatorKey.currentContext;
+        if (context != null && context.mounted) {
+          RewardAnimationWidget.show(context, reward);
+        }
+      }
+      notifyListeners();
+    }
+  }
+
+  // --- Tactical Bounties (Daily Quests) Engine ---
+
+  void _loadDailyQuests(Box box) {
+    final todayStr = DateTime.now().toIso8601String().split('T').first;
+    final lastDate = box.get('bounty_date_key');
+    final saved = box.get('daily_bounties');
+
+    if (lastDate == todayStr && saved != null) {
+      _dailyQuests = (saved as List)
+          .map((item) => BountyQuest.fromJson(Map<String, dynamic>.from(item)))
+          .toList();
+    } else {
+      _generateNewDailyQuests(box, todayStr);
+    }
+  }
+
+  void _generateNewDailyQuests(Box box, String todayStr) {
+    _dailyQuests = [
+      BountyQuest(
+        id: 'q_sync_2',
+        title: 'PROTOCOL DUO',
+        description: 'Synchronize at least 2 habits today.',
+        category: 'completion',
+        currentProgress: 0,
+        targetProgress: 2,
+        xpReward: 100,
+        creditsReward: 30,
+        iconCode: Icons.check_circle_outline_rounded.codePoint,
+      ),
+      BountyQuest(
+        id: 'q_high_prio',
+        title: 'APEX TARGET',
+        description: 'Complete 1 High Priority protocol.',
+        category: 'priority',
+        currentProgress: 0,
+        targetProgress: 1,
+        xpReward: 150,
+        creditsReward: 40,
+        iconCode: Icons.crisis_alert_rounded.codePoint,
+      ),
+      BountyQuest(
+        id: 'q_timer',
+        title: 'CHRONO FOCUS',
+        description: 'Complete a timed protocol session.',
+        category: 'timer',
+        currentProgress: 0,
+        targetProgress: 1,
+        xpReward: 120,
+        creditsReward: 35,
+        iconCode: Icons.timer_rounded.codePoint,
+      ),
+      BountyQuest(
+        id: 'q_reflection',
+        title: 'NEURAL JOURNAL',
+        description: 'Log 1 daily reflection note.',
+        category: 'reflection',
+        currentProgress: 0,
+        targetProgress: 1,
+        xpReward: 80,
+        creditsReward: 25,
+        iconCode: Icons.psychology_rounded.codePoint,
+      ),
+    ];
+    _saveDailyQuests(box, todayStr);
+  }
+
+  Future<void> _saveDailyQuests(Box box, String todayStr) async {
+    await box.put('bounty_date_key', todayStr);
+    await box.put('daily_bounties', _dailyQuests.map((q) => q.toJson()).toList());
+  }
+
+  void _updateBountyProgress({required String category, int delta = 1}) async {
+    bool hasChanges = false;
+    for (int i = 0; i < _dailyQuests.length; i++) {
+      final q = _dailyQuests[i];
+      if (q.category == category && !q.isCompleted) {
+        final newProgress = (q.currentProgress + delta).clamp(0, q.targetProgress);
+        _dailyQuests[i] = q.copyWith(currentProgress: newProgress);
+        hasChanges = true;
+      }
+    }
+    if (hasChanges) {
+      final box = await Hive.openBox('settings');
+      final todayStr = DateTime.now().toIso8601String().split('T').first;
+      await _saveDailyQuests(box, todayStr);
+      notifyListeners();
+    }
+  }
+
+  Future<void> claimBounty(String questId) async {
+    final index = _dailyQuests.indexWhere((q) => q.id == questId);
+    if (index == -1) return;
+    final quest = _dailyQuests[index];
+    if (!quest.isCompleted || quest.isClaimed) return;
+
+    _dailyQuests[index] = quest.copyWith(isClaimed: true);
+    final box = await Hive.openBox('settings');
+    final todayStr = DateTime.now().toIso8601String().split('T').first;
+    await _saveDailyQuests(box, todayStr);
+
+    GameAudioService().playChime();
+    HapticFeedback.heavyImpact();
+
+    await addXP(quest.xpReward);
+    await addCredits(quest.creditsReward);
+
+    _addLog(
+      "BOUNTY SECURED",
+      "Claimed ${quest.title}: +${quest.xpReward} XP, +${quest.creditsReward} Bits",
+      Icons.military_tech_rounded,
+    );
+    notifyListeners();
+  }
+
+  // --- Cyber Armory / Shop Interactions ---
+
+  Future<bool> buyShopItem(ShopItem item, BuildContext context) async {
+    if (_neuralCredits < item.costBits) {
+      GameAudioService().playGlitch();
+      HapticFeedback.mediumImpact();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            "INSUFFICIENT NEURAL BITS // SYNC MORE PROTOCOLS",
+            style: TextStyle(fontFamily: 'SpaceMono', fontSize: 11, color: Colors.white),
+          ),
+        ),
+      );
+      return false;
+    }
+
+    _neuralCredits -= item.costBits;
+    final box = await Hive.openBox('settings');
+    await box.put('neural_credits', _neuralCredits);
+
+    GameAudioService().playChime();
+    HapticFeedback.heavyImpact();
+
+    switch (item.type) {
+      case ShopItemType.streakShield:
+        _streakShields++;
+        await box.put('streak_shields', _streakShields);
+        _addLog(
+          "ARMORY PURCHASE",
+          "Acquired 1x Streak Shield Protocol",
+          Icons.shield_rounded,
+        );
+        break;
+      case ShopItemType.xpOverdrive:
+        _overdriveExpiry = DateTime.now().add(const Duration(hours: 24));
+        await box.put('overdrive_expiry', _overdriveExpiry!.toIso8601String());
+        _addLog(
+          "OVERDRIVE ENGAGED",
+          "2x XP Multiplier active for 24H",
+          Icons.flash_on_rounded,
+        );
+        break;
+      case ShopItemType.corePurifier:
+        if (context.mounted) {
+          final hive = Provider.of<HiveProvider>(context, listen: false);
+          hive.setGlitchState(false);
+        }
+        _addLog(
+          "SYSTEM PURIFIED",
+          "Hive stability restored to maximum",
+          Icons.healing_rounded,
+        );
+        break;
+      case ShopItemType.mysteryDataPack:
+        final reward = RewardGenerator.getRandom();
+        final ts = DateTime.now();
+        _addLog(
+          "ENCRYPTED PACK SUMMONED",
+          "Data Pack ready for decryption in Hub.",
+          Icons.inventory_2_rounded,
+          reward: reward,
+          timestamp: ts,
+        );
+        // Mark not collected so user can decrypt it in Hub!
+        final lastIdx = _systemLogs.length - 1;
+        _systemLogs[lastIdx]['is_collected'] = false;
+        await _saveLogs();
+        break;
+      case ShopItemType.themeCosmetic:
+        _addLog(
+          "THEME UNLOCKED",
+          "Terminal visual module synchronized",
+          Icons.palette_rounded,
+        );
+        break;
+    }
+
+    notifyListeners();
+    return true;
   }
 
   // --- Management & Utilities ---
@@ -623,9 +997,7 @@ class HabitProvider extends ChangeNotifier {
       'reward_color': reward?.themeColor.toARGB32(),
       'reward_points': reward?.points,
       'is_rare': reward?.isRare ?? false,
-      'is_collected': reward != null
-          ? true
-          : false, // Automatically collected if it's a reward
+      'is_collected': reward != null ? true : false,
     });
     _saveLogs();
   }
@@ -688,10 +1060,19 @@ class HabitProvider extends ChangeNotifier {
     _habits = [];
     _achievements = [];
     _systemLogs = [];
+    _dailyQuests = [];
     _totalXP = 0;
+    _neuralCredits = 150;
+    _streakShields = 1;
+    _overdriveExpiry = null;
 
     final box = await Hive.openBox('settings');
     await box.delete('total_xp');
+    await box.delete('neural_credits');
+    await box.delete('streak_shields');
+    await box.delete('overdrive_expiry');
+    await box.delete('daily_bounties');
+    await box.delete('bounty_date_key');
     await box.delete('achievements');
     await box.delete('system_logs');
 

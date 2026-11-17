@@ -21,6 +21,8 @@ import '../widgets/sentient_core.dart';
 import '../widgets/achievement_overlay.dart';
 import '../widgets/level_up_overlay.dart';
 import '../widgets/robot_guide_overlay.dart';
+import '../widgets/gamelike_hud_bar.dart';
+import '../../core/services/game_audio_service.dart';
 import '../../core/utils/responsive.dart';
 import 'game_hub_screen.dart';
 import 'hive_screen.dart';
@@ -163,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                   child: FloatingActionButton(
                     onPressed: () {
                       if (_isGuideVisible) return;
+                      GameAudioService().playBlip();
                       HapticFeedback.heavyImpact();
                       AddHabitSheet.show(context);
                     },
@@ -291,6 +294,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
         slivers: [
           SliverToBoxAdapter(
             child: FadeInDown(child: _buildHeader(systemColor)),
+          ),
+          SliverToBoxAdapter(
+            child: _buildActiveBountyBanner(context, systemColor),
           ),
           SliverToBoxAdapter(
             child: _buildHighlightWrapper(
@@ -455,6 +461,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
 
   Widget _buildHyperHabitCard(BuildContext context, dynamic habit, Color systemColor) {
     final theme = Theme.of(context);
+    final provider = context.read<HabitProvider>();
+    final int habitStreak = provider.calculateStreak(habit.completionDates);
     final bool isCompleted = habit.isGoalMet(DateTime.now());
     final bool isTerminated = habit.isTerminatedOn(DateTime.now());
     final Color cardAccent = isCompleted
@@ -569,24 +577,54 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Row(
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             _buildMiniBadge(
                               habit.category.toUpperCase(),
                               isTerminated ? Colors.redAccent : systemColor,
                             ),
-                            const SizedBox(width: 10),
+                            if (habit.priority == 'HIGH')
+                              _buildMiniBadge("APEX", Colors.redAccent),
+                            if (habitStreak > 0)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.orangeAccent.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.local_fire_department_rounded, color: Colors.orangeAccent, size: 10),
+                                    const SizedBox(width: 2),
+                                    Text(
+                                      "${habitStreak}d",
+                                      style: const TextStyle(
+                                        fontFamily: 'SpaceMono',
+                                        fontSize: 8,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.orangeAccent,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             Text(
                               isCompleted
                                   ? "SYNC COMPLETE"
-                                  : (isTerminated ? "PROTOCOL TERMINATED" : "AWAITING UPLINK"),
+                                  : (isTerminated
+                                      ? "PROTOCOL TERMINATED"
+                                      : "+${(habit.priority == 'HIGH' ? 100 : 70) * (provider.isOverdriveActive ? 2 : 1)} XP"),
                               style: TextStyle(
                                 fontFamily: 'SpaceMono',
                                 color: isCompleted
                                     ? systemColor
                                     : (isTerminated
                                         ? Colors.redAccent
-                                        : theme.colorScheme.onSurface.withValues(alpha: 0.38)),
+                                        : Colors.cyanAccent.withValues(alpha: 0.7)),
                                 fontSize: Responsive.scaleText(context, 8),
                                 fontWeight: FontWeight.w800,
                               ),
@@ -726,68 +764,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              // TELEMETRY & PROGRESS HUD CARD
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: systemColor.withValues(alpha: 0.04),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: systemColor.withValues(alpha: 0.15)),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.bolt_rounded, color: systemColor, size: 16),
-                            const SizedBox(width: 6),
-                            Text(
-                              "LVL ${provider.currentLevel} [${provider.totalXP} XP]",
-                              style: TextStyle(
-                                fontFamily: 'Orbitron',
-                                color: systemColor,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 11,
-                                letterSpacing: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "${(provider.levelProgress * 100).toInt()}% UPLINK",
-                          style: TextStyle(
-                            fontFamily: 'SpaceMono',
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: provider.levelProgress,
-                        minHeight: 6,
-                        backgroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.06),
-                        valueColor: AlwaysStoppedAnimation<Color>(systemColor),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildHeaderMetricTile("STREAK", "${provider.highestStreak}D", Icons.whatshot_rounded, Colors.orangeAccent),
-                        _buildHeaderMetricTile("SYNC RATE", "${(provider.averageCompletionRate * 100).toInt()}%", Icons.sync_rounded, Colors.greenAccent),
-                        _buildHeaderMetricTile("STABILITY", "${(provider.weekStability * 100).toInt()}%", Icons.auto_graph_rounded, Colors.purpleAccent),
-                      ],
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 12),
+              GamelikeHudBar(
+                onOpenGameHub: () {
+                  setState(() => _currentNavIndex = 2);
+                },
               ),
             ],
           ),
@@ -796,36 +777,114 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
     );
   }
 
-  Widget _buildHeaderMetricTile(String label, String value, IconData icon, Color color) {
-    return Column(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: 12),
-            const SizedBox(width: 4),
-            Text(
-              value,
-              style: const TextStyle(
-                fontFamily: 'Orbitron',
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _buildActiveBountyBanner(BuildContext context, Color systemColor) {
+    final habitProvider = context.watch<HabitProvider>();
+    final quests = habitProvider.dailyQuests;
+    if (quests.isEmpty) return const SizedBox.shrink();
+
+    final activeQuest = quests.firstWhere(
+      (q) => !q.isClaimed,
+      orElse: () => quests.first,
+    );
+
+    final theme = Theme.of(context);
+    final isDone = activeQuest.isCompleted;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          setState(() => _currentNavIndex = 2);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isDone
+                ? Colors.cyanAccent.withValues(alpha: 0.1)
+                : theme.colorScheme.surface.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDone ? Colors.cyanAccent : Colors.white12,
             ),
-          ],
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-            fontFamily: 'SpaceMono',
-            color: color.withValues(alpha: 0.6),
-            fontSize: 7,
-            fontWeight: FontWeight.bold,
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDone
+                      ? Colors.cyanAccent.withValues(alpha: 0.2)
+                      : Colors.orangeAccent.withValues(alpha: 0.15),
+                ),
+                child: Icon(
+                  isDone ? Icons.military_tech_rounded : activeQuest.icon,
+                  color: isDone ? Colors.cyanAccent : Colors.orangeAccent,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          "DAILY BOUNTY",
+                          style: TextStyle(
+                            fontFamily: 'SpaceMono',
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                            color: isDone ? Colors.cyanAccent : Colors.orangeAccent,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          "[${activeQuest.currentProgress}/${activeQuest.targetProgress}]",
+                          style: TextStyle(
+                            fontFamily: 'SpaceMono',
+                            fontSize: 8,
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      activeQuest.title,
+                      style: TextStyle(
+                        fontFamily: 'Orbitron',
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.cyanAccent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  isDone ? "CLAIM IN HUB" : "+${activeQuest.xpReward} XP",
+                  style: const TextStyle(
+                    fontFamily: 'Orbitron',
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.cyanAccent,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 

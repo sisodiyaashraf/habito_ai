@@ -15,6 +15,7 @@ import 'neural_customizer_screen.dart';
 import 'neural_backup_screen.dart';
 import '../widgets/robot_guide_overlay.dart';
 import '../widgets/sentinel_identity_hud.dart';
+import '../../core/services/game_audio_service.dart';
 import '../../core/utils/responsive.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -338,6 +339,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onChanged: (val) {
               HapticFeedback.lightImpact();
               notify.toggleMute(val);
+              GameAudioService().setMuted(val);
             },
           ),
         ],
@@ -450,7 +452,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildStatHUDItem("HIGHEST_STREAK", "${habit.highestStreak}D", Icons.local_fire_department_rounded, themeColor),
+              _buildStatHUDItem("BITS", "${habit.neuralCredits}", Icons.diamond_rounded, Colors.cyanAccent),
+              _buildStatHUDItem("SHIELDS", "${habit.streakShields}", Icons.shield_rounded, Colors.lightBlueAccent),
+              _buildStatHUDItem("CP SCORE", "${habit.rpgStats.combatPower}", Icons.speed_rounded, Colors.purpleAccent),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildStatHUDItem("STREAK", "${habit.highestStreak}D", Icons.local_fire_department_rounded, Colors.orangeAccent),
               _buildStatHUDItem("SYNC_RATE", "${(habit.averageCompletionRate * 100).toInt()}%", Icons.sync_rounded, Colors.greenAccent),
               _buildStatHUDItem("TOTAL_XP", "${habit.totalXP}", Icons.bolt_rounded, Colors.amberAccent),
             ],

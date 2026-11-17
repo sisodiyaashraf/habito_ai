@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:provider/provider.dart';
+import '../../core/services/game_audio_service.dart';
 import '../providers/hive_provider.dart';
 import '../providers/habit_provider.dart';
 
@@ -41,6 +42,11 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        GameAudioService().playBlip();
+      }
+    });
   }
 
   @override
@@ -243,13 +249,14 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
     return Column(
       children: [
         _buildUserStatusHeader(userRank, theme),
+        _buildTop3Podium(topSentinels, theme),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
           child: Row(
             children: [
-              Text("TOP_SENTINELS", style: TextStyle(fontFamily: 'Orbitron', color: theme.colorScheme.primary.withValues(alpha: 0.5), fontSize: 8, letterSpacing: 2)),
+              Text("ALL_SENTINELS", style: TextStyle(fontFamily: 'Orbitron', color: theme.colorScheme.primary.withValues(alpha: 0.5), fontSize: 8, letterSpacing: 2)),
               const Spacer(),
-              Text("SYSTEM_ACTIVE", style: TextStyle(fontFamily: 'SpaceMono', color: Colors.greenAccent.withValues(alpha: 0.5), fontSize: 8)),
+              Text("LEAGUE: MASTER CYBER", style: TextStyle(fontFamily: 'SpaceMono', color: Colors.cyanAccent.withValues(alpha: 0.6), fontSize: 8)),
             ],
           ),
         ),
@@ -261,6 +268,123 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
               delay: Duration(milliseconds: index * 100),
               child: _buildGlobalRankTile(topSentinels[index], theme),
             ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTop3Podium(List<GlobalRank> sentinels, ThemeData theme) {
+    if (sentinels.length < 3) return const SizedBox.shrink();
+    final first = sentinels[0];
+    final second = sentinels[1];
+    final third = sentinels[2];
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.emoji_events_rounded, color: Color(0xFFFFD700), size: 16),
+              SizedBox(width: 6),
+              Text(
+                "APEX CYBER PODIUM",
+                style: TextStyle(
+                  fontFamily: 'Orbitron',
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                  color: Color(0xFFFFD700),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _buildPodiumPillar(second, "2", const Color(0xFFC0C0C0), 90, "🥈", theme),
+              _buildPodiumPillar(first, "1", const Color(0xFFFFD700), 120, "👑", theme),
+              _buildPodiumPillar(third, "3", const Color(0xFFCD7F32), 75, "🥉", theme),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPodiumPillar(
+    GlobalRank rank,
+    String rankNum,
+    Color color,
+    double height,
+    String badge,
+    ThemeData theme,
+  ) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(badge, style: const TextStyle(fontSize: 18)),
+        const SizedBox(height: 4),
+        Text(
+          rank.username,
+          style: TextStyle(
+            fontFamily: 'Orbitron',
+            fontSize: 9,
+            fontWeight: FontWeight.w900,
+            color: color,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          "${rank.xp} XP",
+          style: TextStyle(
+            fontFamily: 'SpaceMono',
+            fontSize: 7,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          width: 75,
+          height: height,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            border: Border.all(color: color.withValues(alpha: 0.5)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "#$rankNum",
+                style: TextStyle(
+                  fontFamily: 'Orbitron',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: color,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                "LVL ${rank.level}",
+                style: TextStyle(
+                  fontFamily: 'SpaceMono',
+                  fontSize: 8,
+                  fontWeight: FontWeight.bold,
+                  color: color.withValues(alpha: 0.8),
+                ),
+              ),
+            ],
           ),
         ),
       ],
