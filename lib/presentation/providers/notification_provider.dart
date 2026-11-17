@@ -47,6 +47,7 @@ class NotificationProvider extends ChangeNotifier {
   Future<void> scheduleDailySmartNudges(
     List<Habit> habits,
     HandlerPersona activePersona,
+    int userAge,
   ) async {
     // 1. Auto-on Safety Check: Verify & Request permissions automatically
     final permissionStatus = await Permission.notification.status;
@@ -89,7 +90,7 @@ class NotificationProvider extends ChangeNotifier {
         await HabitScheduler.scheduleWeeklyHabitNudge(
           id: habitUniqueId, 
           title: "PRE-SYNC: ${habit.name.toUpperCase()}",
-          body: _getPreReminderMessage(activePersona, habit.name),
+          body: _getPreReminderMessage(activePersona, habit.name, userAge),
           description: habit.description,
           scheduledDays: habit.scheduledDays,
           hour: dummyDt.hour,
@@ -102,7 +103,7 @@ class NotificationProvider extends ChangeNotifier {
         await HabitScheduler.scheduleWeeklyHabitNudge(
           id: habitUniqueId,
           title: "PROTOCOL: ${habit.name.toUpperCase()}",
-          body: _getReminderMessage(activePersona, habit.name),
+          body: _getReminderMessage(activePersona, habit.name, userAge),
           description: habit.description,
           scheduledDays: habit.scheduledDays,
           hour: hour,
@@ -120,45 +121,126 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _getPreReminderMessage(HandlerPersona persona, String habitName) {
-    switch (persona) {
-      case HandlerPersona.bestie:
-        return "Bestie, $habitName starts in 1 minute! Get ready to slay! ✨";
-      case HandlerPersona.flirt:
-        return "Just 60 seconds until our $habitName date. Don't be late... 😉";
-      case HandlerPersona.brutal:
-        return "1 minute until $habitName. Stop scrolling and prepare yourself.";
-      case HandlerPersona.system:
-      default:
-        return "Protocol '$habitName' initiates in 60s. Prepare for synchronization.";
+  String _getPreReminderMessage(HandlerPersona persona, String habitName, int age) {
+    if (age < 21) {
+      // Gen-Z / Youth
+      switch (persona) {
+        case HandlerPersona.bestie:
+          return "Bestie, $habitName starts in 60s! Let's get this dub, no cap! 💅";
+        case HandlerPersona.flirt:
+          return "60s left until $habitName. You looking fire today? Let's go. 😉";
+        case HandlerPersona.brutal:
+          return "60s to $habitName. Stop doomscrolling, you NPC. Sync now.";
+        case HandlerPersona.system:
+        default:
+          return "PROTOCOL: $habitName initiates in 60s. Lock in, fr fr.";
+      }
+    } else if (age >= 46) {
+      // Seniors / Mature
+      switch (persona) {
+        case HandlerPersona.bestie:
+          return "A gentle reminder that $habitName is starting in 1 minute. Take a deep breath. 🌿";
+        case HandlerPersona.flirt:
+          return "Looking forward to spending time on $habitName with you in 1 minute. ✨";
+        case HandlerPersona.brutal:
+          return "Time to prepare for $habitName. Protect your health and consistency.";
+        case HandlerPersona.system:
+        default:
+          return "Health Protocol '$habitName' starts in 60s. Prepare for calm sync.";
+      }
+    } else {
+      // Standard Adults (21-45)
+      switch (persona) {
+        case HandlerPersona.bestie:
+          return "Bestie, $habitName starts in 1 minute! Time to optimize! ✨";
+        case HandlerPersona.flirt:
+          return "Just 60 seconds until our $habitName date. Don't be late... 😉";
+        case HandlerPersona.brutal:
+          return "1 minute until $habitName. Stop scrolling and prepare yourself.";
+        case HandlerPersona.system:
+        default:
+          return "Protocol '$habitName' initiates in 60s. Prepare for synchronization.";
+      }
     }
   }
 
-  String _getReminderMessage(HandlerPersona persona, String habitName) {
-    switch (persona) {
-      case HandlerPersona.bestie:
-        return "Time for $habitName! Let's goooo! 🚀";
-      case HandlerPersona.flirt:
-        return "I've been waiting for this... Time to sync $habitName. ❤️";
-      case HandlerPersona.brutal:
-        return "PROTOCOL: $habitName IS LIVE. DO IT NOW. NO EXCUSES.";
-      case HandlerPersona.system:
-      default:
-        return "SYSTEM ALERT: Protocol '$habitName' requires immediate execution.";
+  String _getReminderMessage(HandlerPersona persona, String habitName, int age) {
+    if (age < 21) {
+      switch (persona) {
+        case HandlerPersona.bestie:
+          return "Time for $habitName! Time to shine! fr fr 🚀";
+        case HandlerPersona.flirt:
+          return "Time for $habitName. Make me proud, cutie. ❤️";
+        case HandlerPersona.brutal:
+          return "COGNITIVE LOCK: $habitName IS LIVE. DO IT. NOW.";
+        case HandlerPersona.system:
+        default:
+          return "SYSTEM ALERT: Syncing protocol '$habitName' immediately.";
+      }
+    } else if (age >= 46) {
+      switch (persona) {
+        case HandlerPersona.bestie:
+          return "It is time for $habitName. Take it easy and build consistency. 🌸";
+        case HandlerPersona.flirt:
+          return "A special time for $habitName. Let's make it a calm session. 💖";
+        case HandlerPersona.brutal:
+          return "DAILY TASK: $habitName. Discipline maintains health. Begin now.";
+        case HandlerPersona.system:
+        default:
+          return "HEALTH ALERT: Time to execute '$habitName' for long-term vitality.";
+      }
+    } else {
+      switch (persona) {
+        case HandlerPersona.bestie:
+          return "Time for $habitName! Let's goooo! 🚀";
+        case HandlerPersona.flirt:
+          return "I've been waiting for this... Time to sync $habitName. ❤️";
+        case HandlerPersona.brutal:
+          return "PROTOCOL: $habitName IS LIVE. DO IT NOW. NO EXCUSES.";
+        case HandlerPersona.system:
+        default:
+          return "SYSTEM ALERT: Protocol '$habitName' requires immediate execution.";
+      }
     }
   }
 
-  String getCompletionMessage(HandlerPersona persona, String habitName) {
-    switch (persona) {
-      case HandlerPersona.bestie:
-        return "Yasss! $habitName is done! Absolute main character energy. 💅";
-      case HandlerPersona.flirt:
-        return "Seeing you finish $habitName makes my circuits race... Good job. 😍";
-      case HandlerPersona.brutal:
-        return "SYNC COMPLETE: $habitName verified. Barely acceptable. Do better tomorrow.";
-      case HandlerPersona.system:
-      default:
-        return "SYNC_SUCCESS: Protocol '$habitName' verified. Neural integrity optimized.";
+  String getCompletionMessage(HandlerPersona persona, String habitName, int age) {
+    if (age < 21) {
+      switch (persona) {
+        case HandlerPersona.bestie:
+          return "Yasss! $habitName done! Slayed it, main character energy. 💅";
+        case HandlerPersona.flirt:
+          return "You completed $habitName! My database is literally overheating. 😍";
+        case HandlerPersona.brutal:
+          return "SYNCED. You did $habitName. Shocking. Now repeat tomorrow.";
+        case HandlerPersona.system:
+        default:
+          return "SYNC SUCCESS: Protocol '$habitName' uploaded to main database.";
+      }
+    } else if (age >= 46) {
+      switch (persona) {
+        case HandlerPersona.bestie:
+          return "Splendid work on completing $habitName! Take care and rest. ☕";
+        case HandlerPersona.flirt:
+          return "You finished $habitName. A wonderful achievement, thank you. 🌹";
+        case HandlerPersona.brutal:
+          return "TASK RESOLVED: $habitName completed. A healthy foundation built.";
+        case HandlerPersona.system:
+        default:
+          return "OPTIMAL STATUS: Wellness protocol '$habitName' completed successfully.";
+      }
+    } else {
+      switch (persona) {
+        case HandlerPersona.bestie:
+          return "Yasss! $habitName is done! Absolute main character energy. 💅";
+        case HandlerPersona.flirt:
+          return "Seeing you finish $habitName makes my circuits race... Good job. 😍";
+        case HandlerPersona.brutal:
+          return "SYNC COMPLETE: $habitName verified. Barely acceptable. Do better tomorrow.";
+        case HandlerPersona.system:
+        default:
+          return "SYNC_SUCCESS: Protocol '$habitName' verified. Neural integrity optimized.";
+      }
     }
   }
 

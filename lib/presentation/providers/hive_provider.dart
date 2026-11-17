@@ -27,8 +27,11 @@ class HiveProvider extends ChangeNotifier {
 
   // --- Identity & Personality ---
   String _userName = "MOHD ASHRAF";
+  int _userAge = 25;
   HandlerPersona _activePersona = HandlerPersona.system;
   bool _isDarkMode = true;
+
+  int get userAge => _userAge;
 
   // --- HUD & Animation States ---
   bool _isSystemGlitching = false;
@@ -263,6 +266,7 @@ class HiveProvider extends ChangeNotifier {
     _currentHiveId = box.get('hive_id');
     _isDarkMode = box.get('isDarkMode', defaultValue: true);
     _userName = box.get('userName', defaultValue: "MOHD ASHRAF");
+    _userAge = box.get('userAge', defaultValue: 25);
     int? personaIndex = box.get('handler_persona');
     if (personaIndex != null) {
       _activePersona = HandlerPersona.values[personaIndex];
@@ -275,6 +279,13 @@ class HiveProvider extends ChangeNotifier {
     _userName = name;
     final box = await Hive.openBox('settings');
     await box.put('userName', name);
+    notifyListeners();
+  }
+
+  void setUserAge(int age) async {
+    _userAge = age;
+    final box = await Hive.openBox('settings');
+    await box.put('userAge', age);
     notifyListeners();
   }
 

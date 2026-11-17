@@ -11,7 +11,7 @@ class HabitRepositoryImpl implements HabitRepository {
     final box = await Hive.openBox(_boxName);
     // Convert Hive dynamic list to List<Habit>
     return box.values
-        .map((item) => HabitModel.fromJson(Map<String, dynamic>.from(item)))
+        .map<Habit>((item) => HabitModel.fromJson(Map<String, dynamic>.from(item)))
         .toList();
   }
 

@@ -8,6 +8,7 @@ import 'core/theme/app_theme.dart';
 import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/home_screen.dart';
 import 'presentation/screens/neural_initialization_screen.dart';
+import 'presentation/screens/neural_vision_screen.dart';
 
 // Providers
 import 'presentation/providers/habit_provider.dart';
@@ -114,6 +115,7 @@ class HabitoApp extends StatelessWidget {
           routes: {
             '/home': (context) => const HomeScreen(),
             '/initialization': (context) => const NeuralInitializationScreen(),
+            '/vision': (context) => const NeuralVisionScreen(),
           },
         );
       },

@@ -163,6 +163,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
       notificationProvider.scheduleDailySmartNudges(
         habitProvider.habits,
         hiveProvider.activePersona,
+        hiveProvider.userAge,
       );
     } catch (e) {
       if (mounted) {

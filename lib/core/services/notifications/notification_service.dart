@@ -83,7 +83,7 @@ class NotificationService {
           'Tactical Alerts',
           importance: Importance.max,
           priority: Priority.high,
-          fullScreenIntent: true,
+          fullScreenIntent: false,
           styleInformation: BigTextStyleInformation(''),
         ),
         iOS: DarwinNotificationDetails(

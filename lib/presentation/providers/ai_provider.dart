@@ -35,7 +35,7 @@ class AIProvider extends ChangeNotifier {
   // --- Customization State ---
   AIPersonality _currentPersona = AIPersonality.neutral;
   String _activeThemeId = 'cyan_core';
-  
+
   // System Modules
   bool _isHapticEnabled = true;
   bool _isGlitchEnabled = true;
@@ -44,7 +44,7 @@ class AIProvider extends ChangeNotifier {
   // --- Identity State ---
   String _userName = "SENTINEL-01";
   String _userImagePath = ""; // Empty means default icon
-  late String _sentinelId;
+  String _sentinelId = "SN-000000";
 
   final List<String> _callsigns = [
     "NEURAL-REAPER",
@@ -85,15 +85,18 @@ class AIProvider extends ChangeNotifier {
     _activeThemeId = box.get('ai_theme', defaultValue: 'cyan_core');
     _isHapticEnabled = box.get('is_haptic_enabled', defaultValue: true);
     _isGlitchEnabled = box.get('is_glitch_enabled', defaultValue: true);
-    _isVoiceModulationEnabled = box.get('is_voice_modulation_enabled', defaultValue: false);
+    _isVoiceModulationEnabled = box.get(
+      'is_voice_modulation_enabled',
+      defaultValue: false,
+    );
     _userName = box.get('user_name', defaultValue: "SENTINEL-01");
     _userImagePath = box.get('user_image_path', defaultValue: "");
     _sentinelId = box.get('sentinel_id', defaultValue: _generateSentinelId());
-    
+
     if (!box.containsKey('sentinel_id')) {
       await box.put('sentinel_id', _sentinelId);
     }
-    
+
     int? personaIndex = box.get('ai_persona_index');
     if (personaIndex != null) {
       _currentPersona = AIPersonality.values[personaIndex];
@@ -167,7 +170,7 @@ class AIProvider extends ChangeNotifier {
     if (_currentPersona == persona) return;
     _currentPersona = persona;
     if (_isHapticEnabled) HapticFeedback.heavyImpact(); // Neural shift feedback
-    
+
     final box = await Hive.openBox('settings');
     await box.put('ai_persona_index', persona.index);
     notifyListeners();
@@ -178,7 +181,7 @@ class AIProvider extends ChangeNotifier {
     if (_unlockedThemes.contains(themeId)) {
       _activeThemeId = themeId;
       if (_isHapticEnabled) HapticFeedback.selectionClick();
-      
+
       final box = await Hive.openBox('settings');
       await box.put('ai_theme', themeId);
       notifyListeners();

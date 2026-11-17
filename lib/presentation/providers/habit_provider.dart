@@ -182,7 +182,11 @@ class HabitProvider extends ChangeNotifier {
   Future<void> deleteHabit(String id) async {
     await habitRepository.deleteHabit(id);
     await loadHabits();
-    _addLog("PROTOCOL DELETED", "Protocol terminated.", Icons.delete_outline_rounded);
+    _addLog(
+      "PROTOCOL DELETED",
+      "Protocol terminated.",
+      Icons.delete_outline_rounded,
+    );
     notifyListeners();
   }
 
@@ -245,7 +249,7 @@ class HabitProvider extends ChangeNotifier {
       _habits = await habitRepository.getAllHabits();
       final box = await Hive.openBox('settings');
       _totalXP = box.get('total_xp', defaultValue: 0);
-      
+
       // Load Achievements
       final List? savedAchievements = box.get('achievements');
       if (savedAchievements != null) {
@@ -259,7 +263,9 @@ class HabitProvider extends ChangeNotifier {
       // Load System Logs
       final List? savedLogs = box.get('system_logs');
       if (savedLogs != null) {
-        _systemLogs = savedLogs.map((log) => Map<String, dynamic>.from(log)).toList();
+        _systemLogs = savedLogs
+            .map((log) => Map<String, dynamic>.from(log))
+            .toList();
       }
 
       _addLog("NEURAL LINK", "Protocols synchronized.", Icons.sensors);
@@ -275,17 +281,45 @@ class HabitProvider extends ChangeNotifier {
 
   void _initDefaultAchievements() {
     _achievements = [
-      Achievement(id: 'first_habit', title: 'FIRST PROTOCOL', description: 'Initialize your first habit.', icon: Icons.rocket_launch_rounded),
-      Achievement(id: '7_day_streak', title: 'CONSISTENCY CORE', description: 'Maintain a 7-day streak.', icon: Icons.bolt_rounded),
-      Achievement(id: 'level_5', title: 'LEVEL 5 SENTINEL', description: 'Reach level 5.', icon: Icons.grade_rounded),
-      Achievement(id: 'level_10', title: 'NEURAL OVERLORD', description: 'Reach level 10.', icon: Icons.workspace_premium_rounded),
-      Achievement(id: '10_habits', title: 'PROTOCOL MASTER', description: 'Have 10 active habits.', icon: Icons.format_list_bulleted_rounded),
+      Achievement(
+        id: 'first_habit',
+        title: 'FIRST PROTOCOL',
+        description: 'Initialize your first habit.',
+        icon: Icons.rocket_launch_rounded,
+      ),
+      Achievement(
+        id: '7_day_streak',
+        title: 'CONSISTENCY CORE',
+        description: 'Maintain a 7-day streak.',
+        icon: Icons.bolt_rounded,
+      ),
+      Achievement(
+        id: 'level_5',
+        title: 'LEVEL 5 SENTINEL',
+        description: 'Reach level 5.',
+        icon: Icons.grade_rounded,
+      ),
+      Achievement(
+        id: 'level_10',
+        title: 'NEURAL OVERLORD',
+        description: 'Reach level 10.',
+        icon: Icons.workspace_premium_rounded,
+      ),
+      Achievement(
+        id: '10_habits',
+        title: 'PROTOCOL MASTER',
+        description: 'Have 10 active habits.',
+        icon: Icons.format_list_bulleted_rounded,
+      ),
     ];
   }
 
   Future<void> _saveAchievements() async {
     final box = await Hive.openBox('settings');
-    await box.put('achievements', _achievements.map((e) => e.toJson()).toList());
+    await box.put(
+      'achievements',
+      _achievements.map((e) => e.toJson()).toList(),
+    );
   }
 
   Future<void> addXP(int amount) async {
@@ -311,17 +345,17 @@ class HabitProvider extends ChangeNotifier {
 
   void _checkAchievements() {
     bool updated = false;
-    
+
     // Check First Habit
     if (_habits.isNotEmpty) {
       updated |= _unlockAchievement('first_habit');
     }
-    
+
     // Check 7 Day Streak
     if (highestStreak >= 7) {
       updated |= _unlockAchievement('7_day_streak');
     }
-    
+
     // Check Levels
     if (currentLevel >= 5) {
       updated |= _unlockAchievement('level_5');
@@ -329,7 +363,7 @@ class HabitProvider extends ChangeNotifier {
     if (currentLevel >= 10) {
       updated |= _unlockAchievement('level_10');
     }
-    
+
     // Check Habit Count
     if (_habits.length >= 10) {
       updated |= _unlockAchievement('10_habits');
@@ -348,7 +382,11 @@ class HabitProvider extends ChangeNotifier {
         isUnlocked: true,
         unlockedAt: DateTime.now(),
       );
-      _addLog("ACHIEVEMENT UNLOCKED", _achievements[index].title, Icons.emoji_events_rounded);
+      _addLog(
+        "ACHIEVEMENT UNLOCKED",
+        _achievements[index].title,
+        Icons.emoji_events_rounded,
+      );
       return true;
     }
     return false;
@@ -394,7 +432,10 @@ class HabitProvider extends ChangeNotifier {
     final index = _habits.indexWhere((h) => h.id == id);
     if (index == -1) return;
 
-    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+    final notificationProvider = Provider.of<NotificationProvider>(
+      context,
+      listen: false,
+    );
     final hiveProvider = Provider.of<HiveProvider>(context, listen: false);
 
     final habit = _habits[index];
@@ -405,7 +446,9 @@ class HabitProvider extends ChangeNotifier {
     if (!wasDone) {
       updatedDates.add(DateTime.now());
       // Remove from ignored if previously marked ignored today
-      List<DateTime> updatedIgnored = habit.ignoredDates.where((d) => !_isSameDay(d, today)).toList();
+      List<DateTime> updatedIgnored = habit.ignoredDates
+          .where((d) => !_isSameDay(d, today))
+          .toList();
 
       int completedToday =
           _habits
@@ -439,7 +482,11 @@ class HabitProvider extends ChangeNotifier {
       PersonaScheduler.showInstantPersonaNudge(
         persona: hiveProvider.activePersona,
         title: "SYNC COMPLETE",
-        body: notificationProvider.getCompletionMessage(hiveProvider.activePersona, habit.name),
+        body: notificationProvider.getCompletionMessage(
+          hiveProvider.activePersona,
+          habit.name,
+          hiveProvider.userAge,
+        ),
       );
 
       await addXP(reward.points);
@@ -457,11 +504,7 @@ class HabitProvider extends ChangeNotifier {
       );
       await habitRepository.saveHabit(_habits[index]);
 
-      _addLog(
-        "SYNC_REVERSED",
-        "${habit.name} unverified.",
-        Icons.undo_rounded,
-      );
+      _addLog("SYNC_REVERSED", "${habit.name} unverified.", Icons.undo_rounded);
       if (context.mounted) {
         _syncWithHiveProvider(context);
       }
@@ -478,9 +521,11 @@ class HabitProvider extends ChangeNotifier {
 
     final habit = _habits[index];
     final today = _normalizeDate(DateTime.now());
-    
+
     // Remove from completed if completed today
-    List<DateTime> updatedCompletions = habit.completionDates.where((d) => !_isSameDay(d, today)).toList();
+    List<DateTime> updatedCompletions = habit.completionDates
+        .where((d) => !_isSameDay(d, today))
+        .toList();
     List<DateTime> updatedIgnored = List.from(habit.ignoredDates);
     if (!updatedIgnored.any((d) => _isSameDay(d, today))) {
       updatedIgnored.add(DateTime.now());
@@ -538,14 +583,13 @@ class HabitProvider extends ChangeNotifier {
         Future.delayed(const Duration(milliseconds: 100), tryShow);
       }
     }
+
     Future.delayed(const Duration(milliseconds: 100), tryShow);
   }
 
   Future<void> collectBotCard(DateTime timestamp) async {
     final String tsString = timestamp.toIso8601String();
-    final index = _systemLogs.indexWhere(
-      (log) => log['timestamp'] == tsString,
-    );
+    final index = _systemLogs.indexWhere((log) => log['timestamp'] == tsString);
     if (index != -1) {
       _systemLogs[index]['is_collected'] = true;
       await _saveLogs();
@@ -579,7 +623,9 @@ class HabitProvider extends ChangeNotifier {
       'reward_color': reward?.themeColor.toARGB32(),
       'reward_points': reward?.points,
       'is_rare': reward?.isRare ?? false,
-      'is_collected': reward != null ? true : false, // Automatically collected if it's a reward
+      'is_collected': reward != null
+          ? true
+          : false, // Automatically collected if it's a reward
     });
     _saveLogs();
   }

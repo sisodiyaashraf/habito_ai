@@ -152,7 +152,7 @@ class SettingsScreen extends StatelessWidget {
             onTap: () async {
               HapticFeedback.heavyImpact();
               hive.setPersona(persona);
-              await notify.scheduleDailySmartNudges(habits.habits, persona);
+              await notify.scheduleDailySmartNudges(habits.habits, persona, hive.userAge);
             },
             leading: Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
@@ -247,43 +247,141 @@ class SettingsScreen extends StatelessWidget {
   Widget _buildProfileCard(BuildContext context, HiveProvider hive, Color themeColor) {
     final theme = Theme.of(context);
     final ai = context.watch<AIProvider>();
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: _glassDecoration(context),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundColor: themeColor.withValues(alpha: 0.1),
-            backgroundImage: ai.userImagePath.isNotEmpty ? AssetImage(ai.userImagePath) : null,
-            child: ai.userImagePath.isEmpty
-                ? Icon(Icons.person, color: themeColor)
-                : null,
-          ),
-          const SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                hive.userName.toUpperCase(),
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+    return GestureDetector(
+      onTap: () => _showEditProfileDialog(context, hive),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: _glassDecoration(context),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 25,
+              backgroundColor: themeColor.withValues(alpha: 0.1),
+              backgroundImage: ai.userImagePath.isNotEmpty ? AssetImage(ai.userImagePath) : null,
+              child: ai.userImagePath.isEmpty
+                  ? Icon(Icons.person, color: themeColor)
+                  : null,
+            ),
+            const SizedBox(width: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  hive.userName.toUpperCase(),
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
                 ),
-              ),
-              Text(
-                "RANK: SENTINEL",
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.24),
-                  fontSize: 10,
-                  fontFamily: 'SpaceMono',
+                Text(
+                  "RANK: SENTINEL // AGE: ${hive.userAge} CYCLES",
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.24),
+                    fontSize: 10,
+                    fontFamily: 'SpaceMono',
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            const Spacer(),
+            Icon(Icons.edit_rounded, color: themeColor, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditProfileDialog(BuildContext context, HiveProvider hive) {
+    final nameController = TextEditingController(text: hive.userName);
+    final ageController = TextEditingController(text: hive.userAge.toString());
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0D1117),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: Colors.cyanAccent, width: 1.5),
+        ),
+        title: const Text(
+          "COMMANDER PROFILE SYNC",
+          style: TextStyle(
+            fontFamily: 'Orbitron',
+            color: Colors.cyanAccent,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2,
           ),
-          const Spacer(),
-          Icon(Icons.qr_code_2, color: theme.colorScheme.onSurface.withValues(alpha: 0.24)),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              style: const TextStyle(color: Colors.white, fontFamily: 'SpaceMono'),
+              decoration: const InputDecoration(
+                labelText: "IDENTIFIER / NAME",
+                labelStyle: TextStyle(color: Colors.cyanAccent, fontFamily: 'SpaceMono'),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.cyanAccent)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: ageController,
+              keyboardType: TextInputType.number,
+              style: const TextStyle(color: Colors.white, fontFamily: 'SpaceMono'),
+              decoration: const InputDecoration(
+                labelText: "TEMPORAL CYCLE / AGE",
+                labelStyle: TextStyle(color: Colors.cyanAccent, fontFamily: 'SpaceMono'),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.cyanAccent)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("ABORT", style: TextStyle(color: Colors.white60, fontFamily: 'SpaceMono')),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.cyanAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () async {
+              final newName = nameController.text.trim();
+              final newAge = int.tryParse(ageController.text.trim()) ?? hive.userAge;
+              final navigator = Navigator.of(context);
+
+              if (newName.isNotEmpty) {
+                hive.setUserName(newName);
+                hive.setUserAge(newAge);
+
+                final habitProvider = Provider.of<HabitProvider>(context, listen: false);
+                final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+                navigator.pop();
+                
+                await notificationProvider.scheduleDailySmartNudges(
+                  habitProvider.habits,
+                  hive.activePersona,
+                  newAge,
+                );
+              } else {
+                navigator.pop();
+              }
+            },
+            child: const Text(
+              "SYNC DATA",
+              style: TextStyle(
+                fontFamily: 'Orbitron',
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ],
       ),
     );

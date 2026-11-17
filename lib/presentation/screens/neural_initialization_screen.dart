@@ -33,6 +33,9 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
   double _loadProgress = 0.0;
   String _consoleLog = "AWAITING COMMAND...";
 
+  final PageController _pageController = PageController();
+  int _currentStep = 0;
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +45,7 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -225,75 +229,9 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
           _buildAmbientGlow(theme),
           _buildScanningLines(),
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FadeInDown(
-                    child: Text(
-                      "CORE INITIALIZATION",
-                      style: TextStyle(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.9),
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 6,
-                        fontSize: 22,
-                        fontFamily: 'Orbitron',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  FadeInDown(
-                    delay: const Duration(milliseconds: 200),
-                    child: Text(
-                      "Hardware sync required. Grant permissions to establish the Neural Link.",
-                      style: TextStyle(
-                        color: variantColor,
-                        fontSize: 14,
-                        height: 1.6,
-                      ),
-                    ),
-                  ),
-
-                  Center(
-                    child: Container(
-                      height: 250,
-                      width: 250,
-                      margin: const EdgeInsets.symmetric(vertical: 20),
-                      child: _isInitializing || _isBootDone
-                          ? Lottie.asset(
-                              'assets/lottie_animation/Bike Loading Animation.json',
-                              fit: BoxFit.contain,
-                              repeat: true,
-                            )
-                          : Icon(
-                              Icons.directions_bike_rounded,
-                              size: 80,
-                              color: theme.colorScheme.outline.withValues(alpha: 0.5),
-                            ),
-                    ),
-                  ),
-
-                  _buildProgressBar(theme, textColor, variantColor),
-                  const SizedBox(height: 40),
-                  _buildStatusLine(
-                    "UPLINK: NOTIFICATIONS",
-                    _isNotificationsDone,
-                    theme,
-                    textColor,
-                    variantColor,
-                  ),
-                  _buildStatusLine("HARDWARE: EXACT_ALARM", _isAlarmDone, theme, textColor, variantColor),
-                  _buildStatusLine("PROTOCOL: GHOST_MODE", _isDndDone, theme, textColor, variantColor),
-
-                  const SizedBox(height: 30),
-                  if (!_isBootDone) Center(child: _buildInitializationButton(theme)),
-                  const SizedBox(height: 40),
-                  _buildConsole(theme, textColor),
-                ],
-              ),
-            ),
+            child: _currentStep < 3
+                ? _buildOnboardingSlides(theme, textColor, variantColor)
+                : _buildInitializationFlow(theme, textColor, variantColor),
           ),
           if (_isBootDone)
             FadeIn(
@@ -462,6 +400,256 @@ class _NeuralInitializationScreenState extends State<NeuralInitializationScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildOnboardingSlides(ThemeData theme, Color textColor, Color variantColor) {
+    return Column(
+      children: [
+        Expanded(
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentStep = index;
+              });
+            },
+            children: [
+              _buildSlideItem(
+                theme,
+                title: "WELCOME TO THE FUTURE",
+                subtitle: "Synchronize your biological habits with our cognitive AI interface for real-time compliance.",
+                icon: Icons.security_rounded,
+                iconColor: Colors.amberAccent,
+                label: "NEURAL-LINK CORE // OS-V2",
+              ),
+              _buildSlideItem(
+                theme,
+                title: "REAL-TIME AI VISION",
+                subtitle: "Prove your habits in real-time. Use the camera vision system to detect books, cups, and earn rare badges.",
+                icon: Icons.document_scanner_rounded,
+                iconColor: Colors.cyanAccent,
+                label: "SENTIENT TRACKING // VISION",
+              ),
+              _buildSlideItem(
+                theme,
+                title: "HARDWARE SYNC",
+                subtitle: "Initiate precise clock triggers, custom alarms, and background sync engines to unlock maximum efficiency.",
+                icon: Icons.power_rounded,
+                iconColor: Colors.purpleAccent,
+                label: "SYSTEM UPLINK // LOCK",
+              ),
+            ],
+          ),
+        ),
+        // Dots and Next/Skip buttons
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Slide Indicators
+              Row(
+                children: List.generate(3, (index) {
+                  final isActive = _currentStep == index;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: isActive ? 24 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: isActive ? theme.colorScheme.primary : theme.colorScheme.outline.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  );
+                }),
+              ),
+              // Next/Proceed Button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  if (_currentStep < 2) {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 350),
+                      curve: Curves.easeInOut,
+                    );
+                  } else {
+                    setState(() {
+                      _currentStep = 3;
+                    });
+                    _initializeSystem();
+                  }
+                },
+                child: Text(
+                  _currentStep == 2 ? "ESTABLISH LINK" : "NEXT",
+                  style: const TextStyle(
+                    fontFamily: 'Orbitron',
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 10,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSlideItem(
+    ThemeData theme, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Tag Label
+          Text(
+            label,
+            style: TextStyle(
+              fontFamily: 'SpaceMono',
+              color: iconColor.withValues(alpha: 0.8),
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+              letterSpacing: 3,
+            ),
+          ),
+          const SizedBox(height: 15),
+          // Large futuristic title
+          Text(
+            title,
+            style: const TextStyle(
+              fontFamily: 'Orbitron',
+              fontSize: 26,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 30),
+          // Futuristic Center Icon with glow
+          Center(
+            child: Container(
+              width: 180,
+              height: 180,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: iconColor.withValues(alpha: 0.03),
+                border: Border.all(color: iconColor.withValues(alpha: 0.2), width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: iconColor.withValues(alpha: 0.05),
+                    blurRadius: 30,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Icon(
+                icon,
+                color: iconColor,
+                size: 70,
+              ),
+            ),
+          ),
+          const SizedBox(height: 45),
+          // Description Text
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.6,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInitializationFlow(ThemeData theme, Color textColor, Color variantColor) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FadeInDown(
+            child: Text(
+              "CORE INITIALIZATION",
+              style: TextStyle(
+                color: theme.colorScheme.primary.withValues(alpha: 0.9),
+                fontWeight: FontWeight.w900,
+                letterSpacing: 6,
+                fontSize: 22,
+                fontFamily: 'Orbitron',
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          FadeInDown(
+            delay: const Duration(milliseconds: 200),
+            child: Text(
+              "Hardware sync required. Grant permissions to establish the Neural Link.",
+              style: TextStyle(
+                color: variantColor,
+                fontSize: 14,
+                height: 1.6,
+              ),
+            ),
+          ),
+
+          Center(
+            child: Container(
+              height: 250,
+              width: 250,
+              margin: const EdgeInsets.symmetric(vertical: 20),
+              child: _isInitializing || _isBootDone
+                  ? Lottie.asset(
+                      'assets/lottie_animation/Bike Loading Animation.json',
+                      fit: BoxFit.contain,
+                      repeat: true,
+                    )
+                  : Icon(
+                      Icons.directions_bike_rounded,
+                      size: 80,
+                      color: theme.colorScheme.outline.withValues(alpha: 0.5),
+                    ),
+            ),
+          ),
+
+          _buildProgressBar(theme, textColor, variantColor),
+          const SizedBox(height: 40),
+          _buildStatusLine(
+            "UPLINK: NOTIFICATIONS",
+            _isNotificationsDone,
+            theme,
+            textColor,
+            variantColor,
+          ),
+          _buildStatusLine("HARDWARE: EXACT_ALARM", _isAlarmDone, theme, textColor, variantColor),
+          _buildStatusLine("PROTOCOL: GHOST_MODE", _isDndDone, theme, textColor, variantColor),
+
+          const SizedBox(height: 30),
+          if (!_isBootDone) Center(child: _buildInitializationButton(theme)),
+          const SizedBox(height: 40),
+          _buildConsole(theme, textColor),
+        ],
       ),
     );
   }

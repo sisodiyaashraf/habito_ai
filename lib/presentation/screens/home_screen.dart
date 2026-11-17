@@ -129,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
       await notificationProvider.scheduleDailySmartNudges(
         habitProvider.habits,
         hiveProvider.activePersona,
+        hiveProvider.userAge,
       );
     }
   }
@@ -695,7 +696,34 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver, Si
                       ],
                     ),
                   ),
-                  const SentientCore(),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.mediumImpact();
+                          Navigator.pushNamed(context, '/vision');
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: systemColor.withValues(alpha: 0.05),
+                            border: Border.all(color: systemColor.withValues(alpha: 0.3)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: systemColor.withValues(alpha: 0.1),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: Icon(Icons.document_scanner_rounded, color: systemColor, size: 20),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const SentientCore(),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 16),

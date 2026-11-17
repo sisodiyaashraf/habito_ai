@@ -42,7 +42,7 @@ class HabitScheduler {
       ticker: 'TACTICAL ALERT',
       playSound: true,
       enableVibration: true,
-      fullScreenIntent: true,
+      fullScreenIntent: false,
       category: AndroidNotificationCategory.alarm,
       visibility: NotificationVisibility.public,
     );
