@@ -7,9 +7,10 @@ class GameAudioService {
   factory GameAudioService() => _instance;
   GameAudioService._internal();
 
-  final AudioPlayer _player = AudioPlayer();
+  AudioPlayer? _player;
   bool _isMuted = false;
 
+  AudioPlayer get _audioPlayer => _player ??= AudioPlayer();
   bool get isMuted => _isMuted;
 
   Future<void> init() async {
@@ -32,40 +33,40 @@ class GameAudioService {
   Future<void> playBlip() async {
     if (_isMuted) return;
     try {
-      await _player.stop();
-      await _player.play(AssetSource('sounds/neutral_blip.mp3'), volume: 0.6);
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource('sounds/neutral_blip.mp3'), volume: 0.6);
     } catch (e) {
-      debugPrint("Audio play blip error: $e");
+      debugPrint("Audio play blip: $e");
     }
   }
 
   Future<void> playChime() async {
     if (_isMuted) return;
     try {
-      await _player.stop();
-      await _player.play(AssetSource('sounds/scratchonix-victory-chime-366449.mp3'), volume: 0.8);
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource('sounds/scratchonix-victory-chime-366449.mp3'), volume: 0.8);
     } catch (e) {
-      debugPrint("Audio play chime error: $e");
+      debugPrint("Audio play chime: $e");
     }
   }
 
   Future<void> playSoftChime() async {
     if (_isMuted) return;
     try {
-      await _player.stop();
-      await _player.play(AssetSource('sounds/soft_chime.mp3'), volume: 0.7);
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource('sounds/soft_chime.mp3'), volume: 0.7);
     } catch (e) {
-      debugPrint("Audio play soft chime error: $e");
+      debugPrint("Audio play soft chime: $e");
     }
   }
 
   Future<void> playGlitch() async {
     if (_isMuted) return;
     try {
-      await _player.stop();
-      await _player.play(AssetSource('sounds/glitch_error.mp3'), volume: 0.6);
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource('sounds/glitch_error.mp3'), volume: 0.6);
     } catch (e) {
-      debugPrint("Audio play glitch error: $e");
+      debugPrint("Audio play glitch: $e");
     }
   }
 }

@@ -370,7 +370,7 @@ class HabitProvider extends ChangeNotifier {
       }
 
       // Load Daily Quests
-      _loadDailyQuests(box);
+      await _loadDailyQuests(box);
 
       _addLog("NEURAL LINK", "Protocols synchronized.", Icons.sensors);
       notifyListeners();
@@ -777,21 +777,24 @@ class HabitProvider extends ChangeNotifier {
 
   // --- Tactical Bounties (Daily Quests) Engine ---
 
-  void _loadDailyQuests(Box box) {
-    final todayStr = DateTime.now().toIso8601String().split('T').first;
-    final lastDate = box.get('bounty_date_key');
-    final saved = box.get('daily_bounties');
+  Future<void> _loadDailyQuests(Box box) async {
+    try {
+      final safeBox = box.isOpen ? box : await Hive.openBox('settings');
+      final todayStr = DateTime.now().toIso8601String().split('T').first;
+      final lastDate = safeBox.get('bounty_date_key');
+      final saved = safeBox.get('daily_bounties');
 
-    if (lastDate == todayStr && saved != null) {
-      _dailyQuests = (saved as List)
-          .map((item) => BountyQuest.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
-    } else {
-      _generateNewDailyQuests(box, todayStr);
-    }
+      if (lastDate == todayStr && saved != null) {
+        _dailyQuests = (saved as List)
+            .map((item) => BountyQuest.fromJson(Map<String, dynamic>.from(item)))
+            .toList();
+      } else {
+        await _generateNewDailyQuests(safeBox, todayStr);
+      }
+    } catch (_) {}
   }
 
-  void _generateNewDailyQuests(Box box, String todayStr) {
+  Future<void> _generateNewDailyQuests(Box box, String todayStr) async {
     _dailyQuests = [
       BountyQuest(
         id: 'q_sync_2',
@@ -838,12 +841,15 @@ class HabitProvider extends ChangeNotifier {
         iconCode: Icons.psychology_rounded.codePoint,
       ),
     ];
-    _saveDailyQuests(box, todayStr);
+    await _saveDailyQuests(box, todayStr);
   }
 
-  Future<void> _saveDailyQuests(Box box, String todayStr) async {
-    await box.put('bounty_date_key', todayStr);
-    await box.put('daily_bounties', _dailyQuests.map((q) => q.toJson()).toList());
+  Future<void> _saveDailyQuests(Box? box, String todayStr) async {
+    try {
+      final safeBox = (box != null && box.isOpen) ? box : await Hive.openBox('settings');
+      await safeBox.put('bounty_date_key', todayStr);
+      await safeBox.put('daily_bounties', _dailyQuests.map((q) => q.toJson()).toList());
+    } catch (_) {}
   }
 
   void _updateBountyProgress({required String category, int delta = 1}) async {
@@ -857,9 +863,8 @@ class HabitProvider extends ChangeNotifier {
       }
     }
     if (hasChanges) {
-      final box = await Hive.openBox('settings');
       final todayStr = DateTime.now().toIso8601String().split('T').first;
-      await _saveDailyQuests(box, todayStr);
+      await _saveDailyQuests(null, todayStr);
       notifyListeners();
     }
   }
