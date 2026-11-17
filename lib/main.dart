@@ -58,15 +58,18 @@ void main() async {
   await GameAudioService().init();
 
   // 3. Setup Dependencies
-  final String geminiKey = const String.fromEnvironment(
-    'GEMINI_API_KEY',
-    defaultValue: '',
-  ).isNotEmpty 
-      ? const String.fromEnvironment('GEMINI_API_KEY') 
+  final String geminiKey =
+      const String.fromEnvironment(
+        'GEMINI_API_KEY',
+        defaultValue: '',
+      ).isNotEmpty
+      ? const String.fromEnvironment('GEMINI_API_KEY')
       : (dotenv.env['GEMINI_API_KEY'] ?? "");
 
   if (geminiKey.isEmpty) {
-    debugPrint("CRITICAL ALERT: GEMINI_API_KEY not found in environment or .env.");
+    debugPrint(
+      "CRITICAL ALERT: GEMINI_API_KEY not found in environment or .env.",
+    );
   }
 
   final aiService = AIService(geminiKey, aiUsageService);
