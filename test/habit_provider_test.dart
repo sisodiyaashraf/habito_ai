@@ -12,6 +12,7 @@ void main() {
   late MockHabitRepository mockHabitRepository;
 
   setUp(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
     await setUpTestHive();
     mockHabitRepository = MockHabitRepository();
     habitProvider = HabitProvider(habitRepository: mockHabitRepository);
