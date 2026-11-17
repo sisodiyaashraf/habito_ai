@@ -21,6 +21,7 @@ import 'core/services/ai_service.dart';
 import 'core/services/ai_usage_service.dart';
 import 'core/services/notifications/notification_service.dart';
 import 'core/services/connectivity_service.dart';
+import 'core/services/game_audio_service.dart';
 import 'data/repositories/habit_repository_impl.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -54,6 +55,7 @@ void main() async {
 
   // 2. Initialize Hardware Services
   await NotificationService.init();
+  await GameAudioService().init();
 
   // 3. Setup Dependencies
   final String geminiKey = const String.fromEnvironment(

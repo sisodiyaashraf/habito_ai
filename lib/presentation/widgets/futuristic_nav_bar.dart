@@ -29,6 +29,9 @@ class FuturisticNavBar extends StatelessWidget {
       dailyProgress = (doneCount / provider.habits.length).clamp(0.0, 1.0);
     }
 
+    final bool hasLoot = provider.dailyQuests.any((q) => q.isCompleted && !q.isClaimed) ||
+        provider.systemLogs.any((l) => l['reward_bot_id'] != null && l['is_collected'] != true);
+
     return Container(
       height: 90,
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -95,7 +98,7 @@ class FuturisticNavBar extends StatelessWidget {
                 HapticFeedback.heavyImpact();
                 onItemSelected(2);
               },
-              child: _buildCentralHub(context, dailyProgress, selectedIndex == 2),
+              child: _buildCentralHub(context, dailyProgress, selectedIndex == 2, hasLoot),
             ),
           ),
         ],
@@ -103,7 +106,7 @@ class FuturisticNavBar extends StatelessWidget {
     );
   }
 
-  Widget _buildCentralHub(BuildContext context, double progress, bool isActive) {
+  Widget _buildCentralHub(BuildContext context, double progress, bool isActive, bool hasLoot) {
     final theme = Theme.of(context);
     final accent = theme.colorScheme.primary;
 
@@ -157,6 +160,29 @@ class FuturisticNavBar extends StatelessWidget {
             color: isActive ? accent : theme.colorScheme.onSurface.withValues(alpha: 0.38),
             size: 28,
           ),
+          if (hasLoot)
+            Positioned(
+              top: 4,
+              right: 4,
+              child: Pulse(
+                infinite: true,
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.orangeAccent,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.orangeAccent,
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
