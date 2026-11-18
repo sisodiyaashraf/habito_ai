@@ -94,7 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     top: -100,
                     right: -50,
                     child: _buildGlow(
-                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                      Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.08),
                     ),
                   ),
 
@@ -389,7 +391,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeTrackColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+        activeTrackColor: Theme.of(
+          context,
+        ).colorScheme.primary.withValues(alpha: 0.5),
         activeThumbColor: Theme.of(context).colorScheme.primary,
       ),
     );
@@ -450,20 +454,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildStatHUDItem("BITS", "${habit.neuralCredits}", Icons.diamond_rounded, Colors.cyanAccent),
-              _buildStatHUDItem("SHIELDS", "${habit.streakShields}", Icons.shield_rounded, Colors.lightBlueAccent),
-              _buildStatHUDItem("CP SCORE", "${habit.rpgStats.combatPower}", Icons.speed_rounded, Colors.purpleAccent),
+              Expanded(child: _buildStatHUDItem("BITS", "${habit.neuralCredits}", Icons.diamond_rounded, Colors.cyanAccent)),
+              Expanded(child: _buildStatHUDItem("SHIELDS", "${habit.streakShields}", Icons.shield_rounded, Colors.lightBlueAccent)),
+              Expanded(child: _buildStatHUDItem("CP SCORE", "${habit.rpgStats.combatPower}", Icons.speed_rounded, Colors.purpleAccent)),
             ],
           ),
           const SizedBox(height: 20),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildStatHUDItem("STREAK", "${habit.highestStreak}D", Icons.local_fire_department_rounded, Colors.orangeAccent),
-              _buildStatHUDItem("SYNC_RATE", "${(habit.averageCompletionRate * 100).toInt()}%", Icons.sync_rounded, Colors.greenAccent),
-              _buildStatHUDItem("TOTAL_XP", "${habit.totalXP}", Icons.bolt_rounded, Colors.amberAccent),
+              Expanded(child: _buildStatHUDItem("STREAK", "${habit.highestStreak}D", Icons.local_fire_department_rounded, Colors.orangeAccent)),
+              Expanded(child: _buildStatHUDItem("SYNC_RATE", "${(habit.averageCompletionRate * 100).toInt()}%", Icons.sync_rounded, Colors.greenAccent)),
+              Expanded(child: _buildStatHUDItem("TOTAL_XP", "${habit.totalXP}", Icons.bolt_rounded, Colors.amberAccent)),
             ],
           ),
           const SizedBox(height: 25),
@@ -487,13 +489,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     habit.habits.isEmpty
                         ? "OPTIMAL"
                         : (habit.weekStability >= 0.7
-                            ? "OPTIMAL"
-                            : (habit.weekStability >= 0.3 ? "STABLE" : "UNSTABLE")),
+                              ? "OPTIMAL"
+                              : (habit.weekStability >= 0.3
+                                    ? "STABLE"
+                                    : "UNSTABLE")),
                     style: TextStyle(
                       fontFamily: 'SpaceMono',
                       color: habit.habits.isEmpty || habit.weekStability >= 0.7
                           ? Colors.greenAccent
-                          : (habit.weekStability >= 0.3 ? Colors.amberAccent : Colors.redAccent),
+                          : (habit.weekStability >= 0.3
+                                ? Colors.amberAccent
+                                : Colors.redAccent),
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
                     ),
@@ -511,8 +517,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     habit.habits.isEmpty || habit.weekStability >= 0.7
                         ? Colors.greenAccent.withValues(alpha: 0.8)
                         : (habit.weekStability >= 0.3
-                            ? Colors.amberAccent.withValues(alpha: 0.8)
-                            : Colors.redAccent.withValues(alpha: 0.8)),
+                              ? Colors.amberAccent.withValues(alpha: 0.8)
+                              : Colors.redAccent.withValues(alpha: 0.8)),
                   ),
                 ),
               ),
@@ -523,7 +529,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildStatHUDItem(String label, String value, IconData icon, Color color) {
+  Widget _buildStatHUDItem(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Column(
       children: [
         Container(
@@ -535,13 +546,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Icon(icon, color: color, size: 20),
         ),
         const SizedBox(height: 12),
-        Text(
-          value,
-          style: const TextStyle(
-            fontFamily: 'Orbitron',
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontFamily: 'Orbitron',
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
         const SizedBox(height: 4),
@@ -572,14 +588,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       children: [
         const SizedBox(height: 30),
-        
+
         // THE NEW CUSTOM HUD
         GestureDetector(
           onTap: () {
             HapticFeedback.mediumImpact();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const NeuralCustomizerScreen()),
+              MaterialPageRoute(
+                builder: (context) => const NeuralCustomizerScreen(),
+              ),
             );
           },
           child: Hero(
@@ -623,14 +641,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-        
+
         const SizedBox(height: 10),
-        
+
         Text(
           "ENCRYPTION: QUANTUM-ACTIVE",
           style: TextStyle(
             fontFamily: 'SpaceMono',
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.2),
             fontSize: 8,
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
@@ -664,7 +684,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
+        child: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.primary,
+          size: 20,
+        ),
       ),
       title: Text(
         title,
@@ -735,16 +759,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         title: const Text(
           "SECURITY_ALERT",
-          style: TextStyle(fontFamily: 'Orbitron', color: Colors.redAccent, fontSize: 14),
+          style: TextStyle(
+            fontFamily: 'Orbitron',
+            color: Colors.redAccent,
+            fontSize: 14,
+          ),
         ),
         content: const Text(
           "This action will permanently purge all neural history and local data logs. Proceed with extreme caution.",
-          style: TextStyle(fontFamily: 'SpaceMono', color: Colors.white70, fontSize: 10),
+          style: TextStyle(
+            fontFamily: 'SpaceMono',
+            color: Colors.white70,
+            fontSize: 10,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("ABORT", style: TextStyle(fontFamily: 'SpaceMono', color: Colors.cyanAccent)),
+            child: const Text(
+              "ABORT",
+              style: TextStyle(
+                fontFamily: 'SpaceMono',
+                color: Colors.cyanAccent,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -752,7 +790,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Navigator.pop(context);
               Navigator.pushReplacementNamed(context, '/');
             },
-            child: const Text("EXECUTE_PURGE", style: TextStyle(fontFamily: 'SpaceMono', color: Colors.redAccent)),
+            child: const Text(
+              "EXECUTE_PURGE",
+              style: TextStyle(
+                fontFamily: 'SpaceMono',
+                color: Colors.redAccent,
+              ),
+            ),
           ),
         ],
       ),

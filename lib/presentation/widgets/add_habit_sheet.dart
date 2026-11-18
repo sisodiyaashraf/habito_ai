@@ -194,7 +194,9 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.88,
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.88,
+          ),
           decoration: BoxDecoration(
             color: theme.scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
@@ -654,16 +656,20 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                     ? theme.colorScheme.primary 
                     : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  cat['name'],
-                  style: TextStyle(
-                    fontFamily: 'SpaceMono',
-                    color: selected 
-                      ? theme.colorScheme.onSurface 
-                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    cat['name'],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'SpaceMono',
+                      color: selected 
+                        ? theme.colorScheme.onSurface 
+                        : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],

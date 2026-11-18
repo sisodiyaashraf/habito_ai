@@ -115,14 +115,18 @@ class WeeklyRecapCard extends StatelessWidget {
         children: [
           Pulse(child: Icon(Icons.shield_rounded, color: theme, size: 14)),
           const SizedBox(width: 10),
-          Text(
-            message,
-            style: TextStyle(
-              fontFamily: 'SpaceMono',
-              color: theme,
-              fontSize: 9,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
+          Expanded(
+            child: Text(
+              message,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontFamily: 'SpaceMono',
+                color: theme,
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
             ),
           ),
         ],

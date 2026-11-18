@@ -59,43 +59,60 @@ class CyberArmorySheet extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "NEURAL ARMORY // PROTOCOLS",
-                          style: TextStyle(
-                            fontFamily: 'SpaceMono',
-                            fontSize: 9,
-                            letterSpacing: 2,
-                            color: Colors.cyanAccent,
-                            fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "NEURAL ARMORY // PROTOCOLS",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'SpaceMono',
+                              fontSize: 9,
+                              letterSpacing: 2,
+                              color: Colors.cyanAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          "CYBER STORE",
-                          style: TextStyle(
-                            fontFamily: 'Orbitron',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            color: theme.colorScheme.onSurface,
+                          const SizedBox(height: 2),
+                          Text(
+                            "CYBER STORE",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Orbitron',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: theme.colorScheme.onSurface,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 10),
 
                     // Live Bits Balance Pill
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.cyanAccent.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.4)),
+                        border: Border.all(
+                          color: Colors.cyanAccent.withValues(alpha: 0.4),
+                        ),
                       ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.diamond_rounded, color: Colors.cyanAccent, size: 16),
+                          const Icon(
+                            Icons.diamond_rounded,
+                            color: Colors.cyanAccent,
+                            size: 16,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             "${habit.neuralCredits} BITS",
@@ -119,7 +136,10 @@ class CyberArmorySheet extends StatelessWidget {
               Expanded(
                 child: ListView.builder(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   itemCount: ShopItem.catalog.length,
                   itemBuilder: (context, index) {
                     final item = ShopItem.catalog[index];
@@ -127,7 +147,13 @@ class CyberArmorySheet extends StatelessWidget {
 
                     return FadeInUp(
                       delay: Duration(milliseconds: index * 60),
-                      child: _buildItemCard(context, item, canAfford, habit, theme),
+                      child: _buildItemCard(
+                        context,
+                        item,
+                        canAfford,
+                        habit,
+                        theme,
+                      ),
                     );
                   },
                 ),
@@ -166,7 +192,9 @@ class CyberArmorySheet extends StatelessWidget {
             decoration: BoxDecoration(
               color: item.accentColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: item.accentColor.withValues(alpha: 0.3)),
+              border: Border.all(
+                color: item.accentColor.withValues(alpha: 0.3),
+              ),
             ),
             child: Icon(item.icon, color: item.accentColor, size: 26),
           ),
@@ -183,6 +211,8 @@ class CyberArmorySheet extends StatelessWidget {
                     Flexible(
                       child: Text(
                         item.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontFamily: 'Orbitron',
                           fontSize: 11,
@@ -194,7 +224,10 @@ class CyberArmorySheet extends StatelessWidget {
                     if (item.badgeText != null) ...[
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: item.accentColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(6),
@@ -215,6 +248,8 @@ class CyberArmorySheet extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   item.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
                     fontSize: 9,
@@ -224,7 +259,11 @@ class CyberArmorySheet extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.diamond_rounded, color: Colors.cyanAccent, size: 12),
+                    const Icon(
+                      Icons.diamond_rounded,
+                      color: Colors.cyanAccent,
+                      size: 12,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       "${item.costBits} BITS",
@@ -252,7 +291,9 @@ class CyberArmorySheet extends StatelessWidget {
                     if (success && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          backgroundColor: item.accentColor.withValues(alpha: 0.9),
+                          backgroundColor: item.accentColor.withValues(
+                            alpha: 0.9,
+                          ),
                           content: Text(
                             "PROTOCOL ENGAGED: ${item.name}",
                             style: const TextStyle(

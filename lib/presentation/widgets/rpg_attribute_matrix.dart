@@ -68,22 +68,29 @@ class RpgAttributeMatrix extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.analytics_rounded, color: Colors.cyanAccent, size: 18),
-                  const SizedBox(width: 8),
-                  Text(
-                    "SENTINEL RPG MATRIX",
-                    style: TextStyle(
-                      fontFamily: 'Orbitron',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      color: theme.colorScheme.onSurface,
-                      letterSpacing: 2,
+              Expanded(
+                child: Row(
+                  children: [
+                    const Icon(Icons.analytics_rounded, color: Colors.cyanAccent, size: 18),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        "SENTINEL RPG MATRIX",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Orbitron',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: theme.colorScheme.onSurface,
+                          letterSpacing: 2,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -124,33 +131,41 @@ class RpgAttributeMatrix extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Icon(item['icon'] as IconData, color: color, size: 14),
-                            const SizedBox(width: 6),
-                            Text(
-                              item['label'] as String,
-                              style: TextStyle(
-                                fontFamily: 'Orbitron',
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onSurface,
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Icon(item['icon'] as IconData, color: color, size: 14),
+                              const SizedBox(width: 6),
+                              Text(
+                                item['label'] as String,
+                                style: TextStyle(
+                                  fontFamily: 'Orbitron',
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.onSurface,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              "• ${item['sub']}",
-                              style: TextStyle(
-                                fontFamily: 'SpaceMono',
-                                fontSize: 8,
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  "• ${item['sub']}",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: 'SpaceMono',
+                                    fontSize: 8,
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: 8),
 
                         // Grade & Percent
                         Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),

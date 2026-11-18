@@ -382,6 +382,8 @@ class _GameHubScreenState extends State<GameHubScreen> {
                   children: [
                     Text(
                       stats.rankTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: 'SpaceMono',
                         fontSize: 9,
@@ -393,6 +395,8 @@ class _GameHubScreenState extends State<GameHubScreen> {
                     const SizedBox(height: 2),
                     Text(
                       "LEVEL ${habit.currentLevel}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: 'Orbitron',
                         fontSize: 20,
@@ -403,6 +407,8 @@ class _GameHubScreenState extends State<GameHubScreen> {
                     const SizedBox(height: 4),
                     Text(
                       "${habit.totalXP} TOTAL NEURAL XP",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: 'SpaceMono',
                         fontSize: 9,

@@ -64,36 +64,45 @@ class AIInsightCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      _buildPulseDot(themeColor),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "NEURAL ADVISOR v2.0",
-                            style: TextStyle(
-                              fontFamily: 'Orbitron',
-                              color: themeColor,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 9,
-                              letterSpacing: 2,
-                            ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        _buildPulseDot(themeColor),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "NEURAL ADVISOR v2.0",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: 'Orbitron',
+                                  color: themeColor,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 9,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                              Text(
+                                "LEVEL ${habitProvider.currentLevel} PROTOCOL // STREAK: ${habitProvider.highestStreak}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: 'SpaceMono',
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                                  fontSize: 7,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            "LEVEL ${habitProvider.currentLevel} PROTOCOL // STREAK: ${habitProvider.highestStreak}",
-                            style: TextStyle(
-                              fontFamily: 'SpaceMono',
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                              fontSize: 7,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: 8),
                   if (aiProvider.isLoading)
                     const _BlinkingTerminalCursor()
                   else if (hasStreakBonus)

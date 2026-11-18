@@ -84,7 +84,10 @@ class _SessionSheetState extends State<SessionSheet> {
           Positioned(
             top: -100,
             left: -100,
-            child: _buildGlow(theme.colorScheme.primary.withValues(alpha: 0.05), 300),
+            child: _buildGlow(
+              theme.colorScheme.primary.withValues(alpha: 0.05),
+              300,
+            ),
           ),
 
           ClipRRect(
@@ -115,13 +118,17 @@ class _SessionSheetState extends State<SessionSheet> {
                                 targetMinutes: widget.habit.timerMinutes ?? 25,
                                 onComplete: () {
                                   HapticFeedback.vibrate();
-                                  final habitProvider = context.read<HabitProvider>();
-                                  
+                                  final habitProvider = context
+                                      .read<HabitProvider>();
+
                                   // 1. Show custom animation
                                   TimerCompletionWidget.show(context);
-                                  
+
                                   // 2. Save progress (Mark as completed for today)
-                                  habitProvider.toggleHabit(widget.habit.id, context);
+                                  habitProvider.toggleHabit(
+                                    widget.habit.id,
+                                    context,
+                                  );
                                 },
                               ),
                             ),
@@ -192,34 +199,45 @@ class _SessionSheetState extends State<SessionSheet> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 32),
-            Row(
-              children: [
-                Pulse(
-                  infinite: true,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.cyanAccent,
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Pulse(
+                    infinite: true,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.cyanAccent,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  "NEURAL_SYNC_MODE_v2.0",
-                  style: TextStyle(
-                    fontFamily: 'SpaceMono',
-                    color: theme.colorScheme.primary.withValues(alpha: 0.6),
-                    fontSize: 9,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Text(
+                      "NEURAL_SYNC_MODE_v2.0",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'SpaceMono',
+                        color: theme.colorScheme.primary.withValues(alpha: 0.6),
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             IconButton(
-              icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+              icon: const Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.redAccent,
+                size: 20,
+              ),
               onPressed: () => _confirmDeleteInSheet(context),
             ),
           ],
@@ -253,11 +271,18 @@ class _SessionSheetState extends State<SessionSheet> {
         backgroundColor: const Color(0xFF0D1117),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.5), width: 1.5),
+          side: BorderSide(
+            color: Colors.redAccent.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
         ),
         title: const Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 22),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.redAccent,
+              size: 22,
+            ),
             SizedBox(width: 10),
             Text(
               "PURGE PROTOCOL",
@@ -273,24 +298,45 @@ class _SessionSheetState extends State<SessionSheet> {
         ),
         content: Text(
           "Permanently purge '${widget.habit.name.toUpperCase()}' from local neural storage? This action cannot be reversed.",
-          style: const TextStyle(fontFamily: 'SpaceMono', color: Colors.white70, fontSize: 10),
+          style: const TextStyle(
+            fontFamily: 'SpaceMono',
+            color: Colors.white70,
+            fontSize: 10,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(diagContext),
-            child: const Text("ABORT", style: TextStyle(fontFamily: 'SpaceMono', color: Colors.cyanAccent, fontWeight: FontWeight.bold)),
+            child: const Text(
+              "ABORT",
+              style: TextStyle(
+                fontFamily: 'SpaceMono',
+                color: Colors.cyanAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () {
               Navigator.pop(diagContext);
               Navigator.pop(context);
               context.read<HabitProvider>().deleteHabit(widget.habit.id);
             },
-            child: const Text("PURGE DATA", style: TextStyle(fontFamily: 'Orbitron', color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+            child: const Text(
+              "PURGE DATA",
+              style: TextStyle(
+                fontFamily: 'Orbitron',
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -352,8 +398,8 @@ class _SessionSheetState extends State<SessionSheet> {
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: (mood['color'] as Color).withValues(alpha: 
-                                  0.2,
+                                color: (mood['color'] as Color).withValues(
+                                  alpha: 0.2,
                                 ),
                                 blurRadius: 15,
                               ),
@@ -502,7 +548,9 @@ class _SessionSheetState extends State<SessionSheet> {
             decoration: BoxDecoration(
               color: Colors.redAccent.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2)),
+              border: Border.all(
+                color: Colors.redAccent.withValues(alpha: 0.2),
+              ),
             ),
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,

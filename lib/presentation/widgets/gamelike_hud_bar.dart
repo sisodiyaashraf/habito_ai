@@ -47,49 +47,57 @@ class GamelikeHudBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Rank & Level Pill
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: stats.rankColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: stats.rankColor.withValues(alpha: 0.4)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(stats.rankBadge, style: const TextStyle(fontSize: 12)),
-                        const SizedBox(width: 4),
-                        Text(
-                          "LVL ${habit.currentLevel}",
-                          style: TextStyle(
-                            fontFamily: 'Orbitron',
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            color: stats.rankColor,
-                            letterSpacing: 1,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: stats.rankColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: stats.rankColor.withValues(alpha: 0.4)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(stats.rankBadge, style: const TextStyle(fontSize: 12)),
+                          const SizedBox(width: 4),
+                          Text(
+                            "LVL ${habit.currentLevel}",
+                            style: TextStyle(
+                              fontFamily: 'Orbitron',
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: stats.rankColor,
+                              letterSpacing: 1,
+                            ),
                           ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        stats.rankTitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Orbitron',
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                          letterSpacing: 1,
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    stats.rankTitle,
-                    style: TextStyle(
-                      fontFamily: 'Orbitron',
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
 
               // Currency & Power-Ups Pills
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Streak Shield Indicator
                   if (habit.streakShields > 0) ...[
@@ -218,47 +226,54 @@ class GamelikeHudBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Streak & Multiplier
-              Row(
-                children: [
-                  Pulse(
-                    infinite: true,
-                    duration: const Duration(seconds: 2),
-                    child: const Icon(Icons.local_fire_department_rounded, color: Colors.orangeAccent, size: 16),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    "${habit.highestStreak}D STREAK",
-                    style: const TextStyle(
-                      fontFamily: 'Orbitron',
-                      fontSize: 9,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.orangeAccent,
+              Expanded(
+                child: Row(
+                  children: [
+                    Pulse(
+                      infinite: true,
+                      duration: const Duration(seconds: 2),
+                      child: const Icon(Icons.local_fire_department_rounded, color: Colors.orangeAccent, size: 16),
                     ),
-                  ),
-                  const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: isOverdrive
-                          ? Colors.amberAccent.withValues(alpha: 0.2)
-                          : Colors.orangeAccent.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: isOverdrive ? Colors.amberAccent : Colors.orangeAccent.withValues(alpha: 0.4),
+                    const SizedBox(width: 4),
+                    Text(
+                      "${habit.highestStreak}D STREAK",
+                      style: const TextStyle(
+                        fontFamily: 'Orbitron',
+                        fontSize: 9,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.orangeAccent,
                       ),
                     ),
-                    child: Text(
-                      isOverdrive ? "⚡ 2X OVERDRIVE" : "${habit.streakMultiplier}X BOOST",
-                      style: TextStyle(
-                        fontFamily: 'SpaceMono',
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: isOverdrive ? Colors.amberAccent : Colors.orangeAccent,
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isOverdrive
+                              ? Colors.amberAccent.withValues(alpha: 0.2)
+                              : Colors.orangeAccent.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isOverdrive ? Colors.amberAccent : Colors.orangeAccent.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        child: Text(
+                          isOverdrive ? "⚡ 2X OVERDRIVE" : "${habit.streakMultiplier}X BOOST",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'SpaceMono',
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                            color: isOverdrive ? Colors.amberAccent : Colors.orangeAccent,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 6),
 
               // Combat Power (CP) Rating
               Container(
@@ -268,6 +283,7 @@ class GamelikeHudBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.speed_rounded, color: Colors.cyanAccent, size: 12),
                     const SizedBox(width: 4),

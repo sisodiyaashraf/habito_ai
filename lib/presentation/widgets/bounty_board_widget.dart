@@ -33,22 +33,29 @@ class BountyBoardWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.military_tech_rounded, color: Colors.orangeAccent, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    "DAILY TACTICAL BOUNTIES",
-                    style: TextStyle(
-                      fontFamily: 'Orbitron',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      color: theme.colorScheme.onSurface,
-                      letterSpacing: 2,
+              Expanded(
+                child: Row(
+                  children: [
+                    const Icon(Icons.military_tech_rounded, color: Colors.orangeAccent, size: 20),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        "DAILY TACTICAL BOUNTIES",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Orbitron',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          color: theme.colorScheme.onSurface,
+                          letterSpacing: 2,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -145,17 +152,22 @@ class BountyBoardWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      quest.title,
-                      style: TextStyle(
-                        fontFamily: 'Orbitron',
-                        fontSize: 10,
-                        fontWeight: FontWeight.w900,
-                        color: quest.isClaimed
-                            ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
-                            : theme.colorScheme.onSurface,
+                    Expanded(
+                      child: Text(
+                        quest.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Orbitron',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          color: quest.isClaimed
+                              ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
+                              : theme.colorScheme.onSurface,
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 6),
                     Text(
                       "${quest.currentProgress} / ${quest.targetProgress}",
                       style: TextStyle(
@@ -170,6 +182,8 @@ class BountyBoardWidget extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   quest.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: 'SpaceMono',
                     fontSize: 8,
@@ -213,7 +227,7 @@ class BountyBoardWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(4),

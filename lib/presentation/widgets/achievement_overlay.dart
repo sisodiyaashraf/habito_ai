@@ -93,7 +93,8 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
     return FadeInDown(
       duration: const Duration(milliseconds: 600),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 30),
+        margin: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 26),
         decoration: _bannerDecoration(context, Colors.cyanAccent),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -110,6 +111,8 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
             const SizedBox(height: 16),
             const Text(
               "STREAK MILESTONE",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontFamily: 'Orbitron',
                 color: Colors.white,
@@ -121,12 +124,14 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
             const SizedBox(height: 8),
             const Text(
               "7-DAY SYNC COMPLETE",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Orbitron',
                 color: Colors.cyanAccent,
                 fontWeight: FontWeight.w900,
-                fontSize: 20,
+                fontSize: 18,
                 letterSpacing: 1,
               ),
             ),
@@ -142,7 +147,8 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
     return ZoomIn(
       duration: const Duration(milliseconds: 500),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 35),
+        margin: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 28),
         decoration: _bannerDecoration(context, Colors.purpleAccent),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -150,30 +156,34 @@ class _AchievementOverlayState extends State<AchievementOverlay> {
             const Icon(
               Icons.upgrade_rounded,
               color: Colors.purpleAccent,
-              size: 60,
+              size: 50,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             const Text(
               "SYSTEM UPGRADE",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontFamily: 'Orbitron',
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
-                letterSpacing: 6,
-                fontSize: 14,
+                letterSpacing: 4,
+                fontSize: 13,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               "LEVEL $level REACHED",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontFamily: 'Orbitron',
                 color: Colors.purpleAccent,
                 fontWeight: FontWeight.w900,
-                fontSize: 28,
+                fontSize: 24,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             _buildMicroStatus("NEURAL CAPACITY EXPANDED", Colors.purpleAccent),
           ],
         ),

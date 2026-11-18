@@ -69,133 +69,137 @@ class _LevelUpOverlayState extends State<LevelUpOverlay> with SingleTickerProvid
 
           // 3. The Content
           Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FadeInDown(
-                  duration: const Duration(milliseconds: 400),
-                  child: Text(
-                    "NEURAL EVOLUTION DETECTED",
-                    style: TextStyle(
-                      fontFamily: 'SpaceMono',
-                      color: Colors.white.withValues(alpha: 0.6),
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 4,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FadeInDown(
+                    duration: const Duration(milliseconds: 400),
+                    child: Text(
+                      "NEURAL EVOLUTION DETECTED",
+                      style: TextStyle(
+                        fontFamily: 'SpaceMono',
+                        color: Colors.white.withValues(alpha: 0.6),
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 4,
+                      ),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                // Geometric Level Reveal
-                Flash(
-                  duration: const Duration(seconds: 1),
-                  child: Column(
-                    children: [
-                      Text(
-                        "LEVEL",
-                        style: TextStyle(
-                          fontFamily: 'Orbitron',
-                          color: Colors.cyanAccent.withValues(alpha: 0.4),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 12,
+                  // Geometric Level Reveal
+                  Flash(
+                    duration: const Duration(seconds: 1),
+                    child: Column(
+                      children: [
+                        Text(
+                          "LEVEL",
+                          style: TextStyle(
+                            fontFamily: 'Orbitron',
+                            color: Colors.cyanAccent.withValues(alpha: 0.4),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 12,
+                          ),
+                        ),
+                        Text(
+                          "$currentLevel",
+                          style: TextStyle(
+                            fontFamily: 'Orbitron',
+                            color: Colors.cyanAccent,
+                            fontSize: 120,
+                            fontWeight: FontWeight.w900,
+                            height: 1.0,
+                            shadows: [
+                              Shadow(
+                                color: Colors.cyanAccent.withValues(alpha: 0.8),
+                                blurRadius: 50,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  FadeInUp(
+                    delay: const Duration(milliseconds: 500),
+                    child: Column(
+                      children: [
+                        const Text(
+                          "PROTOCOL CAPACITY INCREASED",
+                          style: TextStyle(
+                            fontFamily: 'Orbitron',
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.cyanAccent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            "TOTAL_XP: $totalXP // CORE_STABILITY: OPTIMAL",
+                            style: const TextStyle(
+                              fontFamily: 'SpaceMono',
+                              color: Colors.cyanAccent,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 60),
+
+                  // The Button
+                  FadeIn(
+                    delay: const Duration(seconds: 1),
+                    child: OutlinedButton(
+                      onPressed: () => provider.resetLevelUp(),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(
+                          color: Colors.cyanAccent,
+                          width: 1.5,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 18,
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
                         ),
                       ),
-                      Text(
-                        "$currentLevel",
+                      child: const Text(
+                        "DISMISS LOG",
                         style: TextStyle(
                           fontFamily: 'Orbitron',
                           color: Colors.cyanAccent,
-                          fontSize: 120,
                           fontWeight: FontWeight.w900,
-                          height: 1.0,
-                          shadows: [
-                            Shadow(
-                              color: Colors.cyanAccent.withValues(alpha: 0.8),
-                              blurRadius: 50,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                FadeInUp(
-                  delay: const Duration(milliseconds: 500),
-                  child: Column(
-                    children: [
-                      const Text(
-                        "PROTOCOL CAPACITY INCREASED",
-                        style: TextStyle(
-                          fontFamily: 'Orbitron',
-                          color: Colors.white,
+                          letterSpacing: 3,
                           fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.cyanAccent.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          "TOTAL_XP: $totalXP // CORE_STABILITY: OPTIMAL",
-                          style: const TextStyle(
-                            fontFamily: 'SpaceMono',
-                            color: Colors.cyanAccent,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 60),
-
-                // The Button
-                FadeIn(
-                  delay: const Duration(seconds: 1),
-                  child: OutlinedButton(
-                    onPressed: () => provider.resetLevelUp(),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                        color: Colors.cyanAccent,
-                        width: 1.5,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 18,
-                      ),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                    child: const Text(
-                      "DISMISS LOG",
-                      style: TextStyle(
-                        fontFamily: 'Orbitron',
-                        color: Colors.cyanAccent,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 3,
-                        fontSize: 12,
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

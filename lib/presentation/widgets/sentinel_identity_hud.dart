@@ -199,6 +199,8 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
         // Text Content (Overlayed at bottom)
         Positioned(
           bottom: widget.size * 0.15,
+          left: 10,
+          right: 10,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -211,6 +213,9 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
                 ),
                 child: Text(
                   widget.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Orbitron',
                     color: Colors.white,
@@ -223,6 +228,9 @@ class _SentinelIdentityHUDState extends State<SentinelIdentityHUD>
               const SizedBox(height: 4),
               Text(
                 widget.subLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'SpaceMono',
                   color: widget.themeColor.withValues(alpha: 0.7),

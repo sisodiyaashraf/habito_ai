@@ -312,9 +312,9 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _buildPodiumPillar(second, "2", const Color(0xFFC0C0C0), 90, "🥈", theme),
-              _buildPodiumPillar(first, "1", const Color(0xFFFFD700), 120, "👑", theme),
-              _buildPodiumPillar(third, "3", const Color(0xFFCD7F32), 75, "🥉", theme),
+              Expanded(child: _buildPodiumPillar(second, "2", const Color(0xFFC0C0C0), 90, "🥈", theme)),
+              Expanded(child: _buildPodiumPillar(first, "1", const Color(0xFFFFD700), 120, "👑", theme)),
+              Expanded(child: _buildPodiumPillar(third, "3", const Color(0xFFCD7F32), 75, "🥉", theme)),
             ],
           ),
         ],
@@ -335,18 +335,26 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
       children: [
         Text(badge, style: const TextStyle(fontSize: 18)),
         const SizedBox(height: 4),
-        Text(
-          rank.username,
-          style: TextStyle(
-            fontFamily: 'Orbitron',
-            fontSize: 9,
-            fontWeight: FontWeight.w900,
-            color: color,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            rank.username,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Orbitron',
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
+              color: color,
+            ),
           ),
         ),
         const SizedBox(height: 2),
         Text(
           "${rank.xp} XP",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontFamily: 'SpaceMono',
             fontSize: 7,
@@ -354,37 +362,40 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
           ),
         ),
         const SizedBox(height: 6),
-        Container(
-          width: 75,
-          height: height,
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            border: Border.all(color: color.withValues(alpha: 0.5)),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "#$rankNum",
-                style: TextStyle(
-                  fontFamily: 'Orbitron',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: color,
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 80),
+          child: Container(
+            width: double.infinity,
+            height: height,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              border: Border.all(color: color.withValues(alpha: 0.5)),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "#$rankNum",
+                  style: TextStyle(
+                    fontFamily: 'Orbitron',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: color,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                "LVL ${rank.level}",
-                style: TextStyle(
-                  fontFamily: 'SpaceMono',
-                  fontSize: 8,
-                  fontWeight: FontWeight.bold,
-                  color: color.withValues(alpha: 0.8),
+                const SizedBox(height: 2),
+                Text(
+                  "LVL ${rank.level}",
+                  style: TextStyle(
+                    fontFamily: 'SpaceMono',
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
+                    color: color.withValues(alpha: 0.8),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -557,30 +568,36 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
               ),
             ),
             const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  rank.username,
-                  style: TextStyle(
-                    fontFamily: 'Orbitron',
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w900,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    rank.username,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Orbitron',
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
-                Text(
-                  rank.callsign,
-                  style: TextStyle(
-                    fontFamily: 'SpaceMono',
-                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
-                    fontSize: 7,
-                    letterSpacing: 1,
+                  Text(
+                    rank.callsign,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'SpaceMono',
+                      color: theme.colorScheme.primary.withValues(alpha: 0.5),
+                      fontSize: 7,
+                      letterSpacing: 1,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const Spacer(),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -623,47 +640,57 @@ class _GlobalLeaderboardScreenState extends State<GlobalLeaderboardScreen>
             child: Material(
               color: Colors.transparent,
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
+                width: MediaQuery.of(context).size.width * 0.85,
+                constraints: const BoxConstraints(maxWidth: 400),
                 padding: const EdgeInsets.all(25),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: color.withValues(alpha: 0.1),
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: color.withValues(alpha: 0.1),
+                        ),
+                        child: Icon(Icons.security_rounded, color: color, size: 40),
                       ),
-                      child: Icon(Icons.security_rounded, color: color, size: 40),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      rank.username,
-                      style: TextStyle(fontFamily: 'Orbitron', color: color, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2),
-                    ),
-                    Text(
-                      rank.callsign,
-                      style: TextStyle(fontFamily: 'SpaceMono', color: color.withValues(alpha: 0.5), fontSize: 10),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Divider(color: Colors.white10),
-                    ),
-                    _buildDossierRow("STATUS", "ACTIVE_DUTY", Colors.greenAccent),
-                    _buildDossierRow("LEVEL", "${rank.level}", color),
-                    _buildDossierRow("XP_TOTAL", "${rank.xp}", color),
-                    _buildDossierRow("RANK", "#${rank.position}", color),
-                    const SizedBox(height: 30),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text("CLOSE_DOSSIER", style: TextStyle(fontFamily: 'Orbitron', color: Colors.white38, fontSize: 10, letterSpacing: 2)),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      Text(
+                        rank.username,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontFamily: 'Orbitron', color: color, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2),
+                      ),
+                      Text(
+                        rank.callsign,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontFamily: 'SpaceMono', color: color.withValues(alpha: 0.5), fontSize: 10),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Divider(color: Colors.white10),
+                      ),
+                      _buildDossierRow("STATUS", "ACTIVE_DUTY", Colors.greenAccent),
+                      _buildDossierRow("LEVEL", "${rank.level}", color),
+                      _buildDossierRow("XP_TOTAL", "${rank.xp}", color),
+                      _buildDossierRow("RANK", "#${rank.position}", color),
+                      const SizedBox(height: 30),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("CLOSE_DOSSIER", style: TextStyle(fontFamily: 'Orbitron', color: Colors.white38, fontSize: 10, letterSpacing: 2)),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

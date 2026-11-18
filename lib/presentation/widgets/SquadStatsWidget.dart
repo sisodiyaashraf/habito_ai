@@ -33,11 +33,17 @@ class SquadStatsWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: hive.members
-                .map((member) => _buildMemberGauge(member))
-                .toList(),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: hive.members
+                  .map((member) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: _buildMemberGauge(member),
+                      ))
+                  .toList(),
+            ),
           ),
         ],
       ),
